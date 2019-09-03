@@ -104,6 +104,11 @@ bool IsAValue(const Pie<Derived1>&, const Pie<Derived2>&) {
     return false;
 }
 
+template <typename Derived1, typename Derived2, typename Derived3>
+bool IsTheValueOf(const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
+    return IsTheSameAs(type.derived(), lhs.derived(), rhs.derived()) && IsAValue(type.derived(), lhs.derived());
+}
+
 template <typename Derived>
 bool IsIllTyped(const Pie<Derived>&) {
     return false; // TODO not (type or expression described by a type). For this we need synth
