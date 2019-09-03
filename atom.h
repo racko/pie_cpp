@@ -40,6 +40,10 @@ bool IsANormal(const Quote_t atom, Atom_t) {
     return IsA(atom, Atom);
 }
 
+bool IsANormalType(Atom_t) {
+    return true;
+}
+
 bool IsNormalFormOfType(Atom_t, Atom_t) {
     return true;
 }

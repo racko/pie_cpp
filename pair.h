@@ -80,6 +80,11 @@ bool IsANormal(const Cons_t<Derived1, Derived2>& value, const Pair_t<DerivedT1, 
     return IsANormal(value.car_, type.car_t_) && IsANormal(value.cdr_, type.cdr_t_);
 }
 
+template <typename Derived1, typename Derived2>
+bool IsANormalType(const Pair_t<Derived1, Derived2>& type) {
+    return IsANormal(type.car_t_) && IsANormalType(type.cdr_t_);
+}
+
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 bool IsNormalFormOfType(const Pair_t<Derived1, Derived2>& type1, const Pair_t<Derived3, Derived4>& type2) {
     return IsNormalFormOfType(type1.car_t_, type2.car_t_) && IsNormalFormOfType(type1.cdr_t_, type2.cdr_t_);

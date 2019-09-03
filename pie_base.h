@@ -84,13 +84,14 @@ bool IsANormal(const Pie<Derived1>&, const Pie<Derived2>&) {
     return false;
 }
 
+template <typename Derived>
+bool IsANormalType(const Pie<Derived>&) {
+    return false;
+}
+
 template <typename Derived1, typename Derived2>
 bool IsNormalFormOfType(const Pie<Derived1>& type, const Pie<Derived2>& nf) {
-    // TODO Replace with one of
-    // - IsANormalType(nf)
-    // - IsANormal(nf, Universe)
-    // Can't do: AreTheSameType(nf, normalize(nf)) because AreTheSameType normalizes
-    return AreTheSameType(type.derived(), nf.derived()) && true;
+    return AreTheSameType(type.derived(), nf.derived()) && IsANormalType(nf.derived());
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>

@@ -97,6 +97,10 @@ bool IsANormal(const Add1_t<Derived>& n, Nat_t) {
 
 bool IsANormal(const DynamicNat n, Nat_t) { return IsA(n, Nat); }
 
+bool IsANormalType(Nat_t) {
+    return true;
+}
+
 bool IsNormalFormOfType(Nat_t, Nat_t) { return true; }
 
 bool IsAValue(Nat_t, Zero_t) { return true; }
