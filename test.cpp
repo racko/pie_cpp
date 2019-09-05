@@ -147,5 +147,9 @@ TEST_CASE("Chapter2", "") {
             Pair(Atom, Pair(Nat, Atom)), cons(quote(L"potato"), cons(nat(3), quote(L"potato"))), lambda([](auto root) {
                 return cons(root, cons(plus(nat(1), nat(2)), root));
             })(quote(L"potato"))));
+        CHECK(IsTheValueOf(
+            Pair(Atom, Arrow(Atom, Atom)),
+            cons(quote(L"carrot"), lambda([](auto root) { return root; })),
+            lambda([](auto root) { return cons(root, lambda([](auto root) { return root; })); })(quote(L"carrot"))));
     }
 }

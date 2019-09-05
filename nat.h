@@ -36,12 +36,7 @@ struct Add1_t : Pie<Add1_t<Derived>> {
 };
 
 template <typename Derived1, typename Derived2>
-bool operator==(const Add1_t<Derived1>&, const Add1_t<Derived2>&) {
-    return false;
-}
-
-template <typename Derived>
-bool operator==(const Add1_t<Derived>& lhs, const Add1_t<Derived>& rhs) {
+bool operator==(const Add1_t<Derived1>& lhs, const Add1_t<Derived2>& rhs) {
     return lhs.smaller_ == rhs.smaller_;
 }
 
@@ -107,12 +102,7 @@ struct Plus_t : Pie<Plus_t<Derived1, Derived2>> {
 };
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-bool operator==(const Plus_t<Derived1, Derived2>&, const Plus_t<Derived3, Derived4>&) {
-    return false;
-}
-
-template <typename Derived1, typename Derived2>
-bool operator==(const Plus_t<Derived1, Derived2>& lhs, const Plus_t<Derived1, Derived2>& rhs) {
+bool operator==(const Plus_t<Derived1, Derived2>& lhs, const Plus_t<Derived3, Derived4>& rhs) {
     return lhs.lhs_ == rhs.lhs_ && lhs.rhs_ == rhs.rhs_;
 }
 

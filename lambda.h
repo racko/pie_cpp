@@ -13,12 +13,7 @@ struct Arrow_t : Pie<Arrow_t<Arg, Result>> {
 };
 
 template <typename Arg1, typename Result1, typename Arg2, typename Result2>
-bool operator==(const Arrow_t<Arg1, Result1>&, const Arrow_t<Arg2, Result2>&) {
-    return false;
-}
-
-template <typename Arg, typename Result>
-bool operator==(const Arrow_t<Arg, Result>& lhs, const Arrow_t<Arg, Result>& rhs) {
+bool operator==(const Arrow_t<Arg1, Result1>& lhs, const Arrow_t<Arg2, Result2>& rhs) {
     return lhs.arg_ == rhs.arg_ && lhs.result_ == rhs.result_;
 }
 
@@ -41,12 +36,7 @@ struct App_t : Pie<App_t<F, Arg>> {
 };
 
 template <typename F1, typename Arg1, typename F2, typename Arg2>
-bool operator==(const App_t<F1, Arg1>&, const App_t<F2, Arg2>&) {
-    return false;
-}
-
-template <typename F, typename Arg>
-bool operator==(const App_t<F, Arg>& lhs, const App_t<F, Arg>& rhs) {
+bool operator==(const App_t<F1, Arg1>& lhs, const App_t<F2, Arg2>& rhs) {
     return lhs.f_ == rhs.f_ && lhs.arg_ == rhs.arg_;
 }
 
@@ -66,12 +56,7 @@ struct Lambda_t : Pie<Lambda_t<F>> {
 };
 
 template <typename F1, typename F2>
-bool operator==(const Lambda_t<F1>&, const Lambda_t<F2>&) {
-    return false;
-}
-
-template <typename F>
-bool operator==(const Lambda_t<F>& lhs, const Lambda_t<F>& rhs) {
+bool operator==(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs) {
     static int n = 0;
     const int x = n++;
     return lhs.f_(x) == rhs.f_(x);

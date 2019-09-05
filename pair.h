@@ -13,12 +13,7 @@ struct Pair_t : Pie<Pair_t<Derived1, Derived2>> {
 };
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-bool operator==(const Pair_t<Derived1, Derived2>&, const Pair_t<Derived3, Derived4>&) {
-    return false;
-}
-
-template <typename Derived1, typename Derived2>
-bool operator==(const Pair_t<Derived1, Derived2>& lhs, const Pair_t<Derived1, Derived2>& rhs) {
+bool operator==(const Pair_t<Derived1, Derived2>& lhs, const Pair_t<Derived3, Derived4>& rhs) {
     return lhs.car_t_ == rhs.car_t_ && lhs.cdr_t_ == rhs.cdr_t_;
 }
 
@@ -41,12 +36,7 @@ struct Cons_t : Pie<Cons_t<Derived1, Derived2>> {
 };
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-bool operator==(const Cons_t<Derived1, Derived2>&, const Cons_t<Derived3, Derived4>&) {
-    return false;
-}
-
-template <typename Derived1, typename Derived2>
-bool operator==(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived1, Derived2>& rhs) {
+bool operator==(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived3, Derived4>& rhs) {
     return lhs.car_ == rhs.car_ && lhs.cdr_ == rhs.cdr_;
 }
 
@@ -68,12 +58,7 @@ struct Car_t : Pie<Car_t<Derived>> {
 };
 
 template <typename Derived1, typename Derived2>
-bool operator==(const Car_t<Derived1>&, const Car_t<Derived2>&) {
-    return false;
-}
-
-template <typename Derived>
-bool operator==(const Car_t<Derived>& lhs, const Car_t<Derived>& rhs) {
+bool operator==(const Car_t<Derived1>& lhs, const Car_t<Derived2>& rhs) {
     return lhs.cons_ == rhs.cons_;
 }
 
@@ -95,12 +80,7 @@ struct Cdr_t : Pie<Cdr_t<Derived>> {
 };
 
 template <typename Derived1, typename Derived2>
-bool operator==(const Cdr_t<Derived1>&, const Cdr_t<Derived2>&) {
-    return false;
-}
-
-template <typename Derived>
-bool operator==(const Cdr_t<Derived>& lhs, const Cdr_t<Derived>& rhs) {
+bool operator==(const Cdr_t<Derived1>& lhs, const Cdr_t<Derived2>& rhs) {
     return lhs.cons_ == rhs.cons_;
 }
 
