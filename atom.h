@@ -11,7 +11,7 @@ inline constexpr Atom_t Atom;
 
 bool operator==(Atom_t, Atom_t) { return true; }
 
-std::ostream& operator<<(std::ostream& s, Atom_t) { return s << "Atom"; }
+std::wostream& operator<<(std::wostream& s, Atom_t) { return s << "Atom"; }
 
 struct Quote_t : Pie<Quote_t> {
     Quote_t(const wchar_t* symbol) : symbol_{symbol} {}
@@ -20,7 +20,7 @@ struct Quote_t : Pie<Quote_t> {
 
 bool operator==(const Quote_t lhs, const Quote_t rhs) { return std::wcscmp(lhs.symbol_, rhs.symbol_) == 0; }
 
-std::ostream& operator<<(std::ostream& s, const Quote_t atom) { return s << '\'' << atom.symbol_; }
+std::wostream& operator<<(std::wostream& s, const Quote_t atom) { return s << '\'' << atom.symbol_; }
 
 Quote_t quote(const wchar_t* symbol) { return Quote_t(symbol); }
 

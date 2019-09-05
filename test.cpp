@@ -1,7 +1,9 @@
 #include "pie.h"
 
 #include <catch2/catch.hpp>
+#include <codecvt>
 #include <iostream>
+#include <locale>
 
 // TODO: don't use sections? They are a fixture like mechanism: Catch runs all sections that are on the same level with
 // the same environment defined by the surrounding section by restarting after every section ...
@@ -129,6 +131,8 @@ TEST_CASE("Chapter1", "") {
 }
 
 TEST_CASE("Chapter2", "") {
+    std::wbuffer_convert<std::codecvt_utf8<wchar_t>> conv(std::cout.rdbuf());
+    std::wcout.rdbuf(&conv);
     SECTION("lambda") {
         CHECK(IsAValue(Arrow(Atom, Pair(Atom, Atom)),
                        lambda([](auto flavor) { return cons(flavor, quote(L"lentils")); })));

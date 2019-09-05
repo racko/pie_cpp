@@ -12,7 +12,7 @@ bool operator==(Nat_t, Nat_t) {
     return true;
 }
 
-std::ostream& operator<<(std::ostream& s, Nat_t) {
+std::wostream& operator<<(std::wostream& s, Nat_t) {
     return s << "Nat";
 }
 
@@ -24,7 +24,7 @@ bool operator==(Zero_t, Zero_t) {
     return true;
 }
 
-std::ostream& operator<<(std::ostream& s, Zero_t) {
+std::wostream& operator<<(std::wostream& s, Zero_t) {
     return s << "zero";
 }
 
@@ -46,7 +46,7 @@ bool operator==(const Add1_t<Derived>& lhs, const Add1_t<Derived>& rhs) {
 }
 
 template <typename Derived>
-std::ostream& operator<<(std::ostream& s, const Add1_t<Derived>& n) {
+std::wostream& operator<<(std::wostream& s, const Add1_t<Derived>& n) {
     return s << "(add1 " << n.smaller_ << ')';
 }
 
@@ -92,7 +92,7 @@ bool operator==(const DynamicNat lhs, const Add1_t<Derived>& rhs) {
     return rhs == lhs;
 }
 
-std::ostream& operator<<(std::ostream& s, const DynamicNat n) {
+std::wostream& operator<<(std::wostream& s, const DynamicNat n) {
     return s << n.n_;
 }
 
@@ -117,7 +117,7 @@ bool operator==(const Plus_t<Derived1, Derived2>& lhs, const Plus_t<Derived1, De
 }
 
 template <typename Derived1, typename Derived2>
-std::ostream& operator<<(std::ostream& s, const Plus_t<Derived1, Derived2>& sum) {
+std::wostream& operator<<(std::wostream& s, const Plus_t<Derived1, Derived2>& sum) {
     return s << "(plus " << sum.lhs_ << ' ' << sum.rhs_ << ')';
 }
 

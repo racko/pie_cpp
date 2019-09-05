@@ -23,7 +23,7 @@ bool operator==(const Arrow_t<Arg, Result>& lhs, const Arrow_t<Arg, Result>& rhs
 }
 
 template <typename Arg, typename Result>
-std::ostream& operator<<(std::ostream& s, const Arrow_t<Arg, Result>& type) {
+std::wostream& operator<<(std::wostream& s, const Arrow_t<Arg, Result>& type) {
     return s << "(-> " << type.arg_ << ' ' << type.result_ << ')';
 }
 
@@ -51,7 +51,7 @@ bool operator==(const App_t<F, Arg>& lhs, const App_t<F, Arg>& rhs) {
 }
 
 template <typename F, typename Arg>
-std::ostream& operator<<(std::ostream& s, const App_t<F, Arg>& app) {
+std::wostream& operator<<(std::wostream& s, const App_t<F, Arg>& app) {
     return s << '(' << app.f_ << ' ' << app.arg_ << ')';
 }
 
@@ -78,9 +78,9 @@ bool operator==(const Lambda_t<F>& lhs, const Lambda_t<F>& rhs) {
 }
 
 template <typename F>
-std::ostream& operator<<(std::ostream& s, const Lambda_t<F>& f) {
+std::wostream& operator<<(std::wostream& s, const Lambda_t<F>& f) {
     const Var_t var;
-    return s << "(\u03BB (" << var << ") " << f.f_(var) << ')';
+    return s << L"(λ  (" << var << ") " << f.f_(var) << ')';
 }
 
 template <typename F>

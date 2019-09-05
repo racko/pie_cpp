@@ -23,7 +23,7 @@ bool operator==(const Pair_t<Derived1, Derived2>& lhs, const Pair_t<Derived1, De
 }
 
 template <typename Derived1, typename Derived2>
-std::ostream& operator<<(std::ostream& s, const Pair_t<Derived1, Derived2>& type) {
+std::wostream& operator<<(std::wostream& s, const Pair_t<Derived1, Derived2>& type) {
     return s << "(Pair " << type.car_t_ << ' ' << type.cdr_t_ << ')';
 }
 
@@ -51,7 +51,7 @@ bool operator==(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived1, De
 }
 
 template <typename Derived1, typename Derived2>
-std::ostream& operator<<(std::ostream& s, const Cons_t<Derived1, Derived2>& cons) {
+std::wostream& operator<<(std::wostream& s, const Cons_t<Derived1, Derived2>& cons) {
     return s << "(cons " << cons.car_ << ' ' << cons.cdr_ << ')';
 }
 
@@ -78,7 +78,7 @@ bool operator==(const Car_t<Derived>& lhs, const Car_t<Derived>& rhs) {
 }
 
 template <typename Derived>
-std::ostream& operator<<(std::ostream& s, const Car_t<Derived>& car) {
+std::wostream& operator<<(std::wostream& s, const Car_t<Derived>& car) {
     return s << "(car " << car.cons_ << ')';
 }
 
@@ -105,7 +105,7 @@ bool operator==(const Cdr_t<Derived>& lhs, const Cdr_t<Derived>& rhs) {
 }
 
 template <typename Derived>
-std::ostream& operator<<(std::ostream& s, const Cdr_t<Derived>& cdr) {
+std::wostream& operator<<(std::wostream& s, const Cdr_t<Derived>& cdr) {
     return s << "(cdr " << cdr.cons_ << ')';
 }
 

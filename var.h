@@ -12,7 +12,7 @@ struct The_t : Pie<The_t<Derived1, Derived2>> {
 };
 
 template<typename Derived1, typename Derived2>
-std::ostream& operator<<(std::ostream& s, const The_t<Derived1, Derived2>& x) { return s << "(the " << x.type_ << ' ' << x.value_ << ')'; }
+std::wostream& operator<<(std::wostream& s, const The_t<Derived1, Derived2>& x) { return s << "(the " << x.type_ << ' ' << x.value_ << ')'; }
 
 template<typename Derived1, typename Derived2>
 The_t<Derived1, Derived2> the(const Pie<Derived1>& type, const Pie<Derived2>& value) {
@@ -34,7 +34,7 @@ struct Var_t : Pie<Var_t> {
 
 int Var_t::next_id_{0};
 
-std::ostream& operator<<(std::ostream& s, const Var_t x) { return s << 'x' << x.id_; }
+std::wostream& operator<<(std::wostream& s, const Var_t x) { return s << 'x' << x.id_; }
 
 Var_t var() {
     return Var_t{};
