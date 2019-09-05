@@ -1,6 +1,7 @@
 #include "pie.h"
 
 #include <catch2/catch.hpp>
+#include <iostream>
 
 // TODO: don't use sections? They are a fixture like mechanism: Catch runs all sections that are on the same level with
 // the same environment defined by the surrounding section by restarting after every section ...
@@ -79,8 +80,8 @@ TEST_CASE("Chapter1", "") {
                           car(cons(cons(quote(L"aubergine"), quote(L"courgette")), quote(L"tomato"))),
                           car(cons(cons(quote(L"aubergine"), quote(L"courgette")), quote(L"tomato")))));
         CHECK(IsIllTyped(Pair(cdr(cons(Atom, quote(L"olive"))), car(cons(quote(L"oil"), Atom)))));
-        CHECK(IsNormalFormOfType(Pair(car(cons(Atom, quote(L"olive"))), cdr(cons(quote(L"oil"), Atom))),
-                                 Pair(Atom, Atom)));
+        CHECK(IsNormalFormOfType(Pair(Atom, Atom),
+                                 Pair(car(cons(Atom, quote(L"olive"))), cdr(cons(quote(L"oil"), Atom)))));
         CHECK(IsA(cons(quote(L"ratatouille"), quote(L"baguette")),
                   Pair(car(cons(Atom, quote(L"olive"))), cdr(cons(quote(L"oil"), Atom)))));
         CHECK(AreTheSameType(Pair(car(cons(Atom, quote(L"olive"))), cdr(cons(quote(L"oil"), Atom))), Pair(Atom, Atom)));
@@ -119,11 +120,28 @@ TEST_CASE("Chapter1", "") {
         CHECK(IsTheSameAs(Nat, add1(plus(add1(zero), add1(add1(zero)))), four));
         CHECK(IsTheSameAs(Nat, add1(zero), add1(zero)));
         CHECK(IsTheSameAs(Nat, add1(plus(nat(0), nat(1))), add1(plus(nat(1), nat(0)))));
-        CHECK(IsTheSameAs(Nat, car(cons(plus(nat(3), nat(5)), quote(L"baguette"))), eight));
+        CHECK(IsTheValueOf(Nat, eight, car(cons(plus(nat(3), nat(5)), quote(L"baguette")))));
+        CHECK(!IsA(cons(zero, quote(L"onion")), Pair(Atom, Atom)));
         CHECK(IsA(cons(zero, quote(L"onion")), Pair(Nat, Atom)));
         CHECK(IsA(cons(quote(L"zero"), quote(L"onion")), Pair(Atom, Atom)));
         CHECK(IsA(cons(quote(L"basil"), cons(quote(L"thyme"), quote(L"oregano"))), Pair(Atom, Pair(Atom, Atom))));
     }
+}
 
-    // TODO: Evaluation results in values. Expressions that aren't values are the same if their values are the same.
+TEST_CASE("Chapter2", "") {
+    SECTION("lambda") {
+        CHECK(IsAValue(Arrow(Atom, Pair(Atom, Atom)),
+                       lambda([](auto flavor) { return cons(flavor, quote(L"lentils")); })));
+        CHECK(IsTheValueOf(Pair(Atom, Atom), cons(quote(L"garlic"), quote(L"lentils")), lambda([](auto flavor) {
+                               return cons(flavor, quote(L"lentils"));
+                           })(quote(L"garlic"))));
+        CHECK(IsTheValueOf(
+            Pair(Atom, Pair(Nat, Atom)),
+            cons(quote(L"potato"), cons(plus(nat(1), nat(2)), quote(L"potato"))),
+            lambda([](auto root) { return cons(root, cons(plus(nat(1), nat(2)), root)); })(quote(L"potato"))));
+        CHECK(!IsTheValueOf(
+            Pair(Atom, Pair(Nat, Atom)), cons(quote(L"potato"), cons(nat(3), quote(L"potato"))), lambda([](auto root) {
+                return cons(root, cons(plus(nat(1), nat(2)), root));
+            })(quote(L"potato"))));
+    }
 }

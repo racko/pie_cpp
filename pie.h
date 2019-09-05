@@ -1,5 +1,6 @@
 #pragma once
 
 #include "atom.h"
-#include "pair.h"
+#include "lambda.h"
 #include "nat.h"
+#include "pair.h"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 template <typename Derived>
 struct Pie {
     constexpr operator Derived&() { return static_cast<Derived&>(*this); }
@@ -8,6 +10,9 @@ struct Pie {
     constexpr Derived& derived() { return static_cast<Derived&>(*this); }
     constexpr Derived const& derived() const { return static_cast<const Derived&>(*this); }
 };
+
+template<typename Derived1, typename Derived2>
+bool operator==(const Pie<Derived1>&, const Pie<Derived2>&) { return false; }
 
 struct Universe_t : Pie<Universe_t> {};
 
@@ -90,13 +95,13 @@ bool IsANormalType(const Pie<Derived>&) {
 }
 
 template <typename Derived1, typename Derived2>
-bool IsNormalFormOfType(const Pie<Derived1>& type, const Pie<Derived2>& nf) {
-    return AreTheSameType(type.derived(), nf.derived()) && IsANormalType(nf.derived());
+bool IsNormalFormOfType(const Pie<Derived1>& nf, const Pie<Derived2>& type) {
+    return Normalize(type.derived()) == nf.derived();
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
-bool IsNormalFormOf(const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
-    return IsTheSameAs(type.derived(), lhs.derived(), rhs.derived()) && IsANormal(lhs.derived(), type.derived());
+bool IsNormalFormOf(const Pie<Derived1>& /*type*/, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
+    return Normalize(rhs.derived()) == lhs.derived();
 }
 
 template <typename Derived1, typename Derived2>
@@ -105,8 +110,8 @@ bool IsAValue(const Pie<Derived1>&, const Pie<Derived2>&) {
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
-bool IsTheValueOf(const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
-    return IsTheSameAs(type.derived(), lhs.derived(), rhs.derived()) && IsAValue(type.derived(), lhs.derived());
+bool IsTheValueOf(const Pie<Derived1>& /*type*/, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
+    return ComputeValue(rhs.derived()) == lhs.derived();
 }
 
 template <typename Derived>
@@ -114,5 +119,5 @@ bool IsIllTyped(const Pie<Derived>&) {
     return false; // TODO not (type or expression described by a type). For this we need synth
 }
 
-// template <typename Derived>
-// auto ComputeValue(const Pie<Derived>& value);
+template <typename Derived>
+auto ComputeValue(const Pie<Derived>&);

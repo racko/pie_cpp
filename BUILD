@@ -10,10 +10,12 @@ cc_library(
     name = "pie",
     hdrs = [
         "atom.h",
+        "lambda.h",
         "nat.h",
         "pair.h",
         "pie.h",
         "pie_base.h",
+        "var.h",
     ],
 )
 

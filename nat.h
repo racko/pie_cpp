@@ -2,14 +2,31 @@
 
 #include "pie_base.h"
 #include <utility>
+#include <ostream>
 
 struct Nat_t : Pie<Nat_t> {};
 
 inline constexpr Nat_t Nat;
 
+bool operator==(Nat_t, Nat_t) {
+    return true;
+}
+
+std::ostream& operator<<(std::ostream& s, Nat_t) {
+    return s << "Nat";
+}
+
 struct Zero_t : Pie<Zero_t> {};
 
 inline constexpr Zero_t zero;
+
+bool operator==(Zero_t, Zero_t) {
+    return true;
+}
+
+std::ostream& operator<<(std::ostream& s, Zero_t) {
+    return s << "zero";
+}
 
 template <typename Derived>
 struct Add1_t : Pie<Add1_t<Derived>> {
@@ -17,6 +34,21 @@ struct Add1_t : Pie<Add1_t<Derived>> {
 
     Derived smaller_;
 };
+
+template <typename Derived1, typename Derived2>
+bool operator==(const Add1_t<Derived1>&, const Add1_t<Derived2>&) {
+    return false;
+}
+
+template <typename Derived>
+bool operator==(const Add1_t<Derived>& lhs, const Add1_t<Derived>& rhs) {
+    return lhs.smaller_ == rhs.smaller_;
+}
+
+template <typename Derived>
+std::ostream& operator<<(std::ostream& s, const Add1_t<Derived>& n) {
+    return s << "(add1 " << n.smaller_ << ')';
+}
 
 template <typename Derived>
 constexpr Add1_t<Derived> add1(const Pie<Derived>& n) {
@@ -38,6 +70,32 @@ struct DynamicNat : Pie<DynamicNat> {
     int n_;
 };
 
+bool operator==(const DynamicNat lhs, const DynamicNat rhs) {
+    return lhs.n_ == rhs.n_;
+}
+
+bool operator==(const DynamicNat lhs, Zero_t) {
+    return lhs.n_ == 0;
+}
+
+bool operator==(Zero_t, const DynamicNat rhs) {
+    return 0 == rhs.n_;
+}
+
+template <typename Derived>
+bool operator==(const Add1_t<Derived>& lhs, const DynamicNat rhs) {
+    return lhs.smaller_ == DynamicNat{rhs.n_ - 1};
+}
+
+template <typename Derived>
+bool operator==(const DynamicNat lhs, const Add1_t<Derived>& rhs) {
+    return rhs == lhs;
+}
+
+std::ostream& operator<<(std::ostream& s, const DynamicNat n) {
+    return s << n.n_;
+}
+
 DynamicNat nat(const int n) { return DynamicNat(n); }
 
 template <typename Derived1, typename Derived2>
@@ -47,6 +105,21 @@ struct Plus_t : Pie<Plus_t<Derived1, Derived2>> {
     Derived1 lhs_;
     Derived2 rhs_;
 };
+
+template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
+bool operator==(const Plus_t<Derived1, Derived2>&, const Plus_t<Derived3, Derived4>&) {
+    return false;
+}
+
+template <typename Derived1, typename Derived2>
+bool operator==(const Plus_t<Derived1, Derived2>& lhs, const Plus_t<Derived1, Derived2>& rhs) {
+    return lhs.lhs_ == rhs.lhs_ && lhs.rhs_ == rhs.rhs_;
+}
+
+template <typename Derived1, typename Derived2>
+std::ostream& operator<<(std::ostream& s, const Plus_t<Derived1, Derived2>& sum) {
+    return s << "(plus " << sum.lhs_ << ' ' << sum.rhs_ << ')';
+}
 
 template <typename Derived1, typename Derived2>
 Plus_t<Derived1, Derived2> plus(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs) {
