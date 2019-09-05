@@ -151,5 +151,10 @@ TEST_CASE("Chapter2", "") {
             Pair(Atom, Arrow(Atom, Atom)),
             cons(quote(L"carrot"), lambda([](auto root) { return root; })),
             lambda([](auto root) { return cons(root, lambda([](auto root) { return root; })); })(quote(L"carrot"))));
+        CHECK(IsAValue(Arrow(car(cons(Atom, quote(L"pepper"))), Pair(cdr(cons(quote(L"salt"), Atom)), Atom)),
+                       lambda([](auto flavor) { return cons(flavor, quote(L"lentils")); })));
+        CHECK(IsTheSameAs(Arrow(Nat, Pair(Nat, Nat)), lambda([](auto x) { return cons(x, x); }), lambda([](auto y) {
+                              return cons(y, y);
+                          })));
     }
 }
