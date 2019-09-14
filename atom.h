@@ -9,22 +9,22 @@ struct Atom_t : Pie<Atom_t> {};
 
 inline constexpr Atom_t Atom;
 
-bool operator==(Atom_t, Atom_t) { return true; }
+constexpr bool operator==(Atom_t, Atom_t) { return true; }
 
-std::wostream& operator<<(std::wostream& s, Atom_t) { return s << "Atom"; }
+inline std::wostream& operator<<(std::wostream& s, Atom_t) { return s << "Atom"; }
 
 struct Quote_t : Pie<Quote_t> {
-    Quote_t(const wchar_t* symbol) : symbol_{symbol} {}
+    constexpr Quote_t(const wchar_t* symbol) : symbol_{symbol} {}
     const wchar_t* symbol_;
 };
 
-bool operator==(const Quote_t lhs, const Quote_t rhs) { return std::wcscmp(lhs.symbol_, rhs.symbol_) == 0; }
+inline bool operator==(const Quote_t lhs, const Quote_t rhs) { return std::wcscmp(lhs.symbol_, rhs.symbol_) == 0; }
 
-std::wostream& operator<<(std::wostream& s, const Quote_t atom) { return s << '\'' << atom.symbol_; }
+inline std::wostream& operator<<(std::wostream& s, const Quote_t atom) { return s << '\'' << atom.symbol_; }
 
-Quote_t quote(const wchar_t* symbol) { return Quote_t(symbol); }
+constexpr Quote_t quote(const wchar_t* symbol) { return Quote_t(symbol); }
 
-bool IsA_For_Values(const Quote_t atom, Atom_t) {
+inline bool IsA(const Quote_t atom, Atom_t) {
     const std::locale loc("en_US.UTF8");
     if (*atom.symbol_ == '\0') {
         return false;
@@ -39,40 +39,30 @@ bool IsA_For_Values(const Quote_t atom, Atom_t) {
     return true;
 }
 
-bool IsTheSameAs_For_Values(Atom_t, const Quote_t lhs, const Quote_t rhs) { return lhs == rhs; }
+constexpr bool IsAType(Atom_t) { return true; }
 
-bool IsAType_For_Values(Atom_t) { return true; }
+template<>
+struct is_normal<Atom_t> : std::true_type {};
 
-bool AreTheSameType_For_Values(Atom_t, Atom_t) { return true; }
+template<>
+struct is_value<Atom_t> : std::true_type {};
 
-bool IsANormal(const Quote_t atom, Atom_t) {
-    return IsA(atom, Atom);
-}
+template<>
+struct is_normal<Quote_t> : std::true_type {};
 
-bool IsANormalType(Atom_t) {
-    return true;
-}
+template<>
+struct is_value<Quote_t> : std::true_type {};
 
-bool IsNormalFormOfType(Atom_t, Atom_t) {
-    return true;
-}
+template <>
+struct synth_result<Atom_t> {
+    using type = U_t;
+};
 
-bool IsAValue(Atom_t, const Quote_t atom) {
-    return IsA(atom, Atom);
-}
+constexpr synth_result_t<Atom_t> synth(Atom_t) { return U; }
 
-Atom_t ComputeValue(Atom_t) {
-    return Atom;
-}
+template <>
+struct synth_result<Quote_t> {
+    using type = Atom_t;
+};
 
-Quote_t ComputeValue(const Quote_t value) {
-    return value;
-}
-
-Atom_t Normalize(Atom_t) {
-    return Atom;
-}
-
-Quote_t Normalize(const Quote_t value) {
-    return value;
-}
+constexpr synth_result_t<Quote_t> synth(Quote_t) { return Atom; }

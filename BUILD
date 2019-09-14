@@ -15,6 +15,7 @@ cc_library(
         "pair.h",
         "pie.h",
         "pie_base.h",
+        "prelude.h",
         "var.h",
     ],
 )
@@ -23,6 +24,8 @@ cc_test(
     name = "test",
     srcs = [
         "test.cpp",
+        "test1.cpp",
+        "test2.cpp",
     ],
     deps = [
         ":pie",

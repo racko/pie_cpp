@@ -11,6 +11,11 @@ struct The_t : Pie<The_t<Derived1, Derived2>> {
     Derived2 value_;
 };
 
+template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
+bool operator==(const The_t<Derived1, Derived2>& lhs, const The_t<Derived3, Derived4>& rhs) {
+    return lhs.value_ == rhs.value_;
+}
+
 template <typename Derived1, typename Derived2>
 std::wostream& operator<<(std::wostream& s, const The_t<Derived1, Derived2>& x) {
     return s << "(the " << x.type_ << ' ' << x.value_ << ')';
@@ -21,62 +26,78 @@ The_t<Derived1, Derived2> the(const Pie<Derived1>& type, const Pie<Derived2>& va
     return The_t<Derived1, Derived2>{type, value};
 }
 
-template <typename Derived1, typename Derived2, typename Derived3>
-bool IsA_For_Values(const The_t<Derived1, Derived2>& x, const Pie<Derived3>& type) {
-    // FIXME need to synth type of x.value_ and check it against x.type_
-    return AreTheSameType(x.type_, type.derived());
+template <typename Type, typename Expr>
+struct step_result<The_t<Type, Expr>> {
+    using type = Expr;
+};
+
+template <typename Type, typename Expr>
+step_result_t<The_t<Type, Expr>> Step(const The_t<Type, Expr>& x) {
+    return x.value_;
+}
+
+template <typename Type, typename Expr>
+struct synth_result<The_t<Type, Expr>> {
+    using type = Type;
+};
+
+template <typename Type, typename Expr>
+synth_result_t<The_t<Type, Expr>> synth(const The_t<Type, Expr>& x) {
+    return x.type_;
+}
+
+inline int GetNextId() {
+    static int next_id{};
+    return next_id++;
 }
 
 struct Var_t : Pie<Var_t> {
-    Var_t() : id_{next_id_++} {}
+    Var_t() : id_{GetNextId()} {}
 
     int id_;
-    static int next_id_;
 };
 
-int Var_t::next_id_{0};
+inline bool operator==(const Var_t lhs, const Var_t rhs) { return lhs.id_ == rhs.id_; }
 
-std::wostream& operator<<(std::wostream& s, const Var_t x) { return s << 'x' << x.id_; }
+inline std::wostream& operator<<(std::wostream& s, const Var_t x) { return s << 'x' << x.id_; }
 
-Var_t var() { return Var_t{}; }
+inline Var_t var() { return Var_t{}; }
 
-template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-bool IsTheSameAs_For_Values(const Pie<Derived1>& type,
-                            const The_t<Derived2, Derived3>& lhs,
-                            const Pie<Derived4>& rhs) {
-    return AreTheSameType(type.derived(), lhs.type_) && IsTheSameAs(type.derived(), lhs.value_, rhs.derived());
-}
+template <>
+struct is_neutral<Var_t> : std::true_type {};
 
-template <typename T>
-struct is_a_the {
-    static constexpr bool value = false;
+template <typename Type>
+struct TypedVar_t : Pie<TypedVar_t<Type>> {
+    TypedVar_t(const Type& type) : id_{GetNextId()}, type_{type} {}
+
+    int id_;
+    Type type_;
 };
 
-template <typename Derived1, typename Derived2>
-struct is_a_the<The_t<Derived1, Derived2>> {
-    static constexpr bool value = true;
-};
-
-template <typename T>
-inline constexpr bool is_a_the_v = is_a_the<T>::value;
-
-template <typename Derived1, typename Derived2, typename Derived3, typename Derived4, typename = std::enable_if_t<!is_a_the_v<Derived2>>>
-bool IsTheSameAs_For_Values(const Pie<Derived1>& type,
-                            const Pie<Derived2>& lhs,
-                            const The_t<Derived3, Derived4>& rhs) {
-    return AreTheSameType(type.derived(), rhs.type_) && IsTheSameAs(type.derived(), lhs.derived(), rhs.value_);
-}
-
-// FIXME check type (not because the vars might not be the same, but because they might not match the type ...)
-template <typename Derived>
-bool IsTheSameAs_For_Values(const Pie<Derived>&, const Var_t lhs, const Var_t rhs) {
+template <typename Type1, typename Type2>
+bool operator==(const TypedVar_t<Type1> lhs, const TypedVar_t<Type2> rhs) {
     return lhs.id_ == rhs.id_;
 }
 
-// FIXME should be x.value_, but currently we require the type later ...
-template <typename Derived1, typename Derived2>
-auto ComputeValue(const The_t<Derived1, Derived2>& x) {
-    return x;
+template <typename Type>
+std::wostream& operator<<(std::wostream& s, const TypedVar_t<Type> x) {
+    return s << '[' << 'x' << x.id_ << ' ' << x.type_ << ']';
 }
 
-Var_t ComputeValue(const Var_t var) { return var; }
+template <typename Type>
+TypedVar_t<Type> var(const Type& type) {
+    return TypedVar_t<Type>{type};
+}
+
+template <typename Type>
+struct is_neutral<TypedVar_t<Type>> : std::true_type {};
+
+template <typename Type>
+struct synth_result<TypedVar_t<Type>> {
+    using type = Type;
+};
+
+template <typename Type>
+synth_result_t<TypedVar_t<Type>> synth(const TypedVar_t<Type>& x) {
+    return x.type_;
+}

@@ -6,6 +6,9 @@
 
 template <typename Derived1, typename Derived2>
 struct Pair_t : Pie<Pair_t<Derived1, Derived2>> {
+    using car_type = Derived1;
+    using cdr_type = Derived2;
+
     Pair_t(Derived1 car_t, Derived2 cdr_t) : car_t_{std::move(car_t)}, cdr_t_{std::move(cdr_t)} {}
 
     Derived1 car_t_;
@@ -29,6 +32,9 @@ Pair_t<Derived1, Derived2> Pair(const Pie<Derived1>& car_t, const Pie<Derived2>&
 
 template <typename Derived1, typename Derived2>
 struct Cons_t : Pie<Cons_t<Derived1, Derived2>> {
+    using car_type = Derived1;
+    using cdr_type = Derived2;
+
     Cons_t(Derived1 car, Derived2 cdr) : car_{std::move(car)}, cdr_{std::move(cdr)} {}
 
     Derived1 car_;
@@ -69,7 +75,7 @@ std::wostream& operator<<(std::wostream& s, const Car_t<Derived>& car) {
 
 template <typename Derived>
 Car_t<Derived> car(const Pie<Derived>& cons) {
-    return Car_t<Derived>(cons);
+    return Car_t<Derived>(cons.derived());
 }
 
 template <typename Derived>
@@ -95,88 +101,111 @@ Cdr_t<Derived> cdr(const Pie<Derived>& cons) {
 }
 
 template <typename DerivedT1, typename DerivedT2, typename Derived1, typename Derived2>
-bool IsA_For_Values(const Cons_t<Derived1, Derived2>& value, const Pair_t<DerivedT1, DerivedT2>& type) {
+bool IsA(const Cons_t<Derived1, Derived2>& value, const Pair_t<DerivedT1, DerivedT2>& type) {
     return IsA(value.car_, type.car_t_) && IsA(value.cdr_, type.cdr_t_);
 }
 
-template <typename DerivedT1,
-          typename DerivedT2,
-          typename Derived1,
-          typename Derived2,
-          typename Derived3,
-          typename Derived4>
-bool IsTheSameAs_For_Values(const Pair_t<DerivedT1, DerivedT2>& type,
-                            const Cons_t<Derived1, Derived2>& lhs,
-                            const Cons_t<Derived3, Derived4>& rhs) {
-    return IsTheSameAs(type.car_t_, lhs.car_, rhs.car_) && IsTheSameAs(type.cdr_t_, lhs.cdr_, rhs.cdr_);
-}
-
 template <typename Derived1, typename Derived2>
-bool IsAType_For_Values(const Pair_t<Derived1, Derived2>& type) {
+bool IsAType(const Pair_t<Derived1, Derived2>& type) {
     return IsAType(type.car_t_) && IsAType(type.cdr_t_);
 }
 
-template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-bool AreTheSameType_For_Values(const Pair_t<Derived1, Derived2>& type1, const Pair_t<Derived3, Derived4>& type2) {
-    return AreTheSameType(type1.car_t_, type2.car_t_) && AreTheSameType(type1.cdr_t_, type2.cdr_t_);
-}
-
-template <typename DerivedT1, typename DerivedT2, typename Derived1, typename Derived2>
-bool IsANormal(const Cons_t<Derived1, Derived2>& value, const Pair_t<DerivedT1, DerivedT2>& type) {
-    return IsANormal(value.car_, type.car_t_) && IsANormal(value.cdr_, type.cdr_t_);
-}
+template <typename Derived1, typename Derived2>
+struct is_normal<Pair_t<Derived1, Derived2>> : std::bool_constant<is_normal_v<Derived1> && is_normal_v<Derived2>> {};
 
 template <typename Derived1, typename Derived2>
-bool IsANormalType(const Pair_t<Derived1, Derived2>& type) {
-    return IsANormal(type.car_t_) && IsANormalType(type.cdr_t_);
-}
-
-template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-bool IsNormalFormOfType(const Pair_t<Derived1, Derived2>& type1, const Pair_t<Derived3, Derived4>& type2) {
-    return IsNormalFormOfType(type1.car_t_, type2.car_t_) && IsNormalFormOfType(type1.cdr_t_, type2.cdr_t_);
-}
-
-template <typename DerivedT1, typename DerivedT2, typename Derived1, typename Derived2>
-bool IsAValue(const Pair_t<DerivedT1, DerivedT2>& type, const Cons_t<Derived1, Derived2>& value) {
-    return IsA(value.car_, type.car_t_) && IsA(value.cdr_, type.cdr_t_);
-}
+struct is_value<Pair_t<Derived1, Derived2>> : std::true_type {};
 
 template <typename Derived1, typename Derived2>
-Pair_t<Derived1, Derived2> ComputeValue(const Pair_t<Derived1, Derived2>& type) {
-    return type;
-}
+struct is_normal<Cons_t<Derived1, Derived2>> : std::bool_constant<is_normal_v<Derived1> && is_normal_v<Derived2>> {};
 
 template <typename Derived1, typename Derived2>
-Cons_t<Derived1, Derived2> ComputeValue(const Cons_t<Derived1, Derived2>& value) {
-    return value;
+struct is_value<Cons_t<Derived1, Derived2>> : std::true_type {};
+
+template <typename Derived>
+struct step_result<Car_t<Derived>> {
+    using type = typename compute_value_result_t<Derived>::car_type;
+};
+
+template <typename Derived>
+struct step_result<Cdr_t<Derived>> {
+    using type = typename compute_value_result_t<Derived>::cdr_type;
+};
+
+template <typename Derived>
+step_result_t<Car_t<Derived>> Step(const Car_t<Derived>& car) {
+    assert(!is_neutral_v<Derived>);
+    return ComputeValue(car.cons_).car_;
 }
 
 template <typename Derived>
-auto ComputeValue(const Car_t<Derived>& car) {
-    return ComputeValue(ComputeValue(car.cons_).car_);
+step_result_t<Cdr_t<Derived>> Step(const Cdr_t<Derived>& cdr) {
+    assert(!is_neutral_v<Derived>);
+    return ComputeValue(cdr.cons_).cdr_;
 }
 
 template <typename Derived>
-auto ComputeValue(const Cdr_t<Derived>& cdr) {
-    return ComputeValue(ComputeValue(cdr.cons_).cdr_);
-}
-
-template <typename Derived1, typename Derived2>
-Pair_t<Derived1, Derived2> Normalize(const Pair_t<Derived1, Derived2>& type) {
-    return type;
-}
-
-template <typename Derived1, typename Derived2>
-Cons_t<Derived1, Derived2> Normalize(const Cons_t<Derived1, Derived2>& value) {
-    return value;
-}
+struct is_neutral<Car_t<Derived>> : std::bool_constant<is_neutral_v<Derived>> {};
 
 template <typename Derived>
-auto Normalize(const Car_t<Derived>& car) {
-    return Normalize(ComputeValue(car.cons_).car_);
+struct is_neutral<Cdr_t<Derived>> : std::bool_constant<is_neutral_v<Derived>> {};
+
+template <typename Car, typename Cdr>
+struct normalize_result1<Pair_t<Car, Cdr>, false> {
+    using type = Pair_t<normalize_result_t<Car>, normalize_result_t<Cdr>>;
+};
+
+template <typename Car, typename Cdr>
+struct normalize_result1<Cons_t<Car, Cdr>, false> {
+    using type = Cons_t<normalize_result_t<Car>, normalize_result_t<Cdr>>;
+};
+
+template <typename Car, typename Cdr>
+normalize_result_t<Pair_t<Car, Cdr>> Normalize(const Pair_t<Car, Cdr> type, std::false_type /*is_normal*/) {
+    return Pair(Normalize(type.car_t_), Normalize(type.cdr_t_));
 }
 
-template <typename Derived>
-auto Normalize(const Cdr_t<Derived>& cdr) {
-    return Normalize(ComputeValue(cdr.cons_).cdr_);
+template <typename Car, typename Cdr>
+normalize_result_t<Cons_t<Car, Cdr>> Normalize(const Cons_t<Car, Cdr> type, std::false_type /*is_normal*/) {
+    return Cons_t(Normalize(type.car_), Normalize(type.cdr_));
+}
+
+template <typename CarType, typename CdrType>
+struct synth_result<Pair_t<CarType, CdrType>> {
+    using type = U_t;
+};
+
+template <typename CarType, typename CdrType>
+synth_result_t<Pair_t<CarType, CdrType>> synth(Pair_t<CarType, CdrType>) {
+    return U;
+}
+
+template <typename CarType, typename CdrType>
+struct synth_result<Cons_t<CarType, CdrType>> {
+    using type = Pair_t<synth_result_t<CarType>, synth_result_t<CdrType>>;
+};
+
+template <typename CarType, typename CdrType>
+synth_result_t<Cons_t<CarType, CdrType>> synth(const Cons_t<CarType, CdrType>& x) {
+    return Pair(synth(x.car_), synth(x.cdr_));
+}
+
+template <typename ConsType>
+struct synth_result<Car_t<ConsType>> {
+    using type = typename synth_result_t<ConsType>::car_type;
+};
+
+template <typename ConsType>
+synth_result_t<Car_t<ConsType>> synth(const Car_t<ConsType>& x) {
+    return synth(x.cons_).car_t_;
+}
+
+template <typename ConsType>
+struct synth_result<Cdr_t<ConsType>> {
+    using type = typename synth_result_t<ConsType>::cdr_type;
+};
+
+template <typename ConsType>
+synth_result_t<Cdr_t<ConsType>> synth(const Cdr_t<ConsType>& x) {
+    return synth(x.cons_).cdr_t_;
 }
