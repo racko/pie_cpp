@@ -11,8 +11,8 @@ struct Eq_t : Pie<Eq_t<Derived1, Derived2, Derived3>> {
     using from_t = Derived2;
     using to_t = Derived3;
 
-    constexpr Eq_t(Derived1 type, Derived2 from, Derived3 to)
-        : type_{std::move(type)}, from_{std::move(from)}, to_{std::move(to)} {}
+    constexpr Eq_t(Derived1 t, Derived2 from, Derived3 to)
+        : type_{std::move(t)}, from_{std::move(from)}, to_{std::move(to)} {}
 
     Derived1 type_;
     Derived2 from_;

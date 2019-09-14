@@ -286,7 +286,7 @@ constexpr bool IsNormalFormOfType(const Pie<Derived1>& nf, const Pie<Derived2>& 
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
-constexpr bool IsNormalFormOf(const Pie<Derived1>& /*type*/, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
+constexpr bool IsNormalFormOf([[maybe_unused]] const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
     // std::cerr << "IsNormalFormOf(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << ") ...\n";
     const auto actual = Normalize(rhs.derived());
     // std::cerr << "rhs normal form: " << actual << '\n';
@@ -296,7 +296,7 @@ constexpr bool IsNormalFormOf(const Pie<Derived1>& /*type*/, const Pie<Derived2>
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
-constexpr bool IsTheValueOf(const Pie<Derived1>& /*type*/, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
+constexpr bool IsTheValueOf([[maybe_unused]]const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
     // std::cerr << "IsTheValueOf(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << ") ... \n";
     const auto rhs_value = ComputeValue(rhs.derived());
     // std::cerr << "rhs value: " << rhs_value << '\n';

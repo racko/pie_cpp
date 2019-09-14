@@ -3,8 +3,8 @@ cc_library(
     hdrs = [
         "add1.h",
         "equality.h",
+        "ind_nat.h",
         "int32.h",
-        "iter_nat.h",
         "nat.h",
         "zero.h",
     ],
