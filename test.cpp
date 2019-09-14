@@ -1,17 +1,11 @@
 #include "prelude.h"
 
 #include <catch2/catch.hpp>
-#include <codecvt>
-#include <iostream>
-#include <locale>
 
 // TODO: don't use sections? They are a fixture like mechanism: Catch runs all sections that are on the same level with
 // the same environment defined by the surrounding section by restarting after every section ...
 //
 // TODO: mark each CHECK with frame number and page
-
-// std::wbuffer_convert<std::codecvt_utf8<wchar_t>> cout_conv(std::cout.rdbuf());
-// std::wbuffer_convert<std::codecvt_utf8<wchar_t>> cerr_conv(std::cerr.rdbuf());
 
 TEST_CASE("Chapter 2.5") {
     SECTION("the") {}
@@ -22,7 +16,7 @@ TEST_CASE("Chapter 3") {
         CHECK(Normalize(iter_Nat(five, three, lambda([](auto smaller) { return add1(smaller); }))) == eight);
     }
     SECTION("rec-Nat") {
-        CHECK(ComputeValue(zerop(nat<37>())) == quote(L"nil"));
+        CHECK(ComputeValue(zerop(nat<37>())) == quote("nil"));
         CHECK(Normalize(gauss(zero)) == zero);
         CHECK(Normalize(gauss(one)) == one);
         CHECK(Normalize(gauss(two)) == three);

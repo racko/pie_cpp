@@ -1,37 +1,52 @@
 #pragma once
 
 #include "pie_base.h"
-#include <cwchar>
-#include <locale>
 #include <ostream>
 
 struct Atom_t : Pie<Atom_t> {};
 
 inline constexpr Atom_t Atom;
 
-constexpr bool operator==(Atom_t, Atom_t) { return true; }
+constexpr bool equal(Atom_t, Atom_t, int&) { return true; }
 
-inline std::wostream& operator<<(std::wostream& s, Atom_t) { return s << "Atom"; }
+inline void print(std::ostream& s, Atom_t, int&) { s << "Atom"; }
 
 struct Quote_t : Pie<Quote_t> {
-    constexpr Quote_t(const wchar_t* symbol) : symbol_{symbol} {}
-    const wchar_t* symbol_;
+    constexpr Quote_t(const char* symbol) : symbol_{symbol} {}
+    const char* symbol_;
 };
 
-inline bool operator==(const Quote_t lhs, const Quote_t rhs) { return std::wcscmp(lhs.symbol_, rhs.symbol_) == 0; }
+constexpr int strcmp1(const char* lhs, const char* rhs) {
+    while (true) {
+        if (*lhs < *rhs) {
+            return -1;
+        }
+        if (*lhs > *rhs) {
+            return 1;
+        }
+        if (*lhs == '\0') {
+            return 0;
+        }
+        ++lhs;
+        ++rhs;
+    }
+}
 
-inline std::wostream& operator<<(std::wostream& s, const Quote_t atom) { return s << '\'' << atom.symbol_; }
+constexpr bool equal(const Quote_t lhs, const Quote_t rhs, int&) { return strcmp1(lhs.symbol_, rhs.symbol_) == 0; }
 
-constexpr Quote_t quote(const wchar_t* symbol) { return Quote_t(symbol); }
+inline void print(std::ostream& s, const Quote_t atom, int&) { s << '\'' << atom.symbol_; }
 
-inline bool IsA(const Quote_t atom, Atom_t) {
-    const std::locale loc("en_US.UTF8");
+constexpr Quote_t quote(const char* symbol) { return Quote_t(symbol); }
+
+constexpr bool isalpha1(int c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
+
+constexpr bool IsA1(const Quote_t atom, Atom_t, int&) {
     if (*atom.symbol_ == '\0') {
         return false;
     }
     auto c = atom.symbol_;
     do {
-        if (!std::isalpha(*c, loc) && *c != '-') {
+        if (!isalpha1(*c) && *c != '-') {
             return false;
         }
         ++c;
@@ -39,18 +54,18 @@ inline bool IsA(const Quote_t atom, Atom_t) {
     return true;
 }
 
-constexpr bool IsAType(Atom_t) { return true; }
+constexpr bool IsAType1(Atom_t, int&) { return true; }
 
-template<>
+template <>
 struct is_normal<Atom_t> : std::true_type {};
 
-template<>
+template <>
 struct is_value<Atom_t> : std::true_type {};
 
-template<>
+template <>
 struct is_normal<Quote_t> : std::true_type {};
 
-template<>
+template <>
 struct is_value<Quote_t> : std::true_type {};
 
 template <>
@@ -58,11 +73,11 @@ struct synth_result<Atom_t> {
     using type = U_t;
 };
 
-constexpr synth_result_t<Atom_t> synth(Atom_t) { return U; }
+constexpr synth_result_t<Atom_t> synth1(Atom_t, int&) { return U; }
 
 template <>
 struct synth_result<Quote_t> {
     using type = Atom_t;
 };
 
-constexpr synth_result_t<Quote_t> synth(Quote_t) { return Atom; }
+constexpr synth_result_t<Quote_t> synth1(Quote_t, int&) { return Atom; }
