@@ -379,12 +379,6 @@ struct is_value<U_t> : std::true_type {};
 
 constexpr bool IsAType1(U_t, int&) { return true; }
 
-template <typename T>
-struct CheckResult {
-    constexpr operator bool() const { return !error_; }
-    std::optional<T> error_;
-};
-
 template <typename Derived>
 constexpr bool IsA(U_t, [[maybe_unused]] const Pie<Derived>& type) {
     // std::cerr << "IsA(U, " << type.derived() << "): false (U does not have a type) \n";

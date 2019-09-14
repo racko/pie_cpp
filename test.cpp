@@ -47,5 +47,12 @@ TEST_CASE("Chapter 7.5") {
 }
 
 TEST_CASE("Chapter 8") {
-    SECTION("Eq") {}
+    SECTION("Eq") {
+        CHECK(IsAType(Eq(Atom, quote("kale"), quote("blackberries"))));
+        CHECK(IsAType(Eq(Nat, plus(one, one), two)));
+        CHECK(IsAType(Eq(car(cons(Nat, quote("kale"))), nat<17>(), plus(nat<14>(), nat<3>()))));
+        CHECK(IsAType(Eq(car(cons(Nat, quote("kale"))), nat<15>(), plus(nat<14>(), nat<3>()))));
+        CHECK(IsA(same(nat<21>()), Eq(Nat, plus(nat<17>(), nat<4>()), plus(nat<11>(), nat<10>()))));
+        CHECK(IsA(same(incr(three)), Eq(Nat, plus(two, two), four)));
+    }
 }

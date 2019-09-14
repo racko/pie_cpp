@@ -7,16 +7,27 @@ cc_library(
 )
 
 cc_library(
+    name = "base",
+    hdrs = [
+        "pie_base.h",
+    ],
+    visibility = ["//:__subpackages__"],
+)
+
+cc_library(
     name = "pie",
     hdrs = [
         "atom.h",
-        "lambda.h",
-        "nat.h",
-        "pair.h",
         "pie.h",
-        "pie_base.h",
         "prelude.h",
-        "var.h",
+    ],
+    deps = [
+        "//:base",
+        "//eq",
+        "//lambda",
+        "//nat",
+        "//pair",
+        "//var",
     ],
 )
 
