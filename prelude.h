@@ -16,26 +16,26 @@ constexpr auto ten{define("ten", Nat, add1(nine))};
 // NOTE: NEVER STORE PIE<T> IN A LAMBDA. OR ANYWHERE FOR WHAT IT'S WORTH. SLICING!
 // USE [x = x.derived] OR SIMILAR.
 
-constexpr auto iter_Nat = define("iter-Nat",
-                                 Pi(U, [](const auto& X) { return Arrow(Nat, X, Arrow(X, X), X); }),
-                                 lambda([](const auto& X, const auto& target, const auto& base, const auto& step) {
-                                     return ind_Nat(target,
-                                                    lambda([X](const auto&) { return X; }),
-                                                    base,
-                                                    lambda([step](const auto&, const auto& acc) { return step(acc); }));
-                                 }));
+constexpr auto constant =
+    define("constant",
+           Pi(U, [](const auto& A) { return Pi(U, [A](const auto& B) { return Arrow(A, B, A); }); }),
+           lambda([](const auto&, const auto&, const auto& a, const auto&) { return a; }));
 
-constexpr auto step_rec_Nat =
-    define("step-rec-Nat",
-           Pi(U, [](const auto& X) { return Arrow(Arrow(Nat, X, X), Pair(Nat, X), Pair(Nat, X)); }),
-           lambda([](const auto&, const auto& step, const auto& acc) {
-               return cons(add1(car(acc)), step(car(acc), cdr(acc)));
+constexpr auto const_ind_Mot =
+    define("const-ind-Mot", Arrow(U, Nat, U), lambda([](const auto& X, const auto&) { return X; }));
+
+constexpr auto iter_Nat =
+    define("iter-Nat",
+           Pi(U, [](const auto& X) { return Arrow(Nat, X, Arrow(X, X), X); }),
+           lambda([](const auto& X, const auto& target, const auto& base, const auto& step) {
+               return ind_Nat(
+                   target, const_ind_Mot(X), base, lambda([step](const auto&, const auto& acc) { return step(acc); }));
            }));
 
 constexpr auto rec_Nat = define("rec-Nat",
                                 Pi(U, [](const auto& X) { return Arrow(Nat, X, Arrow(Nat, X, X), X); }),
                                 lambda([](const auto& X, const auto& target, const auto& base, const auto& step) {
-                                    return cdr(iter_Nat(Pair(Nat, X), target, cons(zero, base), step_rec_Nat(X, step)));
+                                    return ind_Nat(target, const_ind_Mot(X), base, step);
                                 }));
 
 constexpr auto step_which_Nat =
@@ -51,11 +51,12 @@ constexpr auto which_Nat = define("which-Nat",
 
 constexpr auto step_plus = define("step-+", Arrow(Nat, Nat), lambda([](const auto& acc) { return add1(acc); }));
 
-constexpr auto plus = define(
-    "+", Arrow(Nat, Nat, Nat), lambda([](const auto& lhs, const auto& rhs) { return iter_Nat(Nat, lhs, rhs, step_plus); }));
+constexpr auto plus = define("+", Arrow(Nat, Nat, Nat), lambda([](const auto& lhs, const auto& rhs) {
+                                 return iter_Nat(Nat, lhs, rhs, step_plus);
+                             }));
 
 constexpr auto zerop = define("zerop", Arrow(Nat, Atom), lambda([](const auto& x) {
-                                  return iter_Nat(Atom, x, quote("t"), lambda([](const auto&) { return quote("nil"); }));
+                                  return iter_Nat(Atom, x, quote("t"), constant(Atom, Atom, quote("nil")));
                               }));
 
 constexpr auto step_gauss = define("step-gauss", Arrow(Nat, Nat, Nat), lambda([](const auto& smaller, const auto& acc) {
@@ -65,8 +66,9 @@ constexpr auto step_gauss = define("step-gauss", Arrow(Nat, Nat, Nat), lambda([]
 constexpr auto gauss =
     define("gauss", Arrow(Nat, Nat), lambda([](const auto& x) { return rec_Nat(Nat, x, zero, step_gauss); }));
 
-constexpr auto times = define(
-    "*", Arrow(Nat, Nat, Nat), lambda([](const auto& lhs, const auto& rhs) { return iter_Nat(Nat, lhs, zero, plus(rhs)); }));
+constexpr auto times = define("*", Arrow(Nat, Nat, Nat), lambda([](const auto& lhs, const auto& rhs) {
+                                  return iter_Nat(Nat, lhs, zero, plus(rhs));
+                              }));
 
 constexpr auto flip =
     define("flip",
@@ -75,6 +77,10 @@ constexpr auto flip =
 
 constexpr auto incr =
     define("incr", Arrow(Nat, Nat), lambda([](const auto& n) { return iter_Nat(Nat, n, one, plus(one)); }));
+
+constexpr auto plus1_equals_add1 = define("+1=add1",
+                                          Pi(Nat, [](const auto& n) { return Eq(Nat, plus(one, n), add1(n)); }),
+                                          lambda([](const auto& n) { return same(add1(n)); }));
 
 constexpr auto base_incr_equals_add1 = define("base-incr=add1", Eq(Nat, incr(zero), add1(zero)), same(add1(zero)));
 
@@ -89,5 +95,7 @@ constexpr auto step_incr_equals_add1 = define(
        }),
     lambda([](const auto&, const auto& almost) { return cong(almost, plus(one)); }));
 
-// constexpr auto incr_equals_add1 = define("incr=add1", Pi(), );
-// constexpr auto plus1_equals_add1 = define("+1=add1", Pi(), );
+constexpr auto incr_equals_add1 =
+    define("incr=add1", Pi(Nat, [](const auto& n) { return Eq(Nat, incr(n), add1(n)); }), lambda([](const auto& n) {
+               return ind_Nat(n, mot_incr_equals_add1, base_incr_equals_add1, step_incr_equals_add1);
+           }));

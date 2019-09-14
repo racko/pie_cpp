@@ -73,18 +73,6 @@ template <typename F>
 struct is_value<Lambda_t<F>> : std::true_type {};
 
 template <typename F>
-struct NormalizedLambda {
-    constexpr NormalizedLambda(const F& f) : f_{f} {}
-
-    template <typename Arg>
-    constexpr normalize_result_t<std::invoke_result_t<F, Arg>> operator()(const Arg& arg) const {
-        return Normalize(f_(arg));
-    }
-
-    F f_;
-};
-
-template <typename F>
 struct normalize_result1<Lambda_t<F>, false> {
     using type = Lambda_t<NormalizedLambda<F>>;
 };
