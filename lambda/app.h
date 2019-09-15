@@ -53,13 +53,13 @@ struct is_neutral<App_t<F, Arg>> : std::bool_constant<is_neutral_v<F> && is_norm
 
 template <typename F, typename Arg>
 struct synth_result<App_t<F, Arg>> {
-    using type = std::invoke_result_t<typename synth_result_t<F>::result_type, Arg>;
+    using type = std::invoke_result_t<typename compute_value_result_t<synth_result_t<F>>::result_type, Arg>;
 };
 
 template <typename F, typename Arg>
 constexpr synth_result_t<App_t<F, Arg>> synth1(const App_t<F, Arg>& x, int& next_index) {
-    const auto pi_type = synth1(x.f_, next_index);
-    assert(IsA1(x.arg_, pi_type.arg_, next_index));
+    const auto pi_type = ComputeValue(synth1(x.f_, next_index));
+    assert(IsA1(x.arg_, ComputeValue(pi_type.arg_), next_index));
     return pi_type.result_(x.arg_);
 }
 

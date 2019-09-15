@@ -63,7 +63,7 @@ constexpr auto lambda(const F& f, std::enable_if_t<!std::is_invocable_v<F, Var_t
 template <typename Arg, typename Result, typename F>
 constexpr bool IsA1(const Lambda_t<F> f, Pi_t<Arg, Result> type, int& next_index) {
     const auto v = var(type.arg_, next_index);
-    return IsA1(f.f_(v), type.result_(v), next_index);
+    return IsA1(f.f_(v), ComputeValue(type.result_(v)), next_index);
 }
 
 template <typename F>

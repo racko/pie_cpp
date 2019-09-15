@@ -32,7 +32,8 @@ constexpr Same_t<Derived> same(const Pie<Derived>& x) {
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo, typename Derived>
 constexpr bool IsA1(const Same_t<Derived>& value, const Eq_t<DerivedT, DerivedFrom, DerivedTo>& type, int& next_index) {
-    return IsA1(value.x_, type.type_, next_index) && IsTheSameAs1(type.type_, type.from_, value.x_, next_index) &&
+    return IsA1(value.x_, ComputeValue(type.type_), next_index) &&
+           IsTheSameAs1(type.type_, type.from_, value.x_, next_index) &&
            IsTheSameAs1(type.type_, value.x_, type.to_, next_index);
 }
 

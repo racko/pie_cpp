@@ -18,8 +18,8 @@ TEST_CASE("Chapter1", "") {
         CHECK(!IsA(quote(""), Atom));
         CHECK(IsA(quote("Atom"), Atom));
         CHECK(!IsA(quote("at0m"), Atom));
-        //CHECK(IsA(quote("cœur-d-artichauts"), Atom));
-        //CHECK(IsA(quote("ἄτομον"), Atom));
+        // CHECK(IsA(quote("cœur-d-artichauts"), Atom));
+        // CHECK(IsA(quote("ἄτομον"), Atom));
         CHECK(IsA(quote("courgette"), Atom));
     }
 
@@ -58,7 +58,9 @@ TEST_CASE("Chapter1", "") {
     SECTION("car and cdr") {
         CHECK(IsTheSameAs(Atom, car(cons(quote("ratatouille"), quote("baguette"))), quote("ratatouille")));
         CHECK(IsTheSameAs(Atom, cdr(cons(quote("ratatouille"), quote("baguette"))), quote("baguette")));
-        CHECK(IsA(car(cons(cons(quote("aubergine"), quote("courgette")), quote("tomato"))), Pair(Atom, Atom)));
+        CHECK(IsA(
+            car(the(Pair(Pair(Atom, Atom), Atom), cons(cons(quote("aubergine"), quote("courgette")), quote("tomato")))),
+            Pair(Atom, Atom)));
         CHECK(IsTheSameAs(Atom,
                           car(cdr(cons(quote("ratatouille"), cons(quote("baguette"), quote("olive-oil"))))),
                           quote("baguette")));
@@ -79,8 +81,8 @@ TEST_CASE("Chapter1", "") {
                           car(cons(cons(quote("aubergine"), quote("courgette")), quote("tomato"))),
                           car(cons(cons(quote("aubergine"), quote("courgette")), quote("tomato")))));
         // CHECK(IsIllTyped(Pair(cdr(cons(Atom, quote("olive"))), car(cons(quote("oil"), Atom)))));
-        CHECK(IsNormalFormOfType(Pair(Atom, Atom),
-                                 Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom)))));
+        CHECK(
+            IsNormalFormOfType(Pair(Atom, Atom), Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom)))));
         CHECK(IsA(cons(quote("ratatouille"), quote("baguette")),
                   Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom)))));
         CHECK(AreTheSameType(Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom))), Pair(Atom, Atom)));

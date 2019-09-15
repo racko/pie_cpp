@@ -43,10 +43,10 @@ struct is_neutral<Car_t<Derived>> : std::bool_constant<is_neutral_v<Derived>> {}
 
 template <typename ConsType>
 struct synth_result<Car_t<ConsType>> {
-    using type = typename synth_result_t<ConsType>::car_type;
+    using type = typename synth_result_t<ConsType>::arg_type;
 };
 
 template <typename ConsType>
 constexpr synth_result_t<Car_t<ConsType>> synth1(const Car_t<ConsType>& x, int& next_index) {
-    return synth1(x.cons_, next_index).car_t_;
+    return synth1(x.cons_, next_index).arg_;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pair/car.h"
 #include "pie_base.h"
 #include <ostream>
 #include <type_traits>
@@ -43,10 +44,15 @@ struct is_neutral<Cdr_t<Derived>> : std::bool_constant<is_neutral_v<Derived>> {}
 
 template <typename ConsType>
 struct synth_result<Cdr_t<ConsType>> {
-    using type = typename synth_result_t<ConsType>::cdr_type;
+    // using type = std::invoke_result_t<typename compute_value_result_t<synth_result_t<ConsType>>::result_type,
+    //                                  typename compute_value_result_t<ConsType>::car_type>;
+    using type =
+        std::invoke_result_t<typename compute_value_result_t<synth_result_t<ConsType>>::result_type, Car_t<ConsType>>;
 };
 
 template <typename ConsType>
 constexpr synth_result_t<Cdr_t<ConsType>> synth1(const Cdr_t<ConsType>& x, int& next_index) {
-    return synth1(x.cons_, next_index).cdr_t_;
+    const auto cons_type = ComputeValue(synth1(x.cons_, next_index));
+    // return cons_type.result_(is_neutral_v<ConsType> ? car(x.cons_) : ComputeValue(x.cons_).car_);
+    return cons_type.result_(car(x.cons_));
 }

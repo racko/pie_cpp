@@ -99,3 +99,12 @@ constexpr auto incr_equals_add1 =
     define("incr=add1", Pi(Nat, [](const auto& n) { return Eq(Nat, incr(n), add1(n)); }), lambda([](const auto& n) {
                return ind_Nat(n, mot_incr_equals_add1, base_incr_equals_add1, step_incr_equals_add1);
            }));
+
+namespace church {
+constexpr auto Nat = define("Nat", U, Pi(U, [](const auto& X) { return Arrow(X, Arrow(X, X), X); }));
+constexpr auto zero = define("zero", Nat, lambda([](const auto&, const auto& b, const auto&) { return b; }));
+constexpr auto add1 =
+    define("add1", Arrow(Nat, Nat), lambda([](const auto& smaller, const auto& X, const auto& b, const auto& step) {
+               return step(smaller(X, b, step));
+           }));
+}

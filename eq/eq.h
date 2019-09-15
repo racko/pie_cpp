@@ -45,7 +45,7 @@ Eq(const Pie<Derived1>& type, const Pie<Derived2>& from, const Pie<Derived3>& to
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
 constexpr bool IsAType1(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& eq, int& next_index) {
-    return IsAType1(eq.type_, next_index) && IsA1(eq.from_, eq.type_, next_index) && IsA1(eq.to_, eq.type_, next_index);
+    return IsAType1(eq.type_, next_index) && IsA1(eq.from_, ComputeValue(eq.type_), next_index) && IsA1(eq.to_, ComputeValue(eq.type_), next_index);
 }
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>

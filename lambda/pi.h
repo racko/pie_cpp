@@ -68,18 +68,6 @@ constexpr synth_result_t<Pi_t<Arg, Result>> synth1(Pi_t<Arg, Result>, int&) {
     return U;
 }
 
-template <typename F>
-struct NormalizedLambda {
-    constexpr NormalizedLambda(const F& f) : f_{f} {}
-
-    template <typename Arg>
-    constexpr normalize_result_t<std::invoke_result_t<F, Arg>> operator()(const Arg& arg) const {
-        return Normalize(f_(arg));
-    }
-
-    F f_;
-};
-
 template <typename Arg, typename Result>
 struct normalize_result1<Pi_t<Arg, Result>, false> {
     using type = Pi_t<normalize_result_t<Arg>, NormalizedLambda<Result>>;

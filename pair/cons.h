@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pair/pair.h"
+#include "pair/sigma.h"
 #include "pie_base.h"
 #include <ostream>
 #include <type_traits>
@@ -34,8 +34,8 @@ constexpr Cons_t<Derived1, Derived2> cons(const Pie<Derived1>& car, const Pie<De
 
 template <typename DerivedT1, typename DerivedT2, typename Derived1, typename Derived2>
 constexpr bool
-IsA1(const Cons_t<Derived1, Derived2>& value, const Pair_t<DerivedT1, DerivedT2>& type, int& next_index) {
-    return IsA1(value.car_, type.car_t_, next_index) && IsA1(value.cdr_, type.cdr_t_, next_index);
+IsA1(const Cons_t<Derived1, Derived2>& value, const Sigma_t<DerivedT1, DerivedT2>& type, int& next_index) {
+    return IsA1(value.car_, ComputeValue(type.arg_), next_index) && IsA1(value.cdr_, ComputeValue(type.result_(value.car_)), next_index);
 }
 
 template <typename Derived1, typename Derived2>
@@ -52,14 +52,4 @@ struct normalize_result1<Cons_t<Car, Cdr>, false> {
 template <typename Car, typename Cdr>
 constexpr normalize_result_t<Cons_t<Car, Cdr>> Normalize(const Cons_t<Car, Cdr> type, std::false_type /*is_normal*/) {
     return Cons_t(Normalize(type.car_), Normalize(type.cdr_));
-}
-
-template <typename CarType, typename CdrType>
-struct synth_result<Cons_t<CarType, CdrType>> {
-    using type = Pair_t<synth_result_t<CarType>, synth_result_t<CdrType>>;
-};
-
-template <typename CarType, typename CdrType>
-constexpr synth_result_t<Cons_t<CarType, CdrType>> synth1(const Cons_t<CarType, CdrType>& x, int& next_index) {
-    return Pair(synth1(x.car_, next_index), synth1(x.cdr_, next_index));
 }

@@ -4,7 +4,7 @@ cc_library(
         "car.h",
         "cdr.h",
         "cons.h",
-        "pair.h",
+        "sigma.h",
     ],
     visibility = ["//:__pkg__"],
     deps = ["//:base"],
