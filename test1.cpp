@@ -82,7 +82,7 @@ TEST_CASE("Chapter1", "") {
                           car(cons(cons(quote("aubergine"), quote("courgette")), quote("tomato")))));
         // CHECK(IsIllTyped(Pair(cdr(cons(Atom, quote("olive"))), car(cons(quote("oil"), Atom)))));
         CHECK(
-            IsNormalFormOfType(Pair(Atom, Atom), Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom)))));
+            IsNormalFormOfType(Normalize(Pair(Atom, Atom)), Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom)))));
         CHECK(IsA(cons(quote("ratatouille"), quote("baguette")),
                   Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom)))));
         CHECK(AreTheSameType(Pair(car(cons(Atom, quote("olive"))), cdr(cons(quote("oil"), Atom))), Pair(Atom, Atom)));

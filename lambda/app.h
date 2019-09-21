@@ -45,7 +45,10 @@ struct step_result<App_t<F, Arg>> {
 
 template <typename F, typename Arg>
 constexpr step_result_t<App_t<F, Arg>> Step(const App_t<F, Arg>& value) {
-    return ComputeValue(value.f_).f_(value.arg_);
+    // LOG("StepApp(F=" << value.f_ << ", Arg=" << value.arg_ << ") ...");
+    const auto result = ComputeValue(value.f_).f_(value.arg_);
+    // LOG("StepApp(F=" << value.f_ << ", Arg=" << value.arg_ << "): " << result);
+    return result;
 }
 
 template <typename F, typename Arg>
@@ -58,8 +61,48 @@ struct synth_result<App_t<F, Arg>> {
 
 template <typename F, typename Arg>
 constexpr synth_result_t<App_t<F, Arg>> synth1(const App_t<F, Arg>& x, int& next_index) {
+    LOG("synth(" << x << ") ...");
     const auto pi_type = ComputeValue(synth1(x.f_, next_index));
     assert(IsA1(x.arg_, ComputeValue(pi_type.arg_), next_index));
-    return pi_type.result_(x.arg_);
+    const auto& result = pi_type.result_(x.arg_);
+    LOG("synth(" << x << "): " << result);
+
+    return result;
 }
 
+template <typename F, typename Arg, bool is_f_neutral>
+struct normalize_app_result;
+
+template <typename F, typename Arg, bool is_f_neutral>
+using normalize_app_result_t = typename normalize_app_result<F, Arg, is_f_neutral>::type;
+
+template <typename F, typename Arg>
+struct normalize_app_result<F, Arg, true> {
+    using type = App_t<normalize_result_t<F>, normalize_result_t<Arg>>;
+};
+
+template <typename F, typename Arg>
+constexpr normalize_app_result_t<F, Arg, true> NormalizeApp(const App_t<F, Arg>& app, std::true_type /*is_f_neutral*/) {
+    return Normalize(app.f_)(Normalize(app.arg_));
+}
+
+template <typename F, typename Arg>
+struct normalize_app_result<F, Arg, false> {
+    using type = typename normalize_result<step_result_t<App_t<F, Arg>>>::type;
+};
+
+template <typename F, typename Arg>
+constexpr normalize_app_result_t<F, Arg, false> NormalizeApp(const App_t<F, Arg>& app, std::false_type /*is_f_neutral*/) {
+    return Normalize(Step(app.derived()));
+}
+
+template <typename F, typename Arg>
+struct normalize_result1<App_t<F, Arg>, false> {
+    using type = normalize_app_result_t<F, Arg, is_neutral_v<F>>;
+};
+
+// !normal => !neutral => !(neutral(f) && normal(arg)) => !neutral(f) || !normal(arg)
+template <typename F, typename Arg>
+constexpr normalize_result_t<App_t<F, Arg>> Normalize(const App_t<F, Arg>& app, std::false_type /*is_normal*/) {
+    return NormalizeApp(app.derived(), is_neutral<F>{});
+}

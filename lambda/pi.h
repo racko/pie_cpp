@@ -14,7 +14,7 @@ struct Pi_t : Pie<Pi_t<ArgType, Result>> {
     constexpr Pi_t(const ArgType& arg, const Result& result) : arg_{arg}, result_{result} {}
 
     ArgType arg_;
-    Result result_; // result_ is now a function object
+    Result result_;
 };
 
 template <typename ArgType1, typename Result1, typename ArgType2, typename Result2>
@@ -25,8 +25,8 @@ constexpr bool equal(const Pi_t<ArgType1, Result1>& lhs, const Pi_t<ArgType2, Re
 
 template <typename ArgType, typename Result>
 void print(std::ostream& s, const Pi_t<ArgType, Result>& type, int& next_index) {
-    const Var_t var{next_index++};
-    s << "(Π (" << var << ' ' << InContext(type.arg_, next_index) << ") " << InContext(type.result_(var), next_index)
+    const auto v = var(type.arg_, next_index++);
+    s << "(Π (" << v << ' ' << InContext(type.arg_, next_index) << ") " << InContext(type.result_(v), next_index)
       << ')';
 }
 
@@ -47,7 +47,7 @@ constexpr auto Arrow(const Pie<Arg>& arg, const Args&... args) {
 
 template <typename Arg, typename Result>
 constexpr bool IsAType1(const Pi_t<Arg, Result>& type, int& next_index) {
-    const auto v = var(type.arg_, next_index);
+    const auto v = var(type.arg_, next_index++);
     return IsAType1(type.arg_, next_index) && IsAType1(type.result_(v), next_index);
 }
 

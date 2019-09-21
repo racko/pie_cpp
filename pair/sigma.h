@@ -35,14 +35,9 @@ constexpr Sigma_t<ArgType, Result> Sigma(const Pie<ArgType>& arg, const Result& 
     return Sigma_t<ArgType, Result>{arg.derived(), result};
 }
 
-template <typename CarT, typename CdrT>
-constexpr auto Pair(const Pie<CarT>& car_type, const Pie<CdrT>& cdr_type) {
-    return Sigma(car_type.derived(), [cdr_type = cdr_type.derived()](const auto&) { return cdr_type; });
-}
-
 template <typename Arg, typename Result>
 constexpr bool IsAType1(const Sigma_t<Arg, Result>& type, int& next_index) {
-    const auto v = var(type.arg_, next_index);
+    const auto v = var(type.arg_, next_index++);
     return IsAType1(type.arg_, next_index) && IsAType1(type.result_(v), next_index);
 }
 

@@ -1,0 +1,49 @@
+#lang pie
+
+(claim flip (Pi ((A U) (D U)) (-> (Pair A D) (Pair D A))))
+(define flip (lambda (A D p) (cons (cdr p) (car p))))
+
+(claim + (-> Nat Nat Nat))
+(define + (lambda (a b) (iter-Nat a b (lambda (x) (add1 x)))))
+
+(claim double (-> Nat Nat))
+(define double (lambda (n) (iter-Nat n 0 (+ 2))))
+
+(claim Even (-> Nat U))
+(define Even (lambda (n) (Sigma ((half Nat)) (= Nat n (double half)))))
+
+(claim Odd (-> Nat U))
+(define Odd (lambda (n) (Sigma ((haf Nat)) (= Nat n (add1 (double haf))))))
+
+(claim zero-is-even (Even 0))
+(define zero-is-even (cons 0 (same 0)))
+
+(claim +two-even (Pi ((n Nat)) (-> (Even n) (Even (+ 2 n)))))
+(define +two-even (lambda (n n-even) (cons (add1 (car n-even)) (cong (cdr n-even) (+ 2)))))
+
+(claim even->add1-odd (Pi ((n Nat)) (-> (Even n) (Odd (add1 n)))))
+(define even->add1-odd (lambda (n n-even) (cons (car n-even) (cong (cdr n-even) (+ 1)))))
+
+(claim odd->add1-even (Pi ((n Nat)) (-> (Odd n) (Even (add1 n)))))
+(define odd->add1-even (lambda (n n-odd) (cons (add1 (car n-odd)) (cong (cdr n-odd) (+ 1)))))
+
+(claim mot-even-or-odd (-> Nat U))
+(define mot-even-or-odd (lambda (k) (Either (Even k) (Odd k))))
+
+(claim base-even-or-odd (mot-even-or-odd zero))
+(define base-even-or-odd (left zero-is-even))
+
+(claim mot-step-even-or-odd (Pi ((n Nat)) (-> (Either (Even n) (Odd n)) U)))
+(define mot-step-even-or-odd (lambda (n even-or-odd-n) (Either (Even (add1 n)) (Odd (add1 n)))))
+
+(claim base-left-even-or-odd (Pi ((n Nat) (n-even (Even n))) (mot-step-even-or-odd n (left n-even))))
+(define base-left-even-or-odd (lambda (n n-even) (right (even->add1-odd n n-even))))
+
+(claim base-right-even-or-odd (Pi ((n Nat) (n-odd (Odd n))) (mot-step-even-or-odd n (right n-odd))))
+(define base-right-even-or-odd (lambda (n n-odd) (left (odd->add1-even n n-odd))))
+
+(claim step-even-or-odd (Pi ((n Nat)) (-> (mot-even-or-odd n) (mot-even-or-odd (add1 n)))))
+(define step-even-or-odd (lambda (n n-even-or-odd) (ind-Either n-even-or-odd (mot-step-even-or-odd n) (base-left-even-or-odd n) (base-right-even-or-odd n))))
+
+(claim even-or-odd (Pi ((n Nat)) (Either (Even n) (Odd n))))
+(define even-or-odd (lambda (n) (ind-Nat n mot-even-or-odd base-even-or-odd step-even-or-odd)))

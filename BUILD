@@ -23,6 +23,7 @@ cc_library(
     ],
     deps = [
         "//:base",
+        "//either",
         "//eq",
         "//lambda",
         "//nat",
@@ -34,9 +35,22 @@ cc_library(
 cc_test(
     name = "test",
     srcs = [
-        "test.cpp",
         "test1.cpp",
+        "test10.cpp",
+        "test11.cpp",
+        "test12.cpp",
+        "test13.cpp",
+        "test14.cpp",
+        "test15.cpp",
+        "test16.cpp",
         "test2.cpp",
+        "test3.cpp",
+        "test4.cpp",
+        "test5.cpp",
+        "test6.cpp",
+        "test7.cpp",
+        "test8.cpp",
+        "test9.cpp",
     ],
     deps = [
         ":pie",

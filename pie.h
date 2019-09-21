@@ -1,8 +1,12 @@
 #pragma once
 
 #include "atom.h"
-#include "eq/cong.h"
+#include "either/either.h"
+#include "either/ind_either.h"
+#include "either/left.h"
+#include "either/right.h"
 #include "eq/eq.h"
+#include "eq/ind_eq.h"
 #include "eq/same.h"
 #include "lambda/app.h"
 #include "lambda/lambda.h"
@@ -16,7 +20,6 @@
 #include "pair/car.h"
 #include "pair/cdr.h"
 #include "pair/cons.h"
-//#include "pair/pair.h"
 #include "pair/sigma.h"
 #include "var/the.h"
 #include "var/typed_var.h"

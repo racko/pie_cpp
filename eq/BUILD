@@ -1,8 +1,8 @@
 cc_library(
     name = "eq",
     hdrs = [
-        "cong.h",
         "eq.h",
+        "ind_eq.h",
         "same.h",
     ],
     visibility = ["//:__pkg__"],
