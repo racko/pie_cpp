@@ -10,13 +10,17 @@
 //#define DEBUG
 
 #ifdef DEBUG
-#define LOG(msg) do { std::cerr << msg << '\n'; } while(0)
+#define LOG(msg)                                                                                                       \
+    do {                                                                                                               \
+        std::cerr << msg << '\n';                                                                                      \
+    } while (0)
 #define FOO inline
 #else
-#define LOG(msg) do {} while(0)
+#define LOG(msg)                                                                                                       \
+    do {                                                                                                               \
+    } while (0)
 #define FOO constexpr
 #endif
-
 
 // SORRY :(
 template <typename F, typename Arg>
@@ -50,38 +54,20 @@ struct Pie {
     constexpr Derived const& derived() const { return static_cast<const Derived&>(*this); }
 };
 
-template <typename Derived>
-struct InContext {
-    InContext(const Derived& expr, int& next_index) : expr_{expr}, next_index_{next_index} {}
-
-    const Derived& expr_;
-    int& next_index_;
-};
-
 template <typename Derived1, typename Derived2>
-constexpr bool equal([[maybe_unused]] const Pie<Derived1>& lhs,
-                     [[maybe_unused]] const Pie<Derived2>& rhs,
-                     [[maybe_unused]] int& next_index) {
+constexpr bool equal([[maybe_unused]] const Pie<Derived1>& lhs, [[maybe_unused]] const Pie<Derived2>& rhs) {
     LOG("operator==(" << lhs.derived() << ", " << rhs.derived() << "): false (default)");
     return false;
 }
 
 template <typename Derived1, typename Derived2>
 constexpr bool operator==(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs) {
-    int next_index{0};
-    return equal(lhs.derived(), rhs.derived(), next_index);
-}
-
-template <typename Derived>
-std::ostream& operator<<(std::ostream& s, const InContext<Derived>& expr) {
-    print(s, expr.expr_, expr.next_index_);
-    return s;
+    return equal(lhs.derived(), rhs.derived());
 }
 
 template <typename Derived>
 std::ostream& operator<<(std::ostream& s, const Pie<Derived>& expr) {
-    int next_index{0};
-    print(s, expr.derived(), next_index);
+    print(s, expr.derived());
     return s;
 }
 
@@ -125,7 +111,12 @@ template <typename T>
 using step_result_t = typename step_result<T>::type;
 
 template <typename Derived>
-step_result_t<Derived> Step(const Pie<Derived>&);
+constexpr step_result_t<Derived> Step(const Pie<Derived>& x) {
+    LOG("Step(" << x.derived() << ") ...");
+    const auto result = Step1(x.derived());
+    LOG("Step(" << x.derived() << "): " << result);
+    return result;
+}
 
 template <typename T>
 struct compute_value_result;
@@ -153,19 +144,21 @@ using compute_value_result_t = typename compute_value_result<T>::type;
 
 template <typename Derived>
 constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x, std::true_type) {
-    LOG("ComputeValue(" << x.derived() << ", is_value=true) ...");
-    return x.derived();
+    const auto result = x.derived();
+    LOG("ComputeValue(" << x.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived>
 constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x, std::false_type) {
-    LOG("ComputeValue(" << x.derived() << ", is_value=false) ...");
-    return ComputeValue(Step(x.derived()));
+    LOG("ComputeValue(" << x.derived() << ") ...");
+    const auto result = ComputeValue(Step(x.derived()));
+    LOG("ComputeValue(" << x.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived>
 constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x) {
-    LOG("ComputeValue(" << x.derived() << ") ...");
     return ComputeValue(x.derived(), is_value<Derived>{});
 }
 
@@ -195,19 +188,21 @@ using normalize_result_t = typename normalize_result<T>::type;
 
 template <typename Derived>
 constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x, std::true_type /*is_normal*/) {
-    LOG("Normalize(" << x.derived() << ", is_normal=true) ...");
-    return x.derived();
+    const auto result = x.derived();
+    LOG("Normalize(" << x.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived>
 constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x, std::false_type /*is_normal*/) {
-    LOG("Normalize(" << x.derived() << ", is_normal=false) ...");
-    return Normalize(Step(x.derived()));
+    LOG("Normalize(" << x.derived() << ") ...");
+    const auto result = Normalize(Step(x.derived()));
+    LOG("Normalize(" << x.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived>
 constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x) {
-    LOG("Normalize(" << x.derived() << ") ...");
     return Normalize(x.derived(), is_normal<Derived>{});
 }
 
@@ -223,7 +218,7 @@ struct NormalizedLambda {
     F f_;
 };
 
-template <typename T>
+template <typename T, typename Enabled = void>
 struct synth_result;
 
 template <typename T>
@@ -231,8 +226,10 @@ using synth_result_t = typename synth_result<T>::type;
 
 template <typename Derived>
 constexpr synth_result_t<Derived> synth(const Pie<Derived>& x) {
-    int next_index{0};
-    return synth1(x.derived(), next_index);
+    LOG("synth(" << x.derived() << ") ...");
+    const auto result = synth1(x.derived());
+    LOG("synth(" << x.derived() << "): " << result);
+    return result;
 }
 
 template <typename T, typename = std::void_t<>>
@@ -245,18 +242,17 @@ template <typename T>
 struct can_synth<T, std::void_t<decltype(synth(std::declval<T>()))>> : std::true_type {};
 
 template <typename Derived1, typename Derived2>
-constexpr bool IsA1(const Pie<Derived1>& value,
-                    const Pie<Derived2>& type,
-                    int& next_index,
-                    std::enable_if_t<can_synth_v<Derived1>, int> = 0) {
+constexpr bool
+IsA1(const Pie<Derived1>& value, const Pie<Derived2>& type, std::enable_if_t<can_synth_v<Derived1>, int> = 0) {
     LOG("IsA(" << value.derived() << ", " << type.derived() << ") [default] ...");
-    return AreTheSameType1(type.derived(), synth1(value.derived(), next_index), next_index);
+    const bool result = AreTheSameType(type.derived(), synth(value.derived()));
+    LOG("IsA(" << value.derived() << ", " << type.derived() << ") [default]: " << result);
+    return result;
 }
 
 template <typename Derived1, typename Derived2>
 constexpr bool IsA1([[maybe_unused]] const Pie<Derived1>& value,
                     [[maybe_unused]] const Pie<Derived2>& type,
-                    [[maybe_unused]] int& next_index,
                     std::enable_if_t<!can_synth_v<Derived1>, int> = 0) {
     LOG("IsA(" << value.derived() << ", " << type.derived() << "): false [can not synth]");
     return false;
@@ -264,61 +260,50 @@ constexpr bool IsA1([[maybe_unused]] const Pie<Derived1>& value,
 
 template <typename Derived1, typename Derived2>
 constexpr bool IsA(const Pie<Derived1>& value, const Pie<Derived2>& type) {
-    int next_index{0};
     LOG("IsA(" << value.derived() << ", " << type.derived() << ") ...");
-    return IsA1(value.derived(), ComputeValue(type.derived()), next_index);
+    assert(IsAType(type.derived()));
+    const bool result = IsA1(value.derived(), ComputeValue(type.derived()));
+    LOG("IsA(" << value.derived() << ", " << type.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived1, typename Derived2>
 constexpr bool IsANormal(const Pie<Derived1>& value, const Pie<Derived2>& type) {
-    return IsA(value.derived(), ComputeValue(type.derived())) && is_normal_v<Derived1>;
-}
-
-template <typename Derived1, typename Derived2, typename Derived3>
-constexpr bool
-IsTheSameAs1(const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs, int& next_index) {
-    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << ") ...");
-    const auto is_type_valid = IsAType1(type.derived(), next_index);
-    LOG("type is valid: " << is_type_valid);
-    if (!is_type_valid) {
-        return false;
-    }
-    const auto lhs_norm = Normalize(lhs.derived());
-    const auto rhs_norm = Normalize(rhs.derived());
-    LOG("lhs normalform: " << lhs_norm);
-    LOG("rhs normalform: " << rhs_norm);
-    const auto normalforms_identical = equal(lhs_norm, rhs_norm, next_index);
-    LOG("normalforms are identical: " << normalforms_identical);
-    return normalforms_identical;
+    return IsA(value.derived(), type.derived()) && is_normal_v<Derived1>;
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
 constexpr bool IsTheSameAs(const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
-    int next_index{0};
-    return IsTheSameAs1(type.derived(), lhs.derived(), rhs.derived(), next_index);
-}
-
-template <typename Derived1, typename Derived2>
-constexpr bool IsAValue(const Pie<Derived1>& type, const Pie<Derived2>& expr) {
-    return IsA(expr.derived(), ComputeValue(type.derived())) && is_value_v<Derived2>;
-}
-
-template <typename Derived1, typename Derived2>
-constexpr bool AreTheSameType1(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs, int& next_index) {
-    LOG("AreTheSameType(" << lhs.derived() << ", " << rhs.derived() << ") ...");
+    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << ") ...");
+    assert(IsAType(type.derived()));
+    assert(IsA(lhs.derived(), type.derived()));
+    assert(IsA(rhs.derived(), type.derived()));
     const auto lhs_norm = Normalize(lhs.derived());
     const auto rhs_norm = Normalize(rhs.derived());
     LOG("lhs normalform: " << lhs_norm);
     LOG("rhs normalform: " << rhs_norm);
-    const auto normalforms_identical = equal(lhs_norm, rhs_norm, next_index);
-    LOG("normalforms are identical: " << normalforms_identical);
+    const auto normalforms_identical = equal(lhs_norm, rhs_norm);
+    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << "): " << normalforms_identical);
     return normalforms_identical;
 }
 
 template <typename Derived1, typename Derived2>
+constexpr bool IsAValue(const Pie<Derived1>& type, const Pie<Derived2>& expr) {
+    return IsA(expr.derived(), type.derived()) && is_value_v<Derived2>;
+}
+
+template <typename Derived1, typename Derived2>
 constexpr bool AreTheSameType(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs) {
-    int next_index{0};
-    return AreTheSameType1(lhs.derived(), rhs.derived(), next_index);
+    LOG("AreTheSameType(" << lhs.derived() << ", " << rhs.derived() << ") ...");
+    assert(IsAType(lhs.derived()));
+    assert(IsAType(rhs.derived()));
+    const auto lhs_norm = Normalize(lhs.derived());
+    const auto rhs_norm = Normalize(rhs.derived());
+    LOG("lhs normalform: " << lhs_norm);
+    LOG("rhs normalform: " << rhs_norm);
+    const auto normalforms_identical = equal(lhs_norm, rhs_norm);
+    LOG("AreTheSameType(" << lhs.derived() << ", " << rhs.derived() << "): " << normalforms_identical);
+    return normalforms_identical;
 }
 
 template <typename Derived1, typename Derived2>
@@ -356,37 +341,38 @@ IsTheValueOf([[maybe_unused]] const Pie<Derived1>& type, const Pie<Derived2>& lh
 template <typename Type, typename Expr>
 struct Definition : Pie<Definition<Type, Expr>> {
     constexpr Definition(const char* name, const Type& type, const Expr& expr)
-        : name_{name}, type_{type}, expr_{expr} {}
+        : height_{std::max(type.height_, expr.height_)}, name_{name}, type_{type}, expr_{expr} {}
 
+    int height_;
     const char* name_;
     Type type_;
     Expr expr_;
 };
 
 template <typename Type1, typename Expr1, typename Type2, typename Expr2>
-constexpr bool equal(const Definition<Type1, Expr1>& lhs, const Definition<Type2, Expr2>& rhs, int&) {
+constexpr bool equal(const Definition<Type1, Expr1>& lhs, const Definition<Type2, Expr2>& rhs) {
     return lhs.name_ == rhs.name_;
 }
 
 template <typename Type, typename Expr, typename Derived>
-constexpr bool equal(const Definition<Type, Expr>& lhs, const Pie<Derived>& rhs, int& next_index) {
-    return equal(lhs.expr_, rhs.derived(), next_index);
+constexpr bool equal(const Definition<Type, Expr>& lhs, const Pie<Derived>& rhs) {
+    return equal(lhs.expr_, rhs.derived());
 }
 
 template <typename Derived, typename Type, typename Expr>
-constexpr bool equal(const Pie<Derived>& lhs, const Definition<Type, Expr>& rhs, int& next_index) {
-    return equal(lhs.derived(), rhs.expr_, next_index);
+constexpr bool equal(const Pie<Derived>& lhs, const Definition<Type, Expr>& rhs) {
+    return equal(lhs.derived(), rhs.expr_);
 }
 
 template <typename Type, typename Expr>
-void print(std::ostream& s, const Definition<Type, Expr>& def, int&) {
+void print(std::ostream& s, const Definition<Type, Expr>& def) {
     s << def.name_;
 }
 
 template <typename Type, typename Expr>
 constexpr Definition<Type, Expr> define(const char* name, const Type& type, const Expr& expr) {
     LOG("checking define " << name << " ...");
-    assert(IsA(expr.derived(), ComputeValue(type.derived())));
+    assert(IsA(expr.derived(), type.derived()));
     LOG("checking define " << name << " done");
     return Definition(name, type, expr);
 }
@@ -397,7 +383,7 @@ struct step_result<Definition<Type, Expr>> {
 };
 
 template <typename Type, typename Expr>
-constexpr step_result_t<Definition<Type, Expr>> Step(const Definition<Type, Expr>& x) {
+constexpr step_result_t<Definition<Type, Expr>> Step1(const Definition<Type, Expr>& x) {
     return x.expr_;
 }
 
@@ -407,16 +393,18 @@ struct synth_result<Definition<Type, Expr>> {
 };
 
 template <typename Type, typename Expr>
-constexpr synth_result_t<Definition<Type, Expr>> synth1(const Definition<Type, Expr>& x, int&) {
+constexpr synth_result_t<Definition<Type, Expr>> synth1(const Definition<Type, Expr>& x) {
     LOG("synth(" << x << "): " << x.type_);
     return x.type_;
 }
 
-struct U_t : Pie<U_t> {};
+struct U_t : Pie<U_t> {
+    int height_{};
+};
 
-constexpr bool equal(U_t, U_t, int&) { return true; }
+constexpr bool equal(U_t, U_t) { return true; }
 
-inline void print(std::ostream& s, U_t, int&) { s << 'U'; }
+inline void print(std::ostream& s, U_t) { s << 'U'; }
 
 inline constexpr U_t U;
 
@@ -426,7 +414,7 @@ struct is_normal<U_t> : std::true_type {};
 template <>
 struct is_value<U_t> : std::true_type {};
 
-FOO bool IsAType1(U_t, int&) {
+FOO bool IsAType1(U_t) {
     LOG("IsAType(U): true");
     return true;
 }
@@ -438,13 +426,17 @@ constexpr bool IsA(U_t, [[maybe_unused]] const Pie<Derived>& type) {
 }
 
 template <typename Derived>
-constexpr bool IsAType1(const Pie<Derived>& type, int& next_index) {
+constexpr bool IsAType1(const Pie<Derived>& type) {
     LOG("IsAType(" << type.derived() << "): ...");
-    return IsA1(type.derived(), U, next_index);
+    const bool result = IsA(type.derived(), U);
+    LOG("IsAType(" << type.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived>
 constexpr bool IsAType(const Pie<Derived>& type) {
-    int next_index{0};
-    return IsAType1(type.derived(), next_index);
+    LOG("IsAType(" << type.derived() << "): ...");
+    const bool result = IsAType1(ComputeValue(type.derived()));
+    LOG("IsAType(" << type.derived() << "): " << result);
+    return result;
 }

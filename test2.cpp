@@ -37,8 +37,9 @@ TEST_CASE("Chapter2", "") {
         CHECK(!IsTheSameAs(Arrow(Atom, Arrow(Atom, Pair(Atom, Atom))),
                            lambda([](auto a) { return lambda([a](auto d) { return cons(a, d); }); }),
                            lambda([](auto d) { return lambda([d](auto a) { return cons(a, d); }); })));
-        CHECK(IsTheSameAs(
-            Arrow(Nat, Nat), lambda([](auto y) { return car(cons(y, y)); }), lambda([](auto x) { return x; })));
+        CHECK(IsTheSameAs(Arrow(Nat, Nat),
+                          lambda([](auto y) { return car(the(Pair(Nat, Nat), cons(y, y))); }),
+                          lambda([](auto x) { return x; })));
     }
 
     SECTION("neutral") {

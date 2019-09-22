@@ -7,18 +7,19 @@ template <typename Type>
 struct TypedVar_t : Pie<TypedVar_t<Type>> {
     constexpr TypedVar_t(const Type& type, const int id) : id_{id}, type_{type} {}
 
+    int height_{};
     int id_;
     Type type_;
 };
 
 template <typename Type1, typename Type2>
-constexpr bool equal(const TypedVar_t<Type1> lhs, const TypedVar_t<Type2> rhs, int&) {
+constexpr bool equal(const TypedVar_t<Type1> lhs, const TypedVar_t<Type2> rhs) {
     return lhs.id_ == rhs.id_;
 }
 
 template <typename Type>
-void print(std::ostream& s, const TypedVar_t<Type> x, int& next_index) {
-    s << '[' << 'x' << x.id_ << ' ' << InContext(x.type_, next_index) << ']';
+void print(std::ostream& s, const TypedVar_t<Type> x) {
+    s << '[' << 'x' << x.id_ << ' ' << x.type_ << ']';
 }
 
 template <typename Type>
@@ -35,6 +36,7 @@ struct synth_result<TypedVar_t<Type>> {
 };
 
 template <typename Type>
-constexpr synth_result_t<TypedVar_t<Type>> synth1(const TypedVar_t<Type>& x, int&) {
+constexpr synth_result_t<TypedVar_t<Type>> synth1(const TypedVar_t<Type>& x) {
+    assert(IsAType(x.type_));
     return x.type_;
 }

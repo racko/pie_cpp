@@ -54,9 +54,19 @@ FOO auto cong = define(
             t, lambda([Y, f, from](const auto& x, const auto& /*t*/) { return Eq(Y, f(from), f(x)); }), same(f(from)));
     }));
 
-FOO auto constant = define("constant",
+FOO auto constant = define("const",
                            Pi(U, [](const auto& A) { return Pi(U, [A](const auto& B) { return Arrow(A, B, A); }); }),
                            lambda([](const auto&, const auto&, const auto& a, const auto&) { return a; }));
+
+FOO auto flip = define(
+    "flip",
+    Pi(U,
+       [](const auto& A) {
+           return Pi(U, [A](const auto& B) {
+               return Pi(U, [A, B](const auto& C) { return Arrow(Arrow(A, B, C), B, A, C); });
+           });
+       }),
+    lambda([](const auto&, const auto&, const auto&, const auto& f, const auto& b, const auto& a) { return f(a, b); }));
 
 FOO auto const_ind_Mot =
     define("const-ind-Mot", Arrow(U, Nat, U), lambda([](const auto& X, const auto&) { return X; }));
@@ -142,8 +152,8 @@ FOO auto incr_equals_add1 = [] {
                   }));
 }();
 
-FOO auto doub =
-    define("double", Arrow(Nat, Nat), lambda([](const auto& n) { return iter_Nat(Nat, n, zero, plus(two)); }));
+//FOO auto doub = define("double", Arrow(Nat, Nat), lambda([](const auto& n) { return times(n, two); }));
+FOO auto doub = define("double", Arrow(Nat, Nat), flip(Nat, Nat, Nat, times, two));
 
 FOO auto twice = define("twice", Arrow(Nat, Nat), lambda([](const auto& n) { return plus(n, n); }));
 
@@ -175,10 +185,12 @@ FOO auto even_implies_add1_odd =
                return cons(car(n_even), cong(Nat, Nat, n, doub(car(n_even)), cdr(n_even), plus(one)));
            }));
 
-FOO auto odd_implies_add1_even = define(
-    "odd->add1-even",
-    Pi(Nat, [](const auto& n) { return Arrow(Odd(n), Even(add1(n))); }),
-    lambda([](const auto& n, const auto& n_odd) { return cons(add1(car(n_odd)), cong(Nat, Nat, n, add1(doub(car(n_odd))), cdr(n_odd), plus(one))); }));
+FOO auto odd_implies_add1_even =
+    define("odd->add1-even",
+           Pi(Nat, [](const auto& n) { return Arrow(Odd(n), Even(add1(n))); }),
+           lambda([](const auto& n, const auto& n_odd) {
+               return cons(add1(car(n_odd)), cong(Nat, Nat, n, add1(doub(car(n_odd))), cdr(n_odd), plus(one)));
+           }));
 
 FOO auto even_or_odd = [] {
     const auto mot_even_or_odd =

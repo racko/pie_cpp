@@ -7,19 +7,20 @@
 
 template <typename Derived>
 struct Add1_t : Pie<Add1_t<Derived>> {
-    constexpr Add1_t(const Derived& smaller) : smaller_{smaller} {}
+    constexpr Add1_t(const Derived& smaller) : height_{smaller.height_}, smaller_{smaller} {}
 
+    int height_;
     Derived smaller_;
 };
 
 template <typename Derived1, typename Derived2>
-constexpr bool equal(const Add1_t<Derived1>& lhs, const Add1_t<Derived2>& rhs, int& next_index) {
-    return equal(lhs.smaller_, rhs.smaller_, next_index);
+constexpr bool equal(const Add1_t<Derived1>& lhs, const Add1_t<Derived2>& rhs) {
+    return equal(lhs.smaller_, rhs.smaller_);
 }
 
 template <typename Derived>
-void print(std::ostream& s, const Add1_t<Derived>& n, int& next_index) {
-    s << "(add1 " << InContext(n.smaller_, next_index) << ')';
+void print(std::ostream& s, const Add1_t<Derived>& n) {
+    s << "(add1 " << n.smaller_ << ')';
 }
 
 template <typename Derived>
@@ -28,8 +29,8 @@ constexpr Add1_t<Derived> add1(const Pie<Derived>& n) {
 }
 
 template <typename Derived>
-constexpr bool IsA1(const Add1_t<Derived>& n, Nat_t, int& next_index) {
-    return IsA1(n.smaller_, Nat, next_index);
+constexpr bool IsA1(const Add1_t<Derived>& n, Nat_t) {
+    return IsA(n.smaller_, Nat);
 }
 
 template <typename Derived>
@@ -54,6 +55,7 @@ struct synth_result<Add1_t<Derived>> {
 };
 
 template <typename Derived>
-constexpr synth_result_t<Add1_t<Derived>> synth1(Add1_t<Derived>, int&) {
+constexpr synth_result_t<Add1_t<Derived>> synth1(const Add1_t<Derived>& n) {
+    assert(IsA(n, Nat));
     return Nat;
 }

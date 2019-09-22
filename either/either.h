@@ -6,7 +6,11 @@
 
 template <typename L, typename R>
 struct Either_t : Pie<Either_t<L, R>> {
-    constexpr Either_t(L left, R right) : left_{std::move(left)}, right_{std::move(right)} {}
+    constexpr Either_t(L left, R right)
+        : height_{std::max(left.height_, right.height_)},
+          left_{std::move(left)},
+          right_{std::move(right)} {}
+    int height_;
     L left_;
     R right_;
 };
@@ -17,18 +21,18 @@ constexpr Either_t<L, R> Either(const Pie<L>& l, const Pie<R>& r) {
 }
 
 template <typename L1, typename R1, typename L2, typename R2>
-constexpr bool equal(const Either_t<L1, R1>& lhs, const Either_t<L2, R2>& rhs, int& next_index) {
-    return equal(lhs.left_, rhs.left_, next_index) && equal(lhs.right_, rhs.right_, next_index);
+constexpr bool equal(const Either_t<L1, R1>& lhs, const Either_t<L2, R2>& rhs) {
+    return equal(lhs.left_, rhs.left_) && equal(lhs.right_, rhs.right_);
 }
 
 template <typename L, typename R>
-inline void print(std::ostream& s, const Either_t<L, R>& x, int& next_index) {
-    s << "Either(" << InContext(x.left_, next_index) << ' ' << InContext(x.right_, next_index) << ')';
+inline void print(std::ostream& s, const Either_t<L, R>& x) {
+    s << "Either(" << x.left_ << ' ' << x.right_ << ')';
 }
 
 template <typename L, typename R>
-constexpr bool IsAType1(const Either_t<L, R>& x, int& next_index) {
-    return IsAType1(x.left_, next_index) && IsAType1(x.right_, next_index);
+constexpr bool IsAType1(const Either_t<L, R>& x) {
+    return IsAType(x.left_) && IsAType(x.right_);
 }
 
 template <typename L, typename R>
@@ -43,7 +47,8 @@ struct synth_result<Either_t<L, R>> {
 };
 
 template <typename L, typename R>
-constexpr synth_result_t<Either_t<L, R>> synth1(Either_t<L, R>, int&) {
+constexpr synth_result_t<Either_t<L, R>> synth1(const Either_t<L, R>& t) {
+    assert(IsAType(t));
     return U;
 }
 
@@ -53,7 +58,6 @@ struct normalize_result1<Either_t<L, R>, false> {
 };
 
 template <typename L, typename R>
-constexpr normalize_result_t<Either_t<L, R>> Normalize(const Either_t<L, R>& type,
-                                                             std::false_type /*is_normal*/) {
+constexpr normalize_result_t<Either_t<L, R>> Normalize(const Either_t<L, R>& type, std::false_type /*is_normal*/) {
     return Either(Normalize(type.left_), Normalize(type.right_));
 }

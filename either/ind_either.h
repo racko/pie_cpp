@@ -11,8 +11,13 @@
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 struct IndEither_t : Pie<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
     constexpr IndEither_t(const Target& target, const Mot& mot, const BaseLeft& base_left, const BaseRight& base_right)
-        : target_{target}, mot_{mot}, base_left_{base_left}, base_right_{base_right} {}
+        : height_{std::max({target.height_, mot.height_, base_left.height_, base_right.height_})},
+          target_{target},
+          mot_{mot},
+          base_left_{base_left},
+          base_right_{base_right} {}
 
+    int height_;
     Target target_;
     Mot mot_;
     BaseLeft base_left_;
@@ -28,16 +33,14 @@ template <typename Target1,
           typename BaseLeft2,
           typename BaseRight2>
 constexpr bool equal(const IndEither_t<Target1, Mot1, BaseLeft1, BaseRight1>& lhs,
-                     const IndEither_t<Target2, Mot2, BaseLeft2, BaseRight2>& rhs,
-                     int& next_index) {
-    return equal(lhs.target_, rhs.target_, next_index) && equal(lhs.mot_, rhs.mot_, next_index) &&
-           equal(lhs.base_left_, rhs.base_left_, next_index) && equal(lhs.base_right_, rhs.base_right_, next_index);
+                     const IndEither_t<Target2, Mot2, BaseLeft2, BaseRight2>& rhs) {
+    return equal(lhs.target_, rhs.target_) && equal(lhs.mot_, rhs.mot_) && equal(lhs.base_left_, rhs.base_left_) &&
+           equal(lhs.base_right_, rhs.base_right_);
 }
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-void print(std::ostream& s, const IndEither_t<Target, Mot, BaseLeft, BaseRight>& x, int& next_index) {
-    s << "(ind-Either " << InContext(x.target_, next_index) << ' ' << InContext(x.mot_, next_index) << ' '
-      << InContext(x.base_left_, next_index) << ' ' << InContext(x.base_right_, next_index) << ')';
+void print(std::ostream& s, const IndEither_t<Target, Mot, BaseLeft, BaseRight>& x) {
+    s << "(ind-Either " << x.target_ << ' ' << x.mot_ << ' ' << x.base_left_ << ' ' << x.base_right_ << ')';
 }
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
@@ -84,7 +87,7 @@ struct step_result<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 constexpr step_result_t<IndEither_t<Target, Mot, BaseLeft, BaseRight>>
-Step(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
+Step1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
     assert(!is_neutral_v<Target>);
     return Step_Ind_Either(
         ComputeValue(ind_either.target_), ind_either.mot_, ind_either.base_left_, ind_either.base_right_);
@@ -100,15 +103,12 @@ struct synth_result<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 constexpr synth_result_t<IndEither_t<Target, Mot, BaseLeft, BaseRight>>
-synth1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either, int& next_index) {
-    const auto target_type = ComputeValue(synth1(ind_either.target_, next_index));
-    assert(IsA1(ind_either.mot_, Arrow(target_type, U), next_index));
-    assert(IsA1(ind_either.base_left_,
-                Pi(target_type.left_, [&ind_either](const auto& x) { return ind_either.mot_(left(x)); }),
-                next_index));
-    assert(IsA1(ind_either.base_right_,
-                Pi(target_type.right_, [&ind_either](const auto& y) { return ind_either.mot_(right(y)); }),
-                next_index));
+synth1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
+    const auto target_type = ComputeValue(synth(ind_either.target_));
+    assert(IsA(ind_either.mot_, Arrow(target_type, U)));
+    assert(IsA(ind_either.base_left_,
+                Pi(target_type.left_, [&ind_either](const auto& x) { return ind_either.mot_(left(x)); })));
+    assert(IsA(ind_either.base_right_,
+                Pi(target_type.right_, [&ind_either](const auto& y) { return ind_either.mot_(right(y)); })));
     return ind_either.mot_(ind_either.target_);
 }
-

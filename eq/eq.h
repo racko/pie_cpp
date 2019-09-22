@@ -12,8 +12,12 @@ struct Eq_t : Pie<Eq_t<Derived1, Derived2, Derived3>> {
     using to_t = Derived3;
 
     constexpr Eq_t(Derived1 t, Derived2 from, Derived3 to)
-        : type_{std::move(t)}, from_{std::move(from)}, to_{std::move(to)} {}
+        : height_{std::max({t.height_, from.height_, to.height_})},
+          type_{std::move(t)},
+          from_{std::move(from)},
+          to_{std::move(to)} {}
 
+    int height_;
     Derived1 type_;
     Derived2 from_;
     Derived3 to_;
@@ -25,16 +29,13 @@ template <typename Derived1,
           typename Derived4,
           typename Derived5,
           typename Derived6>
-constexpr bool
-equal(const Eq_t<Derived1, Derived2, Derived3>& lhs, const Eq_t<Derived4, Derived5, Derived6>& rhs, int& next_index) {
-    return equal(lhs.type_, rhs.type_, next_index) && equal(lhs.from_, rhs.from_, next_index) &&
-           equal(lhs.to_, rhs.to_, next_index);
+constexpr bool equal(const Eq_t<Derived1, Derived2, Derived3>& lhs, const Eq_t<Derived4, Derived5, Derived6>& rhs) {
+    return equal(lhs.type_, rhs.type_) && equal(lhs.from_, rhs.from_) && equal(lhs.to_, rhs.to_);
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
-void print(std::ostream& s, const Eq_t<Derived1, Derived2, Derived3>& eq, int& next_index) {
-    s << "(= " << InContext(eq.type_, next_index) << ' ' << InContext(eq.from_, next_index) << ' '
-      << InContext(eq.to_, next_index) << ')';
+void print(std::ostream& s, const Eq_t<Derived1, Derived2, Derived3>& eq) {
+    s << "(= " << eq.type_ << ' ' << eq.from_ << ' ' << eq.to_ << ')';
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>
@@ -44,8 +45,8 @@ Eq(const Pie<Derived1>& type, const Pie<Derived2>& from, const Pie<Derived3>& to
 }
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
-constexpr bool IsAType1(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& eq, int& next_index) {
-    return IsAType1(eq.type_, next_index) && IsA1(eq.from_, ComputeValue(eq.type_), next_index) && IsA1(eq.to_, ComputeValue(eq.type_), next_index);
+constexpr bool IsAType1(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& eq) {
+    return IsAType(eq.type_) && IsA(eq.from_, eq.type_) && IsA(eq.to_, eq.type_);
 }
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
@@ -72,6 +73,8 @@ struct synth_result<Eq_t<DerivedT, DerivedFrom, DerivedTo>> {
 };
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
-constexpr synth_result_t<Eq_t<DerivedT, DerivedFrom, DerivedTo>> synth1(Eq_t<DerivedT, DerivedFrom, DerivedTo>, int&) {
+constexpr synth_result_t<Eq_t<DerivedT, DerivedFrom, DerivedTo>>
+synth1(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& t) {
+    assert(IsAType(t));
     return U;
 }

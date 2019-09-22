@@ -4,15 +4,17 @@
 #include <ostream>
 #include <type_traits>
 
-struct Nat_t : Pie<Nat_t> {};
+struct Nat_t : Pie<Nat_t> {
+    int height_{};
+};
 
 inline constexpr Nat_t Nat;
 
-constexpr bool equal(Nat_t, Nat_t, int&) { return true; }
+constexpr bool equal(Nat_t, Nat_t) { return true; }
 
-inline void print(std::ostream& s, Nat_t, int&) { s << "Nat"; }
+inline void print(std::ostream& s, Nat_t) { s << "Nat"; }
 
-constexpr bool IsAType1(Nat_t, int&) { return true; }
+constexpr bool IsAType1(Nat_t) { return true; }
 
 template <>
 struct is_normal<Nat_t> : std::true_type {};
@@ -25,4 +27,4 @@ struct synth_result<Nat_t> {
     using type = U_t;
 };
 
-constexpr synth_result_t<Nat_t> synth1(Nat_t, int&) { return U; }
+constexpr synth_result_t<Nat_t> synth1(Nat_t) { return U; }

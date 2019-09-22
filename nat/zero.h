@@ -5,15 +5,17 @@
 #include <ostream>
 #include <utility>
 
-struct Zero_t : Pie<Zero_t> {};
+struct Zero_t : Pie<Zero_t> {
+    int height_{};
+};
 
 inline constexpr Zero_t zero;
 
-constexpr bool equal(Zero_t, Zero_t, int&) { return true; }
+constexpr bool equal(Zero_t, Zero_t) { return true; }
 
-inline void print(std::ostream& s, Zero_t, int&) { s << "zero"; }
+inline void print(std::ostream& s, Zero_t) { s << "zero"; }
 
-constexpr bool IsA1(Zero_t, Nat_t, int&) { return true; }
+constexpr bool IsA1(Zero_t, Nat_t) { return true; }
 
 template <>
 struct is_normal<Zero_t> : std::true_type {};
@@ -26,4 +28,4 @@ struct synth_result<Zero_t> {
     using type = Nat_t;
 };
 
-constexpr synth_result_t<Zero_t> synth1(Zero_t, int&) { return Nat; }
+constexpr synth_result_t<Zero_t> synth1(Zero_t) { return Nat; }

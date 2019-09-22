@@ -5,20 +5,22 @@
 
 template <typename Derived1, typename Derived2>
 struct The_t : Pie<The_t<Derived1, Derived2>> {
-    constexpr The_t(const Pie<Derived1>& type, const Pie<Derived2>& value) : type_(type), value_(value) {}
+    constexpr The_t(const Pie<Derived1>& type, const Pie<Derived2>& value)
+        : height_{std::max(type.derived().height_, value.derived().height_)}, type_(type), value_(value) {}
 
+    int height_;
     Derived1 type_;
     Derived2 value_;
 };
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-constexpr bool equal(const The_t<Derived1, Derived2>& lhs, const The_t<Derived3, Derived4>& rhs, int& next_index) {
-    return equal(lhs.value_, rhs.value_, next_index);
+constexpr bool equal(const The_t<Derived1, Derived2>& lhs, const The_t<Derived3, Derived4>& rhs) {
+    return equal(lhs.value_, rhs.value_);
 }
 
 template <typename Derived1, typename Derived2>
-void print(std::ostream& s, const The_t<Derived1, Derived2>& x, int& next_index) {
-    s << "(the " << InContext(x.type_, next_index) << ' ' << InContext(x.value_, next_index) << ')';
+void print(std::ostream& s, const The_t<Derived1, Derived2>& x) {
+    s << "(the " << x.type_ << ' ' << x.value_ << ')';
 }
 
 template <typename Derived1, typename Derived2>
@@ -32,7 +34,7 @@ struct step_result<The_t<Type, Expr>> {
 };
 
 template <typename Type, typename Expr>
-constexpr step_result_t<The_t<Type, Expr>> Step(const The_t<Type, Expr>& x) {
+constexpr step_result_t<The_t<Type, Expr>> Step1(const The_t<Type, Expr>& x) {
     return x.value_;
 }
 
@@ -42,6 +44,8 @@ struct synth_result<The_t<Type, Expr>> {
 };
 
 template <typename Type, typename Expr>
-constexpr synth_result_t<The_t<Type, Expr>> synth1(const The_t<Type, Expr>& x, int&) {
+constexpr synth_result_t<The_t<Type, Expr>> synth1(const The_t<Type, Expr>& x) {
+    assert(IsAType(x.type_));
+    assert(IsA(x.value_, x.type_));
     return x.type_;
 }

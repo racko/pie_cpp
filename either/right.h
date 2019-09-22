@@ -7,19 +7,20 @@
 
 template <typename Derived>
 struct Right_t : Pie<Right_t<Derived>> {
-    constexpr Right_t(const Derived& r) : r_{r} {}
+    constexpr Right_t(const Derived& r) : height_{r.height_}, r_{r} {}
 
+    int height_;
     Derived r_;
 };
 
 template <typename Derived1, typename Derived2>
-constexpr bool equal(const Right_t<Derived1>& lhs, const Right_t<Derived2>& rhs, int& next_index) {
-    return equal(lhs.r_, rhs.r_, next_index);
+constexpr bool equal(const Right_t<Derived1>& lhs, const Right_t<Derived2>& rhs) {
+    return equal(lhs.r_, rhs.r_);
 }
 
 template <typename Derived>
-void print(std::ostream& s, const Right_t<Derived>& x, int& next_index) {
-    s << "(right " << InContext(x.r_, next_index) << ')';
+void print(std::ostream& s, const Right_t<Derived>& x) {
+    s << "(right " << x.r_ << ')';
 }
 
 template <typename Derived>
@@ -28,8 +29,8 @@ constexpr Right_t<Derived> right(const Pie<Derived>& x) {
 }
 
 template <typename Derived, typename L, typename R>
-constexpr bool IsA1(const Right_t<Derived>& x, const Either_t<L, R>& t, int& next_index) {
-    return IsA1(x.r_, t.right_, next_index);
+constexpr bool IsA1(const Right_t<Derived>& x, const Either_t<L, R>& t) {
+    return IsA(x.r_, t.right_);
 }
 
 template <typename Derived>

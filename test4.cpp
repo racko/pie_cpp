@@ -9,11 +9,11 @@
 
 TEST_CASE("Chapter 4") {
     SECTION("Pi") {
-        const auto flip = define(
+        const auto flipPair = define(
             "flip",
             Pi(U, [](const auto& A) { return Pi(U, [A](const auto& D) { return Arrow(Pair(A, D), Pair(D, A)); }); }),
             lambda([](const auto&, const auto&, const auto& p) { return cons(cdr(p), car(p)); }));
 
-        CHECK(ComputeValue(flip(Nat, Atom)) == lambda([](const auto& p) { return cons(cdr(p), car(p)); }));
+        CHECK(ComputeValue(flipPair(Nat, Atom)) == lambda([](const auto& p) { return cons(cdr(p), car(p)); }));
     }
 }

@@ -11,20 +11,24 @@ struct Cons_t : Pie<Cons_t<Derived1, Derived2>> {
     using car_type = Derived1;
     using cdr_type = Derived2;
 
-    constexpr Cons_t(Derived1 car, Derived2 cdr) : car_{std::move(car)}, cdr_{std::move(cdr)} {}
+    constexpr Cons_t(Derived1 car, Derived2 cdr)
+        : height_{std::max(car.height_, cdr.height_)},
+          car_{std::move(car)},
+          cdr_{std::move(cdr)} {}
 
+    int height_;
     Derived1 car_;
     Derived2 cdr_;
 };
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-constexpr bool equal(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived3, Derived4>& rhs, int& next_index) {
-    return equal(lhs.car_, rhs.car_, next_index) && equal(lhs.cdr_, rhs.cdr_, next_index);
+constexpr bool equal(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived3, Derived4>& rhs) {
+    return equal(lhs.car_, rhs.car_) && equal(lhs.cdr_, rhs.cdr_);
 }
 
 template <typename Derived1, typename Derived2>
-void print(std::ostream& s, const Cons_t<Derived1, Derived2>& cons, int& next_index) {
-    s << "(cons " << InContext(cons.car_, next_index) << ' ' << InContext(cons.cdr_, next_index) << ')';
+void print(std::ostream& s, const Cons_t<Derived1, Derived2>& cons) {
+    s << "(cons " << cons.car_ << ' ' << cons.cdr_ << ')';
 }
 
 template <typename Derived1, typename Derived2>
@@ -33,9 +37,8 @@ constexpr Cons_t<Derived1, Derived2> cons(const Pie<Derived1>& car, const Pie<De
 }
 
 template <typename DerivedT1, typename DerivedT2, typename Derived1, typename Derived2>
-constexpr bool
-IsA1(const Cons_t<Derived1, Derived2>& value, const Sigma_t<DerivedT1, DerivedT2>& type, int& next_index) {
-    return IsA1(value.car_, ComputeValue(type.arg_), next_index) && IsA1(value.cdr_, ComputeValue(type.result_(value.car_)), next_index);
+constexpr bool IsA1(const Cons_t<Derived1, Derived2>& value, const Sigma_t<DerivedT1, DerivedT2>& type) {
+    return IsA(value.car_, type.arg_) && IsA(value.cdr_, type.result_(value.car_));
 }
 
 template <typename Derived1, typename Derived2>

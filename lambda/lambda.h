@@ -12,24 +12,25 @@ template <typename F>
 struct Lambda_t : Pie<Lambda_t<F>> {
     using type = F;
 
-    constexpr Lambda_t(const F& f) : f_{f} {}
+    constexpr Lambda_t(const F& f) : height_{f(var(0)).height_ + 1}, f_{f} {}
 
     // operator()'s declaration can be found in Pie<>
-    // The implementation is above -.-*
+    // The implementation is in lambda/app.h -.-*
 
+    int height_;
     F f_;
 };
 
 template <typename F1, typename F2>
-constexpr bool equal(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs, int& next_index) {
-    const Var_t var{next_index++};
-    return equal(lhs.f_(var), rhs.f_(var), next_index);
+constexpr bool equal(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs) {
+    const Var_t var{std::max(lhs.height_, rhs.height_)};
+    return equal(lhs.f_(var), rhs.f_(var));
 }
 
 template <typename F>
-void print(std::ostream& s, const Lambda_t<F>& f, int& next_index) {
-    const Var_t var{next_index++};
-    s << "(λ (" << var << ") " << InContext(f.f_(var), next_index) << ')';
+void print(std::ostream& s, const Lambda_t<F>& f) {
+    const Var_t var{f.height_};
+    s << "(λ (" << var << ") " << f.f_(var) << ')';
 }
 
 template <typename F>
@@ -50,6 +51,7 @@ struct BindFront {
     Arg arg_;
 };
 
+// std::bind_front isn't constexpr
 template <typename F, typename Arg>
 constexpr BindFront<F, Arg> bind_front(F f, Arg arg) {
     return BindFront<F, Arg>{std::move(f), std::move(arg)};
@@ -60,10 +62,10 @@ constexpr auto lambda(const F& f, std::enable_if_t<!std::is_invocable_v<F, Var_t
     return lambda([f](const auto& arg) { return lambda(bind_front(f, arg)); });
 }
 
-template <typename Arg, typename Result, typename F>
-constexpr bool IsA1(const Lambda_t<F> f, Pi_t<Arg, Result> type, int& next_index) {
-    const auto v = var(type.arg_, next_index++);
-    return IsA1(f.f_(v), ComputeValue(type.result_(v)), next_index);
+template <typename F, typename Arg, typename Result>
+constexpr bool IsA1(const Lambda_t<F> f, Pi_t<Arg, Result> type) {
+    const auto v = var(type.arg_, f.height_);
+    return IsA(f.f_(v), type.result_(v));
 }
 
 template <typename F>

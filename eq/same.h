@@ -10,19 +10,20 @@ template <typename Derived>
 struct Same_t : Pie<Same_t<Derived>> {
     using type = Derived;
 
-    constexpr Same_t(Derived x) : x_{std::move(x)} {}
+    constexpr Same_t(Derived x) : height_{x.height_}, x_{std::move(x)} {}
 
+    int height_;
     Derived x_;
 };
 
 template <typename Derived1, typename Derived2>
-constexpr bool equal(const Same_t<Derived1>& lhs, const Same_t<Derived2>& rhs, int& next_index) {
-    return equal(lhs.x_, rhs.x_, next_index);
+constexpr bool equal(const Same_t<Derived1>& lhs, const Same_t<Derived2>& rhs) {
+    return equal(lhs.x_, rhs.x_);
 }
 
 template <typename Derived>
-void print(std::ostream& s, const Same_t<Derived>& same, int& next_index) {
-    s << "(same " << InContext(same.x_, next_index) << ')';
+void print(std::ostream& s, const Same_t<Derived>& same) {
+    s << "(same " << same.x_ << ')';
 }
 
 template <typename Derived>
@@ -31,10 +32,9 @@ constexpr Same_t<Derived> same(const Pie<Derived>& x) {
 }
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo, typename Derived>
-constexpr bool IsA1(const Same_t<Derived>& value, const Eq_t<DerivedT, DerivedFrom, DerivedTo>& type, int& next_index) {
-    return IsA1(value.x_, ComputeValue(type.type_), next_index) &&
-           IsTheSameAs1(type.type_, type.from_, value.x_, next_index) &&
-           IsTheSameAs1(type.type_, value.x_, type.to_, next_index);
+constexpr bool IsA1(const Same_t<Derived>& value, const Eq_t<DerivedT, DerivedFrom, DerivedTo>& type) {
+    return IsA(value.x_, type.type_) && IsTheSameAs(type.type_, type.from_, value.x_) &&
+           IsTheSameAs(type.type_, value.x_, type.to_);
 }
 
 template <typename Derived>

@@ -43,7 +43,17 @@
 (define base-right-even-or-odd (lambda (n n-odd) (left (odd->add1-even n n-odd))))
 
 (claim step-even-or-odd (Pi ((n Nat)) (-> (mot-even-or-odd n) (mot-even-or-odd (add1 n)))))
-(define step-even-or-odd (lambda (n n-even-or-odd) (ind-Either n-even-or-odd (mot-step-even-or-odd n) (base-left-even-or-odd n) (base-right-even-or-odd n))))
+(define step-even-or-odd (lambda (n n-even-or-odd) (ind-Either
+                                                     n-even-or-odd
+                                                     (mot-step-even-or-odd n)
+                                                     (base-left-even-or-odd n)
+                                                     (base-right-even-or-odd n))))
 
 (claim even-or-odd (Pi ((n Nat)) (Either (Even n) (Odd n))))
 (define even-or-odd (lambda (n) (ind-Nat n mot-even-or-odd base-even-or-odd step-even-or-odd)))
+
+(claim mot-cong (Pi ((X U) (Y U) (f (-> X Y)) (from X) (to X)) (-> (= X from to) U)))
+(define mot-cong (lambda (X Y f from to t) (= Y (f from) (f to))))
+
+(claim cong1 (Pi ((X U) (Y U) (from X) (to X)) (-> (= X from to) (Pi ((f (-> X Y))) (= Y (f from) (f to))))))
+(define cong1 (lambda (X Y from to t f) (ind-= t (mot-cong X Y f from) (same (f from)))))

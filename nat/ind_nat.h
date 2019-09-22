@@ -12,8 +12,13 @@
 template <typename Target, typename Mot, typename Base, typename Step>
 struct IndNat_t : Pie<IndNat_t<Target, Mot, Base, Step>> {
     constexpr IndNat_t(const Target& target, const Mot& mot, const Base& base, const Step& step)
-        : target_{target}, mot_{mot}, base_{base}, step_{step} {}
+        : height_{std::max({target.height_, mot.height_, base.height_, step.height_})},
+          target_{target},
+          mot_{mot},
+          base_{base},
+          step_{step} {}
 
+    int height_;
     Target target_;
     Mot mot_;
     Base base_;
@@ -29,16 +34,14 @@ template <typename Target1,
           typename Base2,
           typename Step2>
 constexpr bool equal(const IndNat_t<Target1, Mot1, Base1, Step1>& lhs,
-                     const IndNat_t<Target2, Mot2, Base2, Step2>& rhs,
-                     int& next_index) {
-    return equal(lhs.target_, rhs.target_, next_index) && equal(lhs.mot_, rhs.mot_, next_index) &&
-           equal(lhs.base_, rhs.base_, next_index) && equal(lhs.step_, rhs.step_, next_index);
+                     const IndNat_t<Target2, Mot2, Base2, Step2>& rhs) {
+    return equal(lhs.target_, rhs.target_) && equal(lhs.mot_, rhs.mot_) && equal(lhs.base_, rhs.base_) &&
+           equal(lhs.step_, rhs.step_);
 }
 
 template <typename Target, typename Mot, typename Base, typename Step>
-void print(std::ostream& s, const IndNat_t<Target, Mot, Base, Step>& x, int& next_index) {
-    s << "(ind-Nat " << InContext(x.target_, next_index) << ' ' << InContext(x.mot_, next_index) << ' '
-      << InContext(x.base_, next_index) << ' ' << InContext(x.step_, next_index) << ')';
+void print(std::ostream& s, const IndNat_t<Target, Mot, Base, Step>& x) {
+    s << "(ind-Nat " << x.target_ << ' ' << x.mot_ << ' ' << x.base_ << ' ' << x.step_ << ')';
 }
 
 template <typename Target, typename Mot, typename Base, typename Step>
@@ -103,7 +106,7 @@ struct step_result<IndNat_t<Target, Mot, Base, Step>> {
 };
 
 template <typename Target, typename Mot, typename Base, typename StepT>
-constexpr step_result_t<IndNat_t<Target, Mot, Base, StepT>> Step(const IndNat_t<Target, Mot, Base, StepT>& ind_nat) {
+constexpr step_result_t<IndNat_t<Target, Mot, Base, StepT>> Step1(const IndNat_t<Target, Mot, Base, StepT>& ind_nat) {
     assert(!is_neutral_v<Target>);
     return Step_Ind_Nat(ComputeValue(ind_nat.target_), ind_nat.mot_, ind_nat.base_, ind_nat.step_);
 }
@@ -117,14 +120,11 @@ struct synth_result<IndNat_t<Target, Mot, Base, Step>> {
 };
 
 template <typename Target, typename Mot, typename Base, typename Step>
-constexpr synth_result_t<IndNat_t<Target, Mot, Base, Step>> synth1(const IndNat_t<Target, Mot, Base, Step>& x,
-                                                                   int& next_index) {
-    assert(IsA1(x.target_, Nat, next_index));
-    assert(IsA1(x.mot_, Arrow(Nat, U), next_index));
-    assert(IsA1(x.base_, ComputeValue(x.mot_(zero)), next_index));
-    assert(IsA1(x.step_,
-                Pi(Nat, [&x](const auto& smaller) { return Arrow(x.mot_(smaller), x.mot_(add1(smaller))); }),
-                next_index));
+constexpr synth_result_t<IndNat_t<Target, Mot, Base, Step>> synth1(const IndNat_t<Target, Mot, Base, Step>& x) {
+    assert(IsA(x.target_, Nat));
+    assert(IsA(x.mot_, Arrow(Nat, U)));
+    assert(IsA(x.base_, x.mot_(zero)));
+    assert(IsA(x.step_, Pi(Nat, [&x](const auto& smaller) { return Arrow(x.mot_(smaller), x.mot_(add1(smaller))); })));
     return x.mot_(x.target_);
 }
 
