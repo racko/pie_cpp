@@ -8,9 +8,25 @@
 // TODO: mark each CHECK with frame number and page
 
 TEST_CASE("Chapter 15") {
-    SECTION("not") {}
+    SECTION("not") {
+        define("donut-absurdity",
+               Arrow(Eq(Nat, zero, six), Eq(Atom, quote("powdered"), quote("glazed"))),
+               lambda([](const auto& zero_equals_six) {
+                   return ind_Absurd(zero_not_add1(five, zero_equals_six),
+                                     Eq(Atom, quote("powdered"), quote("glazed")));
+               }));
+        define("one-not-six", Arrow(Eq(Nat, one, six), Absurd), lambda([](const auto& one_equals_six) {
+                   return zero_not_add1(four, sub1_eq(zero, five, one_equals_six));
+               }));
+    }
     SECTION("front") {}
     // Vec version of head
-    SECTION("principle of excluded middle") {}
+    SECTION("principle of excluded middle") {
+        define("pem-not-false",
+               Pi(U, [](const auto& P) { return Arrow(Arrow(Either(P, Arrow(P, Absurd)), Absurd), Absurd); }),
+               lambda([](const auto&, const auto& pem_false) {
+                   return pem_false(right(lambda([pem_false](const auto& p) { return pem_false(left(p)); })));
+               }));
+    }
     // last page: Definition of Dec
 }

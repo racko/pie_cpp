@@ -1,5 +1,7 @@
 #pragma once
 
+#include "absurd.h"
+#include "ind_absurd.h"
 #include "atom.h"
 #include "either/either.h"
 #include "either/ind_either.h"
@@ -21,6 +23,7 @@
 #include "pair/cdr.h"
 #include "pair/cons.h"
 #include "pair/sigma.h"
+#include "trivial.h"
 #include "var/the.h"
 #include "var/typed_var.h"
 #include "var/var.h"

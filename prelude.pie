@@ -1,5 +1,19 @@
 #lang pie
 
+(claim iter-Nat2 (Pi ((X U)) (-> Nat X (-> X X) X)))
+(define iter-Nat2 (lambda (X target base step)
+                    (ind-Nat
+                      target
+                      (lambda (n) X)
+                      base
+                      (lambda (smaller acc) (step acc)))))
+
+(claim Maybe (-> U U))
+(define Maybe (lambda (X) (Either X Trivial)))
+
+(claim Fin (-> Nat U))
+(define Fin (lambda (n) (iter-Nat n Absurd Maybe)))
+
 (claim flip (Pi ((A U) (D U)) (-> (Pair A D) (Pair D A))))
 (define flip (lambda (A D p) (cons (cdr p) (car p))))
 
@@ -57,3 +71,4 @@
 
 (claim cong1 (Pi ((X U) (Y U) (from X) (to X)) (-> (= X from to) (Pi ((f (-> X Y))) (= Y (f from) (f to))))))
 (define cong1 (lambda (X Y from to t f) (ind-= t (mot-cong X Y f from) (same (f from)))))
+

@@ -14,12 +14,14 @@
     do {                                                                                                               \
         std::cerr << msg << '\n';                                                                                      \
     } while (0)
-#define FOO inline
+#define CONSTEXPR const
+#define CONSTEXPR_FUNC inline
 #else
 #define LOG(msg)                                                                                                       \
     do {                                                                                                               \
     } while (0)
-#define FOO constexpr
+#define CONSTEXPR constexpr
+#define CONSTEXPR_FUNC constexpr
 #endif
 
 // SORRY :(
@@ -414,7 +416,7 @@ struct is_normal<U_t> : std::true_type {};
 template <>
 struct is_value<U_t> : std::true_type {};
 
-FOO bool IsAType1(U_t) {
+CONSTEXPR_FUNC bool IsAType1(U_t) {
     LOG("IsAType(U): true");
     return true;
 }

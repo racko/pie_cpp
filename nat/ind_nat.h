@@ -122,7 +122,8 @@ struct synth_result<IndNat_t<Target, Mot, Base, Step>> {
 template <typename Target, typename Mot, typename Base, typename Step>
 constexpr synth_result_t<IndNat_t<Target, Mot, Base, Step>> synth1(const IndNat_t<Target, Mot, Base, Step>& x) {
     assert(IsA(x.target_, Nat));
-    assert(IsA(x.mot_, Arrow(Nat, U)));
+    //assert(IsA(x.mot_, Arrow(Nat, U)));
+    assert(IsAType(x.mot_(var(Nat, x.height_))));
     assert(IsA(x.base_, x.mot_(zero)));
     assert(IsA(x.step_, Pi(Nat, [&x](const auto& smaller) { return Arrow(x.mot_(smaller), x.mot_(add1(smaller))); })));
     return x.mot_(x.target_);

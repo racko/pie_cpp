@@ -17,9 +17,12 @@ cc_library(
 cc_library(
     name = "pie",
     hdrs = [
+        "absurd.h",
         "atom.h",
+        "ind_absurd.h",
         "pie.h",
         "prelude.h",
+        "trivial.h",
     ],
     deps = [
         "//:base",
