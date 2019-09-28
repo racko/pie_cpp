@@ -3,20 +3,26 @@
 #include "pie_base.h"
 #include <ostream>
 
-struct Var_t : Pie<Var_t> {
-    constexpr Var_t(const int id) : id_{id} {}
+template <int id>
+struct Var_t : Pie<Var_t<id>> {};
 
-    int id_;
-};
+template <int id>
+struct Height<Var_t<id>> : std::integral_constant<int, 0> {};
 
-template <>
-struct Height<Var_t> : std::integral_constant<int, 0> {};
+template <int id1, int id2>
+constexpr bool equal(Var_t<id1>, Var_t<id2>) {
+    return id1 == id2;
+}
 
-constexpr bool equal(const Var_t lhs, const Var_t rhs) { return lhs.id_ == rhs.id_; }
+template <int id>
+inline void print(std::ostream& s, Var_t<id>) {
+    s << 'x' << id;
+}
 
-inline void print(std::ostream& s, const Var_t x) { s << 'x' << x.id_; }
+template <int id>
+constexpr Var_t<id> var() {
+    return Var_t<id>{};
+}
 
-constexpr Var_t var(const int id) { return Var_t{id}; }
-
-template <>
-struct is_neutral<Var_t> : std::true_type {};
+template <int id>
+struct is_neutral<Var_t<id>> : std::true_type {};

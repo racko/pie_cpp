@@ -21,7 +21,7 @@ struct Lambda_t : Pie<Lambda_t<F>> {
 };
 
 template <typename F>
-struct Height<Lambda_t<F>> : std::integral_constant<int, height_v<std::invoke_result_t<F, Var_t>> + 1> {};
+struct Height<Lambda_t<F>> : std::integral_constant<int, height_v<std::invoke_result_t<F, Var_t<0>>> + 1> {};
 
 template <typename F1, typename F2>
 constexpr bool equal(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs) {
@@ -29,18 +29,18 @@ constexpr bool equal(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs) {
     if (height != height_v<Lambda_t<F2>>) {
         return false;
     }
-    const Var_t v{height};
+    const Var_t<height> v;
     return lhs.f_(v) == rhs.f_(v);
 }
 
 template <typename F>
 void print(std::ostream& s, const Lambda_t<F>& f) {
-    const Var_t v{height_v<Lambda_t<F>>};
+    const Var_t<height_v<Lambda_t<F>>> v;
     s << "(λ (" << v << ") " << f.f_(v) << ')';
 }
 
 template <typename F>
-constexpr Lambda_t<F> lambda(const F& f, std::enable_if_t<std::is_invocable_v<F, Var_t>, int> = 0) {
+constexpr Lambda_t<F> lambda(const F& f, std::enable_if_t<std::is_invocable_v<F, Var_t<0>>, int> = 0) {
     return Lambda_t<F>(f);
 }
 
@@ -64,19 +64,19 @@ constexpr BindFront<F, Arg> bind_front(F f, Arg arg) {
 }
 
 template <typename F>
-constexpr auto lambda(const F& f, std::enable_if_t<!std::is_invocable_v<F, Var_t>, int> = 0) {
+constexpr auto lambda(const F& f, std::enable_if_t<!std::is_invocable_v<F, Var_t<0>>, int> = 0) {
     return lambda([f](const auto& arg) { return lambda(bind_front(f, arg)); });
 }
 
 template <typename F, typename Arg, typename Result>
 constexpr bool IsA1(const Lambda_t<F> f, Pi_t<Arg, Result> type) {
     const auto height = std::max(height_v<Lambda_t<F>>, height_v<Pi_t<Arg, Result>>);
-    const auto v = var(type.arg_, height);
+    const auto v = var<height>(type.arg_);
     return IsA(f.f_(v), type.result_(v));
 }
 
 template <typename F>
-struct is_normal<Lambda_t<F>> : std::bool_constant<is_normal_v<std::invoke_result_t<F, Var_t>>> {};
+struct is_normal<Lambda_t<F>> : std::bool_constant<is_normal_v<std::invoke_result_t<F, Var_t<0>>>> {};
 
 template <typename F>
 struct is_value<Lambda_t<F>> : std::true_type {};

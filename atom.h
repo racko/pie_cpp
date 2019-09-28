@@ -4,8 +4,7 @@
 #include <ostream>
 #include <type_traits>
 
-struct Atom_t : Pie<Atom_t> {
-};
+struct Atom_t : Pie<Atom_t> {};
 
 template <>
 struct Height<Atom_t> : std::integral_constant<int, 0> {};
@@ -16,13 +15,11 @@ constexpr bool equal(Atom_t, Atom_t) { return true; }
 
 inline void print(std::ostream& s, Atom_t) { s << "Atom"; }
 
-struct Quote_t : Pie<Quote_t> {
-    constexpr Quote_t(const char* symbol) : symbol_{symbol} {}
-    const char* symbol_;
-};
+template <typename Symbol>
+struct Quote_t : Pie<Quote_t<Symbol>> {};
 
-template <>
-struct Height<Quote_t> : std::integral_constant<int, 0> {};
+template <typename Symbol>
+struct Height<Quote_t<Symbol>> : std::integral_constant<int, 0> {};
 
 namespace detail {
 constexpr int strcmp(const char* lhs, const char* rhs) {
@@ -45,17 +42,27 @@ constexpr bool isalpha(int c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c 
 
 } // namespace detail
 
-constexpr bool equal(const Quote_t lhs, const Quote_t rhs) { return detail::strcmp(lhs.symbol_, rhs.symbol_) == 0; }
+template <typename Symbol1, typename Symbol2>
+constexpr bool equal(Quote_t<Symbol1>, Quote_t<Symbol2>) {
+    return detail::strcmp(Symbol1::value, Symbol2::value) == 0;
+}
 
-inline void print(std::ostream& s, const Quote_t atom) { s << '\'' << atom.symbol_; }
+template <typename Symbol>
+inline void print(std::ostream& s, Quote_t<Symbol>) {
+    s << '\'' << Symbol::value;
+}
 
-constexpr Quote_t quote(const char* symbol) { return Quote_t(symbol); }
+template <typename Symbol>
+constexpr Quote_t<Symbol> quote() {
+    return Quote_t<Symbol>{};
+}
 
-constexpr bool IsA1(const Quote_t atom, Atom_t) {
-    if (*atom.symbol_ == '\0') {
+template <typename Symbol>
+constexpr bool IsA1(Quote_t<Symbol>, Atom_t) {
+    if (*Symbol::value == '\0') {
         return false;
     }
-    auto c = atom.symbol_;
+    auto c = Symbol::value;
     do {
         if (!detail::isalpha(*c) && *c != '-') {
             return false;
@@ -73,11 +80,11 @@ struct is_normal<Atom_t> : std::true_type {};
 template <>
 struct is_value<Atom_t> : std::true_type {};
 
-template <>
-struct is_normal<Quote_t> : std::true_type {};
+template <typename Symbol>
+struct is_normal<Quote_t<Symbol>> : std::true_type {};
 
-template <>
-struct is_value<Quote_t> : std::true_type {};
+template <typename Symbol>
+struct is_value<Quote_t<Symbol>> : std::true_type {};
 
 template <>
 struct synth_result<Atom_t> {
@@ -86,12 +93,13 @@ struct synth_result<Atom_t> {
 
 constexpr synth_result_t<Atom_t> synth1(Atom_t) { return U; }
 
-template <>
-struct synth_result<Quote_t> {
+template <typename Symbol>
+struct synth_result<Quote_t<Symbol>> {
     using type = Atom_t;
 };
 
-constexpr synth_result_t<Quote_t> synth1(const Quote_t atom) {
+template <typename Symbol>
+constexpr synth_result_t<Quote_t<Symbol>> synth1(const Quote_t<Symbol> atom) {
     assert(IsA(atom, Atom));
     return Atom;
 }

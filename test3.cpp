@@ -17,7 +17,7 @@ TEST_CASE("Chapter 3") {
         CHECK(Normalize(iter_Nat(Nat, five, three, lambda([](auto smaller) { return add1(smaller); }))) == eight);
     }
     SECTION("rec-Nat") {
-        CHECK(ComputeValue(zerop(nat<37>())) == quote("nil"));
+        CHECK(ComputeValue(zerop(nat<37>())) == quote<quote_nil>());
         CHECK(Normalize(gauss(zero)) == zero);
         CHECK(Normalize(gauss(one)) == one);
         CHECK(Normalize(gauss(two)) == three);

@@ -7,13 +7,21 @@
 //
 // TODO: mark each CHECK with frame number and page
 
+struct quote_powdered {
+    static inline constexpr const char* value = "powdered";
+};
+
+struct quote_glazed {
+    static inline constexpr const char* value = "glazed";
+};
+
 TEST_CASE("Chapter 15") {
     SECTION("not") {
         define("donut-absurdity",
-               Arrow(Eq(Nat, zero, six), Eq(Atom, quote("powdered"), quote("glazed"))),
+               Arrow(Eq(Nat, zero, six), Eq(Atom, quote<quote_powdered>(), quote<quote_glazed>())),
                lambda([](const auto& zero_equals_six) {
                    return ind_Absurd(zero_not_add1(five, zero_equals_six),
-                                     Eq(Atom, quote("powdered"), quote("glazed")));
+                                     Eq(Atom, quote<quote_powdered>(), quote<quote_glazed>()));
                }));
         define("one-not-six", Arrow(Eq(Nat, one, six), Absurd), lambda([](const auto& one_equals_six) {
                    return zero_not_add1(four, sub1_eq(zero, five, one_equals_six));

@@ -7,30 +7,75 @@
 //
 // TODO: mark each CHECK with frame number and page
 
+struct quote_garlic {
+    static inline constexpr const char* value = "garlic";
+};
+
+struct quote_potato {
+    static inline constexpr const char* value = "potato";
+};
+
+struct quote_lentils {
+    static inline constexpr const char* value = "lentils";
+};
+
+struct quote_pepper {
+    static inline constexpr const char* value = "pepper";
+};
+
+struct quote_salt {
+    static inline constexpr const char* value = "salt";
+};
+
+struct quote_rutabaga {
+    static inline constexpr const char* value = "rutabaga";
+};
+
+struct quote_celery {
+    static inline constexpr const char* value = "celery";
+};
+
+struct quote_carrot {
+    static inline constexpr const char* value = "carrot";
+};
+
+struct quote_naught {
+    static inline constexpr const char* value = "naught";
+};
+
+struct quote_more {
+    static inline constexpr const char* value = "more";
+};
+
+struct quote_prune {
+    static inline constexpr const char* value = "prune";
+};
+
 TEST_CASE("Chapter2", "") {
     SECTION("lambda") {
         CHECK(IsAValue(Arrow(Atom, Pair(Atom, Atom)),
-                       lambda([](auto flavor) { return cons(flavor, quote("lentils")); })));
-        CHECK(IsTheValueOf(Pair(Atom, Atom), cons(quote("garlic"), quote("lentils")), lambda([](auto flavor) {
-                               return cons(flavor, quote("lentils"));
-                           })(quote("garlic"))));
+                       lambda([](auto flavor) { return cons(flavor, quote<quote_lentils>()); })));
+        CHECK(
+            IsTheValueOf(Pair(Atom, Atom), cons(quote<quote_garlic>(), quote<quote_lentils>()), lambda([](auto flavor) {
+                             return cons(flavor, quote<quote_lentils>());
+                         })(quote<quote_garlic>())));
         CHECK(IsTheValueOf(
             Pair(Atom, Pair(Nat, Atom)),
-            cons(quote("potato"), cons(plus(nat<1>(), nat<2>()), quote("potato"))),
-            lambda([](auto root) { return cons(root, cons(plus(nat<1>(), nat<2>()), root)); })(quote("potato"))));
+            cons(quote<quote_potato>(), cons(plus(nat<1>(), nat<2>()), quote<quote_potato>())),
+            lambda([](auto root) { return cons(root, cons(plus(nat<1>(), nat<2>()), root)); })(quote<quote_potato>())));
         CHECK(!IsTheValueOf(
-            Pair(Atom, Pair(Nat, Atom)), cons(quote("potato"), cons(nat<3>(), quote("potato"))), lambda([](auto root) {
-                return cons(root, cons(plus(nat<1>(), nat<2>()), root));
-            })(quote("potato"))));
+            Pair(Atom, Pair(Nat, Atom)),
+            cons(quote<quote_potato>(), cons(nat<3>(), quote<quote_potato>())),
+            lambda([](auto root) { return cons(root, cons(plus(nat<1>(), nat<2>()), root)); })(quote<quote_potato>())));
         // here we would want to check whether shadowing works as expected, but
         // a) we use C++ variables/lambdas, so "it works".
         // b) We even get shadowing warnings which prevent compilation due to -Werror :rofl:
-        CHECK(IsTheValueOf(
-            Pair(Atom, Arrow(Atom, Atom)),
-            cons(quote("carrot"), lambda([](auto root) { return root; })),
-            lambda([](auto root) { return cons(root, lambda([](auto root1) { return root1; })); })(quote("carrot"))));
-        CHECK(IsAValue(Arrow(car(cons(Atom, quote("pepper"))), Pair(cdr(cons(quote("salt"), Atom)), Atom)),
-                       lambda([](auto flavor) { return cons(flavor, quote("lentils")); })));
+        CHECK(IsTheValueOf(Pair(Atom, Arrow(Atom, Atom)),
+                           cons(quote<quote_carrot>(), lambda([](auto root) { return root; })),
+                           lambda([](auto root) { return cons(root, lambda([](auto root1) { return root1; })); })(
+                               quote<quote_carrot>())));
+        CHECK(IsAValue(Arrow(car(cons(Atom, quote<quote_pepper>())), Pair(cdr(cons(quote<quote_salt>(), Atom)), Atom)),
+                       lambda([](auto flavor) { return cons(flavor, quote<quote_lentils>()); })));
         CHECK(IsTheSameAs(Arrow(Nat, Pair(Nat, Nat)), lambda([](auto x) { return cons(x, x); }), lambda([](auto y) {
                               return cons(y, y);
                           })));
@@ -43,33 +88,35 @@ TEST_CASE("Chapter2", "") {
     }
 
     SECTION("neutral") {
-        CHECK(!IsNeutral(cons(var(0), quote("rutabaga"))));
+        CHECK(!IsNeutral(cons(var<0>(), quote<quote_rutabaga>())));
 
         // page 40, frame 26: "(cons y 'rutabaga) is a value" ... but I have to provide a type :/
-        // CHECK(IsAValue(Pair(Nat, Atom), cons(var(), quote("rutabaga"))));
+        // CHECK(IsAValue(Pair(Nat, Atom), cons(var(), quote<quote_rutabaga>())));
 
-        CHECK(IsNeutral(cdr(var(0))));
+        CHECK(IsNeutral(cdr(var<0>())));
 
         CHECK(IsTheSameAs(
             Arrow(Pair(Nat, Nat), Nat), lambda([](auto x) { return car(x); }), lambda([](auto y) { return car(y); })));
     }
 
     SECTION("claim and define") {
-        const auto vegetables = define("vegetables", Pair(Atom, Atom), cons(quote("celery"), quote("carrot")));
+        const auto vegetables =
+            define("vegetables", Pair(Atom, Atom), cons(quote<quote_celery>(), quote<quote_carrot>()));
         CHECK(IsTheSameAs(Pair(Atom, Atom), vegetables, cons(car(vegetables), cdr(vegetables))));
         // TODO This should also work with an undefined variable
         // TODO fix the same for lambdas (eta-expansion)
     }
 
     SECTION("which-Nat") {
-        CHECK(ComputeValue(which_Nat(Atom, four, quote("naught"), lambda([](auto) { return quote("more"); }))) ==
-              quote("more"));
+        CHECK(ComputeValue(which_Nat(Atom, four, quote<quote_naught>(), lambda([](auto) {
+                                         return quote<quote_more>();
+                                     }))) == quote<quote_more>());
         CHECK(Normalize(which_Nat(Nat, five, zero, lambda([](auto n) { return plus(six, n); }))) == ten);
         // gauss cannot be implemented yet (and isn't defined in the book ... yet)
     }
 
     SECTION("type values") {
-        CHECK(AreTheSameType(car(cons(Atom, quote("prune"))), Atom));
+        CHECK(AreTheSameType(car(cons(Atom, quote<quote_prune>())), Atom));
         CHECK(!IsA(cons(Atom, Atom), U));
         CHECK(IsA(cons(Atom, Atom), Pair(U, U)));
         CHECK(!IsA(U, U));

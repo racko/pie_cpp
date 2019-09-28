@@ -135,8 +135,16 @@ inline CONSTEXPR auto plus = [] {
                   }));
 }();
 
+struct quote_nil {
+    static inline constexpr const char* value = "nil";
+};
+
+struct quote_t {
+    static inline constexpr const char* value = "t";
+};
+
 inline CONSTEXPR auto zerop = define("zerop", Arrow(Nat, Atom), lambda([](const auto& x) {
-                                         return iter_Nat(Atom, x, quote("t"), constant(Atom, Atom, quote("nil")));
+                                         return iter_Nat(Atom, x, quote<quote_nil>(), constant(Atom, Atom, quote<quote_nil>()));
                                      }));
 
 inline CONSTEXPR auto gauss = [] {
