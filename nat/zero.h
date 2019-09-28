@@ -6,8 +6,10 @@
 #include <utility>
 
 struct Zero_t : Pie<Zero_t> {
-    int height_{};
 };
+
+template <>
+struct Height<Zero_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Zero_t zero;
 

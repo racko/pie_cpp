@@ -7,9 +7,10 @@
 #include <type_traits>
 
 template <std::int32_t N>
-struct Int32 : Pie<Int32<N>> {
-    int height_{};
-};
+struct Int32 : Pie<Int32<N>> {};
+
+template <std::int32_t N>
+struct Height<Int32<N>> : std::integral_constant<int, 0> {};
 
 template <std::int32_t N1, std::int32_t N2>
 constexpr bool equal(Int32<N1>, Int32<N2>) {

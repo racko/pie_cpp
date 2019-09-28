@@ -8,11 +8,13 @@
 
 template <typename Derived>
 struct Cdr_t : Pie<Cdr_t<Derived>> {
-    constexpr Cdr_t(Derived cons) : height_{cons.height_}, cons_{std::move(cons)} {}
+    constexpr Cdr_t(Derived cons) : cons_{std::move(cons)} {}
 
-    int height_;
     Derived cons_;
 };
+
+template <typename Derived>
+struct Height<Cdr_t<Derived>> : std::integral_constant<int, height_v<Derived>> {};
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Cdr_t<Derived1>& lhs, const Cdr_t<Derived2>& rhs) {

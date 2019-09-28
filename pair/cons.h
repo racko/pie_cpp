@@ -11,15 +11,15 @@ struct Cons_t : Pie<Cons_t<Derived1, Derived2>> {
     using car_type = Derived1;
     using cdr_type = Derived2;
 
-    constexpr Cons_t(Derived1 car, Derived2 cdr)
-        : height_{std::max(car.height_, cdr.height_)},
-          car_{std::move(car)},
-          cdr_{std::move(cdr)} {}
+    constexpr Cons_t(Derived1 car, Derived2 cdr) : car_{std::move(car)}, cdr_{std::move(cdr)} {}
 
-    int height_;
     Derived1 car_;
     Derived2 cdr_;
 };
+
+template <typename Derived1, typename Derived2>
+struct Height<Cons_t<Derived1, Derived2>>
+    : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 constexpr bool equal(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived3, Derived4>& rhs) {

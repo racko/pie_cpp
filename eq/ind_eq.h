@@ -10,16 +10,16 @@
 template <typename Target, typename Mot, typename Base>
 struct IndEq_t : Pie<IndEq_t<Target, Mot, Base>> {
     constexpr IndEq_t(Target target, Mot mot, Base base)
-        : height_{std::max({target.height_, mot.height_, base.height_})},
-          target_{std::move(target)},
-          mot_{std::move(mot)},
-          base_{std::move(base)} {}
+        : target_{std::move(target)}, mot_{std::move(mot)}, base_{std::move(base)} {}
 
-    int height_;
     Target target_;
     Mot mot_;
     Base base_;
 };
+
+template <typename Target, typename Mot, typename Base>
+struct Height<IndEq_t<Target, Mot, Base>>
+    : std::integral_constant<int, std::max({height_v<Target>, height_v<Mot>, height_v<Base>})> {};
 
 template <typename Target1, typename Mot1, typename Base1, typename Target2, typename Mot2, typename Base2>
 constexpr bool equal(const IndEq_t<Target1, Mot1, Base1>& lhs, const IndEq_t<Target2, Mot2, Base2>& rhs) {

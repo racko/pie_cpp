@@ -7,11 +7,13 @@
 
 template <typename Derived>
 struct Left_t : Pie<Left_t<Derived>> {
-    constexpr Left_t(const Derived& l) : height_{l.height_}, l_{l} {}
+    constexpr Left_t(const Derived& l) : l_{l} {}
 
-    int height_;
     Derived l_;
 };
+
+template <typename Derived>
+struct Height<Left_t<Derived>> : std::integral_constant<int, height_v<Derived>> {};
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Left_t<Derived1>& lhs, const Left_t<Derived2>& rhs) {

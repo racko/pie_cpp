@@ -11,18 +11,18 @@
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 struct IndEither_t : Pie<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
     constexpr IndEither_t(const Target& target, const Mot& mot, const BaseLeft& base_left, const BaseRight& base_right)
-        : height_{std::max({target.height_, mot.height_, base_left.height_, base_right.height_})},
-          target_{target},
-          mot_{mot},
-          base_left_{base_left},
-          base_right_{base_right} {}
+        : target_{target}, mot_{mot}, base_left_{base_left}, base_right_{base_right} {}
 
-    int height_;
     Target target_;
     Mot mot_;
     BaseLeft base_left_;
     BaseRight base_right_;
 };
+
+template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
+struct Height<IndEither_t<Target, Mot, BaseLeft, BaseRight>>
+    : std::integral_constant<int,
+                             std::max({height_v<Target>, height_v<Mot>, height_v<BaseLeft>, height_v<BaseRight>})> {};
 
 template <typename Target1,
           typename Mot1,

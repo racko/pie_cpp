@@ -12,16 +12,16 @@ struct Eq_t : Pie<Eq_t<Derived1, Derived2, Derived3>> {
     using to_t = Derived3;
 
     constexpr Eq_t(Derived1 t, Derived2 from, Derived3 to)
-        : height_{std::max({t.height_, from.height_, to.height_})},
-          type_{std::move(t)},
-          from_{std::move(from)},
-          to_{std::move(to)} {}
+        : type_{std::move(t)}, from_{std::move(from)}, to_{std::move(to)} {}
 
-    int height_;
     Derived1 type_;
     Derived2 from_;
     Derived3 to_;
 };
+
+template <typename Derived1, typename Derived2, typename Derived3>
+struct Height<Eq_t<Derived1, Derived2, Derived3>>
+    : std::integral_constant<int, std::max({height_v<Derived1>, height_v<Derived2>, height_v<Derived3>})> {};
 
 template <typename Derived1,
           typename Derived2,

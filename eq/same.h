@@ -10,11 +10,13 @@ template <typename Derived>
 struct Same_t : Pie<Same_t<Derived>> {
     using type = Derived;
 
-    constexpr Same_t(Derived x) : height_{x.height_}, x_{std::move(x)} {}
+    constexpr Same_t(Derived x) : x_{std::move(x)} {}
 
-    int height_;
     Derived x_;
 };
+
+template <typename Derived>
+struct Height<Same_t<Derived>> : std::integral_constant<int, height_v<Derived>> {};
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Same_t<Derived1>& lhs, const Same_t<Derived2>& rhs) {

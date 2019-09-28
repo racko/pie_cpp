@@ -7,10 +7,12 @@ template <typename Type>
 struct TypedVar_t : Pie<TypedVar_t<Type>> {
     constexpr TypedVar_t(const Type& type, const int id) : id_{id}, type_{type} {}
 
-    int height_{};
     int id_;
     Type type_;
 };
+
+template <typename Type>
+struct Height<TypedVar_t<Type>> : std::integral_constant<int, 0> {};
 
 template <typename Type1, typename Type2>
 constexpr bool equal(const TypedVar_t<Type1> lhs, const TypedVar_t<Type2> rhs) {

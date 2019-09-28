@@ -12,18 +12,17 @@
 template <typename Target, typename Mot, typename Base, typename Step>
 struct IndNat_t : Pie<IndNat_t<Target, Mot, Base, Step>> {
     constexpr IndNat_t(const Target& target, const Mot& mot, const Base& base, const Step& step)
-        : height_{std::max({target.height_, mot.height_, base.height_, step.height_})},
-          target_{target},
-          mot_{mot},
-          base_{base},
-          step_{step} {}
+        : target_{target}, mot_{mot}, base_{base}, step_{step} {}
 
-    int height_;
     Target target_;
     Mot mot_;
     Base base_;
     Step step_;
 };
+
+template <typename Target, typename Mot, typename Base, typename Step>
+struct Height<IndNat_t<Target, Mot, Base, Step>>
+    : std::integral_constant<int, std::max({height_v<Target>, height_v<Mot>, height_v<Base>, height_v<Step>})> {};
 
 template <typename Target1,
           typename Mot1,
@@ -122,7 +121,7 @@ template <typename Target, typename Mot, typename Base, typename Step>
 constexpr synth_result_t<IndNat_t<Target, Mot, Base, Step>> synth1(const IndNat_t<Target, Mot, Base, Step>& x) {
     assert(IsA(x.target_, Nat));
     // assert(IsA(x.mot_, Arrow(Nat, U)));
-    assert(IsAType(x.mot_(var(Nat, x.height_))));
+    assert(IsAType(x.mot_(var(Nat, height_v<IndNat_t<Target, Mot, Base, Step>>))));
     assert(IsA(x.base_, x.mot_(zero)));
     assert(IsA(x.step_, Pi(Nat, [&x](const auto& smaller) { return Arrow(x.mot_(smaller), x.mot_(add1(smaller))); })));
     return x.mot_(x.target_);

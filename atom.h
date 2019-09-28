@@ -2,10 +2,13 @@
 
 #include "pie_base.h"
 #include <ostream>
+#include <type_traits>
 
 struct Atom_t : Pie<Atom_t> {
-    int height_{};
 };
+
+template <>
+struct Height<Atom_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Atom_t Atom;
 
@@ -15,9 +18,11 @@ inline void print(std::ostream& s, Atom_t) { s << "Atom"; }
 
 struct Quote_t : Pie<Quote_t> {
     constexpr Quote_t(const char* symbol) : symbol_{symbol} {}
-    int height_{};
     const char* symbol_;
 };
+
+template <>
+struct Height<Quote_t> : std::integral_constant<int, 0> {};
 
 namespace detail {
 constexpr int strcmp(const char* lhs, const char* rhs) {

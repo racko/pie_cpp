@@ -6,12 +6,13 @@
 
 template <typename L, typename R>
 struct Either_t : Pie<Either_t<L, R>> {
-    constexpr Either_t(L left, R right)
-        : height_{std::max(left.height_, right.height_)}, left_{std::move(left)}, right_{std::move(right)} {}
-    int height_;
+    constexpr Either_t(L left, R right) : left_{std::move(left)}, right_{std::move(right)} {}
     L left_;
     R right_;
 };
+
+template <typename L, typename R>
+struct Height<Either_t<L, R>> : std::integral_constant<int, std::max(height_v<L>, height_v<R>)> {};
 
 template <typename L, typename R>
 constexpr Either_t<L, R> Either(const Pie<L>& l, const Pie<R>& r) {

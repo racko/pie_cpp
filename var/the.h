@@ -6,12 +6,14 @@
 template <typename Derived1, typename Derived2>
 struct The_t : Pie<The_t<Derived1, Derived2>> {
     constexpr The_t(const Pie<Derived1>& type, const Pie<Derived2>& value)
-        : height_{std::max(type.derived().height_, value.derived().height_)}, type_(type), value_(value) {}
+        : type_(type), value_(value) {}
 
-    int height_;
     Derived1 type_;
     Derived2 value_;
 };
+
+template <typename Derived1, typename Derived2>
+struct Height<The_t<Derived1, Derived2>> : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 constexpr bool equal(const The_t<Derived1, Derived2>& lhs, const The_t<Derived3, Derived4>& rhs) {

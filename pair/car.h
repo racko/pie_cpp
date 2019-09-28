@@ -7,11 +7,13 @@
 
 template <typename Derived>
 struct Car_t : Pie<Car_t<Derived>> {
-    constexpr Car_t(Derived cons) : height_{cons.height_}, cons_{std::move(cons)} {}
+    constexpr Car_t(Derived cons) : cons_{std::move(cons)} {}
 
-    int height_;
     Derived cons_;
 };
+
+template <typename Derived>
+struct Height<Car_t<Derived>> : std::integral_constant<int, height_v<Derived>> {};
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Car_t<Derived1>& lhs, const Car_t<Derived2>& rhs) {

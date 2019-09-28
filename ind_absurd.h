@@ -8,13 +8,14 @@
 
 template <typename Target, typename Mot>
 struct IndAbsurd_t : Pie<IndAbsurd_t<Target, Mot>> {
-    constexpr IndAbsurd_t(Target target, Mot mot)
-        : height_{std::max(target.height_, mot.height_)}, target_{std::move(target)}, mot_{std::move(mot)} {}
+    constexpr IndAbsurd_t(Target target, Mot mot) : target_{std::move(target)}, mot_{std::move(mot)} {}
 
-    int height_;
     Target target_;
     Mot mot_;
 };
+
+template <typename Target, typename Mot>
+struct Height<IndAbsurd_t<Target, Mot>> : std::integral_constant<int, std::max(height_v<Target>, height_v<Mot>)> {};
 
 template <typename Target1, typename Mot1, typename Target2, typename Mot2>
 constexpr bool equal(const IndAbsurd_t<Target1, Mot1>& lhs, const IndAbsurd_t<Target2, Mot2>& rhs) {

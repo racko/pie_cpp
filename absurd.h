@@ -3,9 +3,10 @@
 #include "pie_base.h"
 #include <ostream>
 
-struct Absurd_t : Pie<Absurd_t> {
-    int height_{};
-};
+struct Absurd_t : Pie<Absurd_t> {};
+
+template <>
+struct Height<Absurd_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Absurd_t Absurd;
 

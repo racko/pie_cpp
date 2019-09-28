@@ -6,12 +6,14 @@
 
 template <typename F, typename Arg>
 struct App_t : Pie<App_t<F, Arg>> {
-    constexpr App_t(const F& f, const Arg& arg) : height_{std::max(f.height_, arg.height_)}, f_{f}, arg_{arg} {}
+    constexpr App_t(const F& f, const Arg& arg) : f_{f}, arg_{arg} {}
 
-    int height_;
     F f_;
     Arg arg_;
 };
+
+template <typename F, typename Arg>
+struct Height<App_t<F, Arg>> : std::integral_constant<int, std::max(height_v<F>, height_v<Arg>)> {};
 
 template <typename F>
 constexpr apply_result_t<F> apply(const Pie<F>& f) {

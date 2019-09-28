@@ -7,11 +7,13 @@
 
 template <typename Derived>
 struct Add1_t : Pie<Add1_t<Derived>> {
-    constexpr Add1_t(const Derived& smaller) : height_{smaller.height_}, smaller_{smaller} {}
+    constexpr Add1_t(const Derived& smaller) : smaller_{smaller} {}
 
-    int height_;
     Derived smaller_;
 };
+
+template <typename Derived>
+struct Height<Add1_t<Derived>> : std::integral_constant<int, height_v<Derived>> {};
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Add1_t<Derived1>& lhs, const Add1_t<Derived2>& rhs) {

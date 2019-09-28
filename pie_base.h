@@ -77,6 +77,12 @@ std::ostream& operator<<(std::ostream& s, const Pie<Derived>& expr) {
 }
 
 template <typename T>
+struct Height;
+
+template <typename T>
+constexpr inline int height_v = Height<T>::value;
+
+template <typename T>
 struct is_neutral : std::false_type {};
 
 template <typename T>
@@ -286,7 +292,8 @@ constexpr bool IsTheSameAs(const Pie<Derived1>& type, const Pie<Derived2>& lhs, 
     const auto lhs_norm = Normalize(lhs.derived());
     const auto rhs_norm = Normalize(rhs.derived());
     const auto normalforms_identical = lhs_norm == rhs_norm;
-    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << "): " << normalforms_identical);
+    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived()
+                       << "): " << normalforms_identical);
     return normalforms_identical;
 }
 
@@ -339,13 +346,16 @@ IsTheValueOf([[maybe_unused]] const Pie<Derived1>& type, const Pie<Derived2>& lh
 template <typename Type, typename Expr>
 struct Definition : Pie<Definition<Type, Expr>> {
     constexpr Definition(const char* name, const Type& type, const Expr& expr)
-        : height_{std::max(type.height_, expr.height_)}, name_{name}, type_{type}, expr_{expr} {}
+        : name_{name}, type_{type}, expr_{expr} {}
 
-    int height_;
     const char* name_;
     Type type_;
     Expr expr_;
 };
+
+template <typename Derived1, typename Derived2>
+struct Height<Definition<Derived1, Derived2>>
+    : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
 
 template <typename Type1, typename Expr1, typename Type2, typename Expr2>
 constexpr bool equal(const Definition<Type1, Expr1>& lhs, const Definition<Type2, Expr2>& rhs) {
@@ -396,9 +406,10 @@ constexpr synth_result_t<Definition<Type, Expr>> synth1(const Definition<Type, E
     return x.type_;
 }
 
-struct U_t : Pie<U_t> {
-    int height_{};
-};
+struct U_t : Pie<U_t> {};
+
+template <>
+struct Height<U_t> : std::integral_constant<int, 0> {};
 
 constexpr bool equal(U_t, U_t) { return true; }
 
@@ -411,6 +422,15 @@ struct is_normal<U_t> : std::true_type {};
 
 template <>
 struct is_value<U_t> : std::true_type {};
+
+template <typename T>
+struct is_type;
+
+template <typename T>
+constexpr inline bool is_type_v = is_type<T>::value;
+
+template <>
+struct is_type<U_t> : std::true_type {};
 
 CONSTEXPR_FUNC bool IsAType1(U_t) {
     LOG("IsAType(U): true");

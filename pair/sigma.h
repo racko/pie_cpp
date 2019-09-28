@@ -2,7 +2,6 @@
 
 #include "pie_base.h"
 #include "var/typed_var.h"
-#include "var/var.h"
 #include <ostream>
 #include <type_traits>
 
@@ -11,24 +10,32 @@ struct Sigma_t : Pie<Sigma_t<ArgType, Result>> {
     using arg_type = ArgType;
     using result_type = Result;
 
-    constexpr Sigma_t(const ArgType& arg, const Result& result)
-        : height_{std::max(arg.height_, result(var(0)).height_) + 1}, arg_{arg}, result_{result} {}
+    constexpr Sigma_t(const ArgType& arg, const Result& result) : arg_{arg}, result_{result} {}
 
-    int height_;
     ArgType arg_;
-    Result result_; // result_ is now a function object
+    Result result_;
 };
+
+template <typename Derived1, typename Derived2>
+struct Height<Sigma_t<Derived1, Derived2>>
+    : std::integral_constant<
+          int,
+          std::max(height_v<Derived1>, height_v<std::invoke_result_t<Derived2, TypedVar_t<Derived1>>>) + 1> {};
 
 template <typename ArgType1, typename Result1, typename ArgType2, typename Result2>
 constexpr bool equal(const Sigma_t<ArgType1, Result1>& lhs, const Sigma_t<ArgType2, Result2>& rhs) {
-    const Var_t var{std::max(lhs.height_, rhs.height_)};
-    return lhs.arg_ == rhs.arg_ && lhs.result_(var) == rhs.result_(var);
+    constexpr int height = height_v<Sigma_t<ArgType1, Result1>>;
+    if (!(lhs.arg_ == rhs.arg_) || height != height_v<Sigma_t<ArgType2, Result2>>) {
+        return false;
+    }
+    const auto v = var(lhs.arg_, height);
+    return lhs.result_(v) == rhs.result_(v);
 }
 
 template <typename ArgType, typename Result>
 void print(std::ostream& s, const Sigma_t<ArgType, Result>& type) {
-    const Var_t var{type.height_};
-    s << "(Σ (" << var << ' ' << type.arg_ << ") " << type.result_(var) << ')';
+    const auto v = var(type.arg_, height_v<Sigma_t<ArgType, Result>>);
+    s << "(Σ (" << v << ' ' << type.arg_ << ") " << type.result_(v) << ')';
 }
 
 template <typename ArgType, typename Result>
@@ -38,13 +45,13 @@ constexpr Sigma_t<ArgType, Result> Sigma(const Pie<ArgType>& arg, const Result& 
 
 template <typename Arg, typename Result>
 constexpr bool IsAType1(const Sigma_t<Arg, Result>& type) {
-    const auto v = var(type.arg_, type.height_);
+    const auto v = var(type.arg_, height_v<Sigma_t<Arg, Result>>);
     return IsAType(type.arg_) && IsAType(type.result_(v));
 }
 
 template <typename Arg, typename Result>
 struct is_normal<Sigma_t<Arg, Result>>
-    : std::bool_constant<is_normal_v<Arg> && is_normal_v<std::invoke_result_t<Result, Var_t>>> {};
+    : std::bool_constant<is_normal_v<Arg> && is_normal_v<std::invoke_result_t<Result, TypedVar_t<Arg>>>> {};
 
 template <typename Arg, typename Result>
 struct is_value<Sigma_t<Arg, Result>> : std::true_type {};

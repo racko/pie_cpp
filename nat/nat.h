@@ -4,9 +4,10 @@
 #include <ostream>
 #include <type_traits>
 
-struct Nat_t : Pie<Nat_t> {
-    int height_{};
-};
+struct Nat_t : Pie<Nat_t> {};
+
+template <>
+struct Height<Nat_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Nat_t Nat;
 

@@ -3,9 +3,10 @@
 #include "pie_base.h"
 #include <ostream>
 
-struct Trivial_t : Pie<Trivial_t> {
-    int height_{};
-};
+struct Trivial_t : Pie<Trivial_t> {};
+
+template <>
+struct Height<Trivial_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Trivial_t Trivial;
 
@@ -13,9 +14,10 @@ constexpr bool equal(Trivial_t, Trivial_t) { return true; }
 
 inline void print(std::ostream& s, Trivial_t) { s << "Trivial"; }
 
-struct Sole_t : Pie<Sole_t> {
-    int height_{};
-};
+struct Sole_t : Pie<Sole_t> {};
+
+template <>
+struct Height<Sole_t> : std::integral_constant<int, 0> {};
 
 constexpr bool equal(Sole_t, Sole_t) { return true; }
 
@@ -23,9 +25,7 @@ inline void print(std::ostream& s, Sole_t) { s << "sole"; }
 
 inline constexpr Sole_t sole;
 
-constexpr bool IsA1(Sole_t, Trivial_t) {
-    return true;
-}
+constexpr bool IsA1(Sole_t, Trivial_t) { return true; }
 
 constexpr bool IsAType1(Trivial_t) { return true; }
 
@@ -53,8 +53,6 @@ struct synth_result<Sole_t> {
     using type = Trivial_t;
 };
 
-constexpr synth_result_t<Sole_t> synth1(Sole_t) {
-    return Trivial;
-}
+constexpr synth_result_t<Sole_t> synth1(Sole_t) { return Trivial; }
 
 // TODO: If e is a Trivial, then e is the same as sole
