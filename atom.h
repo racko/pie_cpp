@@ -19,7 +19,8 @@ struct Quote_t : Pie<Quote_t> {
     const char* symbol_;
 };
 
-constexpr int strcmp1(const char* lhs, const char* rhs) {
+namespace detail {
+constexpr int strcmp(const char* lhs, const char* rhs) {
     while (true) {
         if (*lhs < *rhs) {
             return -1;
@@ -35,13 +36,15 @@ constexpr int strcmp1(const char* lhs, const char* rhs) {
     }
 }
 
-constexpr bool equal(const Quote_t lhs, const Quote_t rhs) { return strcmp1(lhs.symbol_, rhs.symbol_) == 0; }
+constexpr bool isalpha(int c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
+
+} // namespace detail
+
+constexpr bool equal(const Quote_t lhs, const Quote_t rhs) { return detail::strcmp(lhs.symbol_, rhs.symbol_) == 0; }
 
 inline void print(std::ostream& s, const Quote_t atom) { s << '\'' << atom.symbol_; }
 
 constexpr Quote_t quote(const char* symbol) { return Quote_t(symbol); }
-
-constexpr bool isalpha1(int c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
 
 constexpr bool IsA1(const Quote_t atom, Atom_t) {
     if (*atom.symbol_ == '\0') {
@@ -49,7 +52,7 @@ constexpr bool IsA1(const Quote_t atom, Atom_t) {
     }
     auto c = atom.symbol_;
     do {
-        if (!isalpha1(*c) && *c != '-') {
+        if (!detail::isalpha(*c) && *c != '-') {
             return false;
         }
         ++c;
