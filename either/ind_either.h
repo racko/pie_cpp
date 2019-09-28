@@ -34,8 +34,8 @@ template <typename Target1,
           typename BaseRight2>
 constexpr bool equal(const IndEither_t<Target1, Mot1, BaseLeft1, BaseRight1>& lhs,
                      const IndEither_t<Target2, Mot2, BaseLeft2, BaseRight2>& rhs) {
-    return equal(lhs.target_, rhs.target_) && equal(lhs.mot_, rhs.mot_) && equal(lhs.base_left_, rhs.base_left_) &&
-           equal(lhs.base_right_, rhs.base_right_);
+    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_ && lhs.base_left_ == rhs.base_left_ &&
+           lhs.base_right_ == rhs.base_right_;
 }
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
@@ -107,8 +107,8 @@ synth1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
     const auto target_type = ComputeValue(synth(ind_either.target_));
     assert(IsA(ind_either.mot_, Arrow(target_type, U)));
     assert(IsA(ind_either.base_left_,
-                Pi(target_type.left_, [&ind_either](const auto& x) { return ind_either.mot_(left(x)); })));
+               Pi(target_type.left_, [&ind_either](const auto& x) { return ind_either.mot_(left(x)); })));
     assert(IsA(ind_either.base_right_,
-                Pi(target_type.right_, [&ind_either](const auto& y) { return ind_either.mot_(right(y)); })));
+               Pi(target_type.right_, [&ind_either](const auto& y) { return ind_either.mot_(right(y)); })));
     return ind_either.mot_(ind_either.target_);
 }

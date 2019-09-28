@@ -15,7 +15,7 @@ struct The_t : Pie<The_t<Derived1, Derived2>> {
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 constexpr bool equal(const The_t<Derived1, Derived2>& lhs, const The_t<Derived3, Derived4>& rhs) {
-    return equal(lhs.value_, rhs.value_);
+    return lhs.value_ == rhs.value_;
 }
 
 template <typename Derived1, typename Derived2>

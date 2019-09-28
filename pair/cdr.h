@@ -16,7 +16,7 @@ struct Cdr_t : Pie<Cdr_t<Derived>> {
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Cdr_t<Derived1>& lhs, const Cdr_t<Derived2>& rhs) {
-    return equal(lhs.cons_, rhs.cons_);
+    return lhs.cons_ == rhs.cons_;
 }
 
 template <typename Derived>

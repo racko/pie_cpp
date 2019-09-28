@@ -22,7 +22,7 @@ struct Sigma_t : Pie<Sigma_t<ArgType, Result>> {
 template <typename ArgType1, typename Result1, typename ArgType2, typename Result2>
 constexpr bool equal(const Sigma_t<ArgType1, Result1>& lhs, const Sigma_t<ArgType2, Result2>& rhs) {
     const Var_t var{std::max(lhs.height_, rhs.height_)};
-    return equal(lhs.arg_, rhs.arg_) && equal(lhs.result_(var), rhs.result_(var));
+    return lhs.arg_ == rhs.arg_ && lhs.result_(var) == rhs.result_(var);
 }
 
 template <typename ArgType, typename Result>

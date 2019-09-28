@@ -15,7 +15,7 @@ struct Car_t : Pie<Car_t<Derived>> {
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Car_t<Derived1>& lhs, const Car_t<Derived2>& rhs) {
-    return equal(lhs.cons_, rhs.cons_);
+    return lhs.cons_ == rhs.cons_;
 }
 
 template <typename Derived>

@@ -30,7 +30,7 @@ template <typename Derived1,
           typename Derived5,
           typename Derived6>
 constexpr bool equal(const Eq_t<Derived1, Derived2, Derived3>& lhs, const Eq_t<Derived4, Derived5, Derived6>& rhs) {
-    return equal(lhs.type_, rhs.type_) && equal(lhs.from_, rhs.from_) && equal(lhs.to_, rhs.to_);
+    return lhs.type_ == rhs.type_ && lhs.from_ == rhs.from_ && lhs.to_ == rhs.to_;
 }
 
 template <typename Derived1, typename Derived2, typename Derived3>

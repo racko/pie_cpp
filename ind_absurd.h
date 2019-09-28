@@ -18,7 +18,7 @@ struct IndAbsurd_t : Pie<IndAbsurd_t<Target, Mot>> {
 
 template <typename Target1, typename Mot1, typename Target2, typename Mot2>
 constexpr bool equal(const IndAbsurd_t<Target1, Mot1>& lhs, const IndAbsurd_t<Target2, Mot2>& rhs) {
-    return equal(lhs.target_, rhs.target_) && equal(lhs.mot_, rhs.mot_);
+    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_;
 }
 
 template <typename Target, typename Mot>

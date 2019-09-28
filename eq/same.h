@@ -18,7 +18,7 @@ struct Same_t : Pie<Same_t<Derived>> {
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Same_t<Derived1>& lhs, const Same_t<Derived2>& rhs) {
-    return equal(lhs.x_, rhs.x_);
+    return lhs.x_ == rhs.x_;
 }
 
 template <typename Derived>

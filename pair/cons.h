@@ -23,7 +23,7 @@ struct Cons_t : Pie<Cons_t<Derived1, Derived2>> {
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 constexpr bool equal(const Cons_t<Derived1, Derived2>& lhs, const Cons_t<Derived3, Derived4>& rhs) {
-    return equal(lhs.car_, rhs.car_) && equal(lhs.cdr_, rhs.cdr_);
+    return lhs.car_ == rhs.car_ && lhs.cdr_ == rhs.cdr_;
 }
 
 template <typename Derived1, typename Derived2>

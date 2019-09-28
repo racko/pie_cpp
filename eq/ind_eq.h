@@ -23,7 +23,7 @@ struct IndEq_t : Pie<IndEq_t<Target, Mot, Base>> {
 
 template <typename Target1, typename Mot1, typename Base1, typename Target2, typename Mot2, typename Base2>
 constexpr bool equal(const IndEq_t<Target1, Mot1, Base1>& lhs, const IndEq_t<Target2, Mot2, Base2>& rhs) {
-    return equal(lhs.target_, rhs.target_) && equal(lhs.mot_, rhs.mot_) && equal(lhs.base_, rhs.base_);
+    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_ && lhs.base_ == rhs.base_;
 }
 
 template <typename Target, typename Mot, typename Base>

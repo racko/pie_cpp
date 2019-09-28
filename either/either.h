@@ -7,9 +7,7 @@
 template <typename L, typename R>
 struct Either_t : Pie<Either_t<L, R>> {
     constexpr Either_t(L left, R right)
-        : height_{std::max(left.height_, right.height_)},
-          left_{std::move(left)},
-          right_{std::move(right)} {}
+        : height_{std::max(left.height_, right.height_)}, left_{std::move(left)}, right_{std::move(right)} {}
     int height_;
     L left_;
     R right_;
@@ -22,7 +20,7 @@ constexpr Either_t<L, R> Either(const Pie<L>& l, const Pie<R>& r) {
 
 template <typename L1, typename R1, typename L2, typename R2>
 constexpr bool equal(const Either_t<L1, R1>& lhs, const Either_t<L2, R2>& rhs) {
-    return equal(lhs.left_, rhs.left_) && equal(lhs.right_, rhs.right_);
+    return lhs.left_ == rhs.left_ && lhs.right_ == rhs.right_;
 }
 
 template <typename L, typename R>

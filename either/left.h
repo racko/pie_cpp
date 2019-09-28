@@ -15,7 +15,7 @@ struct Left_t : Pie<Left_t<Derived>> {
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Left_t<Derived1>& lhs, const Left_t<Derived2>& rhs) {
-    return equal(lhs.l_, rhs.l_);
+    return lhs.l_ == rhs.l_;
 }
 
 template <typename Derived>

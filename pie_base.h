@@ -64,7 +64,10 @@ constexpr bool equal([[maybe_unused]] const Pie<Derived1>& lhs, [[maybe_unused]]
 
 template <typename Derived1, typename Derived2>
 constexpr bool operator==(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs) {
-    return equal(lhs.derived(), rhs.derived());
+    LOG("operator==(" << lhs.derived() << ", " << rhs.derived() << ") ...");
+    const bool result = equal(lhs.derived(), rhs.derived());
+    LOG("operator==(" << lhs.derived() << ", " << rhs.derived() << "): " << result);
+    return result;
 }
 
 template <typename Derived>
@@ -282,9 +285,7 @@ constexpr bool IsTheSameAs(const Pie<Derived1>& type, const Pie<Derived2>& lhs, 
     assert(IsA(rhs.derived(), type.derived()));
     const auto lhs_norm = Normalize(lhs.derived());
     const auto rhs_norm = Normalize(rhs.derived());
-    LOG("lhs normalform: " << lhs_norm);
-    LOG("rhs normalform: " << rhs_norm);
-    const auto normalforms_identical = equal(lhs_norm, rhs_norm);
+    const auto normalforms_identical = lhs_norm == rhs_norm;
     LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << "): " << normalforms_identical);
     return normalforms_identical;
 }
@@ -301,9 +302,7 @@ constexpr bool AreTheSameType(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs
     assert(IsAType(rhs.derived()));
     const auto lhs_norm = Normalize(lhs.derived());
     const auto rhs_norm = Normalize(rhs.derived());
-    LOG("lhs normalform: " << lhs_norm);
-    LOG("rhs normalform: " << rhs_norm);
-    const auto normalforms_identical = equal(lhs_norm, rhs_norm);
+    const auto normalforms_identical = lhs_norm == rhs_norm;
     LOG("AreTheSameType(" << lhs.derived() << ", " << rhs.derived() << "): " << normalforms_identical);
     return normalforms_identical;
 }
@@ -312,9 +311,8 @@ template <typename Derived1, typename Derived2>
 constexpr bool IsNormalFormOfType(const Pie<Derived1>& nf, const Pie<Derived2>& type) {
     LOG("IsNormalFormOfType(" << nf.derived() << ", " << type.derived() << ") ...");
     const auto actual = Normalize(type.derived());
-    LOG("rhs normal form: " << actual);
     const auto identical = actual == nf.derived();
-    LOG("rhs normal form == lhs: " << identical);
+    LOG("IsNormalFormOfType(" << nf.derived() << ", " << type.derived() << "):" << identical);
     return identical;
 }
 
@@ -323,9 +321,8 @@ constexpr bool
 IsNormalFormOf([[maybe_unused]] const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
     LOG("IsNormalFormOf(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << ") ...");
     const auto actual = Normalize(rhs.derived());
-    LOG("rhs normal form: " << actual);
     const auto identical = actual == lhs.derived();
-    LOG("rhs normal form == lhs: " << identical);
+    LOG("IsNormalFormOf(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << "): " << identical);
     return identical;
 }
 
@@ -334,9 +331,8 @@ constexpr bool
 IsTheValueOf([[maybe_unused]] const Pie<Derived1>& type, const Pie<Derived2>& lhs, const Pie<Derived3>& rhs) {
     LOG("IsTheValueOf(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << ") ...");
     const auto rhs_value = ComputeValue(rhs.derived());
-    LOG("rhs value: " << rhs_value);
     const auto identical = rhs_value == lhs.derived();
-    LOG("rhs value == lhs: " << identical);
+    LOG("IsTheValueOf(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << "): " << identical);
     return identical;
 }
 
@@ -358,12 +354,12 @@ constexpr bool equal(const Definition<Type1, Expr1>& lhs, const Definition<Type2
 
 template <typename Type, typename Expr, typename Derived>
 constexpr bool equal(const Definition<Type, Expr>& lhs, const Pie<Derived>& rhs) {
-    return equal(lhs.expr_, rhs.derived());
+    return lhs.expr_ == rhs.derived();
 }
 
 template <typename Derived, typename Type, typename Expr>
 constexpr bool equal(const Pie<Derived>& lhs, const Definition<Type, Expr>& rhs) {
-    return equal(lhs.derived(), rhs.expr_);
+    return lhs.derived() == rhs.expr_;
 }
 
 template <typename Type, typename Expr>

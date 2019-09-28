@@ -35,8 +35,7 @@ template <typename Target1,
           typename Step2>
 constexpr bool equal(const IndNat_t<Target1, Mot1, Base1, Step1>& lhs,
                      const IndNat_t<Target2, Mot2, Base2, Step2>& rhs) {
-    return equal(lhs.target_, rhs.target_) && equal(lhs.mot_, rhs.mot_) && equal(lhs.base_, rhs.base_) &&
-           equal(lhs.step_, rhs.step_);
+    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_ && lhs.base_ == rhs.base_ && lhs.step_ == rhs.step_;
 }
 
 template <typename Target, typename Mot, typename Base, typename Step>
@@ -122,7 +121,7 @@ struct synth_result<IndNat_t<Target, Mot, Base, Step>> {
 template <typename Target, typename Mot, typename Base, typename Step>
 constexpr synth_result_t<IndNat_t<Target, Mot, Base, Step>> synth1(const IndNat_t<Target, Mot, Base, Step>& x) {
     assert(IsA(x.target_, Nat));
-    //assert(IsA(x.mot_, Arrow(Nat, U)));
+    // assert(IsA(x.mot_, Arrow(Nat, U)));
     assert(IsAType(x.mot_(var(Nat, x.height_))));
     assert(IsA(x.base_, x.mot_(zero)));
     assert(IsA(x.step_, Pi(Nat, [&x](const auto& smaller) { return Arrow(x.mot_(smaller), x.mot_(add1(smaller))); })));

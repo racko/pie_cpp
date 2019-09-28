@@ -15,7 +15,7 @@ struct Add1_t : Pie<Add1_t<Derived>> {
 
 template <typename Derived1, typename Derived2>
 constexpr bool equal(const Add1_t<Derived1>& lhs, const Add1_t<Derived2>& rhs) {
-    return equal(lhs.smaller_, rhs.smaller_);
+    return lhs.smaller_ == rhs.smaller_;
 }
 
 template <typename Derived>

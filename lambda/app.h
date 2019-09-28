@@ -6,8 +6,7 @@
 
 template <typename F, typename Arg>
 struct App_t : Pie<App_t<F, Arg>> {
-    constexpr App_t(const F& f, const Arg& arg)
-        : height_{std::max(f.height_, arg.height_)}, f_{f}, arg_{arg} {}
+    constexpr App_t(const F& f, const Arg& arg) : height_{std::max(f.height_, arg.height_)}, f_{f}, arg_{arg} {}
 
     int height_;
     F f_;
@@ -32,7 +31,7 @@ constexpr apply_result_t<Derived, Args...> Pie<Derived>::operator()(const Pie<Ar
 
 template <typename F1, typename Arg1, typename F2, typename Arg2>
 constexpr bool equal(const App_t<F1, Arg1>& lhs, const App_t<F2, Arg2>& rhs) {
-    return equal(lhs.f_, rhs.f_) && equal(lhs.arg_, rhs.arg_);
+    return lhs.f_ == rhs.f_ && lhs.arg_ == rhs.arg_;
 }
 
 template <typename F, typename Arg>

@@ -24,7 +24,7 @@ struct Lambda_t : Pie<Lambda_t<F>> {
 template <typename F1, typename F2>
 constexpr bool equal(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs) {
     const Var_t var{std::max(lhs.height_, rhs.height_)};
-    return equal(lhs.f_(var), rhs.f_(var));
+    return lhs.f_(var) == rhs.f_(var);
 }
 
 template <typename F>
