@@ -20,7 +20,9 @@ struct Printer<Atom_t> {
 };
 
 template <typename Symbol>
-struct Quote_t : Pie<Quote_t<Symbol>> {};
+struct Quote_t : Pie<Quote_t<Symbol>> {
+    constexpr Quote_t() = default;
+};
 
 template <typename Symbol>
 struct Height<Quote_t<Symbol>> : std::integral_constant<int, 0> {};

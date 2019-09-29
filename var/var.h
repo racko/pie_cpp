@@ -4,7 +4,9 @@
 #include <ostream>
 
 template <int id>
-struct Var_t : Pie<Var_t<id>> {};
+struct Var_t : Pie<Var_t<id>> {
+    constexpr Var_t() = default;
+};
 
 template <int id>
 struct Height<Var_t<id>> : std::integral_constant<int, 0> {};

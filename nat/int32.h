@@ -7,7 +7,9 @@
 #include <type_traits>
 
 template <std::int32_t N>
-struct Int32 : Pie<Int32<N>> {};
+struct Int32 : Pie<Int32<N>> {
+    constexpr Int32() = default;
+};
 
 template <std::int32_t N>
 struct Height<Int32<N>> : std::integral_constant<int, 0> {};

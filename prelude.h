@@ -14,9 +14,6 @@ inline CONSTEXPR auto eight{define<Eight>(Nat, add1(seven))};
 inline CONSTEXPR auto nine{define<Nine>(Nat, add1(eight))};
 inline CONSTEXPR auto ten{define<Ten>(Nat, add1(nine))};
 
-// NOTE: NEVER STORE PIE<T> IN A LAMBDA. OR ANYWHERE FOR WHAT IT'S WORTH. SLICING!
-// USE [x = x.derived] OR SIMILAR.
-
 inline CONSTEXPR auto Pair = define<Pair_>(
     Arrow(U, U, U), lambda([](const auto& A, const auto& D) { return Sigma(A, [D](const auto&) { return D; }); }));
 
