@@ -343,59 +343,58 @@ IsTheValueOf([[maybe_unused]] const Pie<Derived1>& type, const Pie<Derived2>& lh
     return identical;
 }
 
-template <typename Type, typename Expr>
-struct Definition : Pie<Definition<Type, Expr>> {
-    constexpr Definition(const char* name, const Type& type, const Expr& expr)
-        : name_{name}, type_{type}, expr_{expr} {}
+template <typename Symbol, typename Type, typename Expr>
+struct Definition : Pie<Definition<Symbol, Type, Expr>> {
+    constexpr Definition(const Type& type, const Expr& expr) : type_{type}, expr_{expr} {}
 
-    const char* name_;
     Type type_;
     Expr expr_;
 };
 
-template <typename Derived1, typename Derived2>
-struct Height<Definition<Derived1, Derived2>>
-    : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
+template <typename Symbol, typename Type, typename Expr>
+struct Height<Definition<Symbol, Type, Expr>> : std::integral_constant<int, std::max(height_v<Type>, height_v<Expr>)> {
+};
 
-template <typename Type1, typename Expr1, typename Type2, typename Expr2>
-struct Equal<Definition<Type1, Expr1>, Definition<Type2, Expr2>> : std::bool_constant<equal_v<Expr1, Expr2>> {};
+template <typename Symbol1, typename Type1, typename Expr1, typename Symbol2, typename Type2, typename Expr2>
+struct Equal<Definition<Symbol1, Type1, Expr1>, Definition<Symbol2, Type2, Expr2>>
+    : std::bool_constant<equal_v<Expr1, Expr2>> {};
 
-template <typename Type, typename Expr, typename T>
-struct Equal<Definition<Type, Expr>, T> : std::bool_constant<equal_v<Expr, T>> {};
+template <typename Symbol, typename Type, typename Expr, typename T>
+struct Equal<Definition<Symbol, Type, Expr>, T> : std::bool_constant<equal_v<Expr, T>> {};
 
-template <typename T, typename Type, typename Expr>
-struct Equal<T, Definition<Type, Expr>> : std::bool_constant<equal_v<T, Expr>> {};
+template <typename T, typename Symbol, typename Type, typename Expr>
+struct Equal<T, Definition<Symbol, Type, Expr>> : std::bool_constant<equal_v<T, Expr>> {};
 
-template <typename Type, typename Expr>
-void print(std::ostream& s, const Definition<Type, Expr>& def) {
-    s << def.name_;
+template <typename Symbol, typename Type, typename Expr>
+void print(std::ostream& s, Definition<Symbol, Type, Expr>) {
+    s << Symbol::value;
 }
 
-template <typename Type, typename Expr>
-constexpr Definition<Type, Expr> define(const char* name, const Type& type, const Expr& expr) {
-    LOG("checking define " << name << " ...");
+template <typename Symbol, typename Type, typename Expr>
+constexpr Definition<Symbol, Type, Expr> define(const Type& type, const Expr& expr) {
+    LOG("checking define " << Symbol::value << " ...");
     assert(IsA(expr.derived(), type.derived()));
-    LOG("checking define " << name << " done");
-    return Definition(name, type, expr);
+    LOG("checking define " << Symbol::value << " done");
+    return Definition<Symbol, Type, Expr>(type, expr);
 }
 
-template <typename Type, typename Expr>
-struct step_result<Definition<Type, Expr>> {
+template <typename Symbol, typename Type, typename Expr>
+struct step_result<Definition<Symbol, Type, Expr>> {
     using type = Expr;
 };
 
-template <typename Type, typename Expr>
-constexpr step_result_t<Definition<Type, Expr>> Step1(const Definition<Type, Expr>& x) {
+template <typename Symbol, typename Type, typename Expr>
+constexpr step_result_t<Definition<Symbol, Type, Expr>> Step1(const Definition<Symbol, Type, Expr>& x) {
     return x.expr_;
 }
 
-template <typename Type, typename Expr>
-struct synth_result<Definition<Type, Expr>> {
+template <typename Symbol, typename Type, typename Expr>
+struct synth_result<Definition<Symbol, Type, Expr>> {
     using type = Type;
 };
 
-template <typename Type, typename Expr>
-constexpr synth_result_t<Definition<Type, Expr>> synth1(const Definition<Type, Expr>& x) {
+template <typename Symbol, typename Type, typename Expr>
+constexpr synth_result_t<Definition<Symbol, Type, Expr>> synth1(const Definition<Symbol, Type, Expr>& x) {
     LOG("synth(" << x << "): " << x.type_);
     return x.type_;
 }

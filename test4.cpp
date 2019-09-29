@@ -7,13 +7,16 @@
 //
 // TODO: mark each CHECK with frame number and page
 
+struct Flip_pair {
+    static inline constexpr const char* value = "flip-pair";
+};
+
 TEST_CASE("Chapter 4") {
     SECTION("Pi") {
-        const auto flipPair = define(
-            "flip",
+        constexpr auto flip_pair = define<Flip_pair>(
             Pi(U, [](const auto& A) { return Pi(U, [A](const auto& D) { return Arrow(Pair(A, D), Pair(D, A)); }); }),
             lambda([](const auto&, const auto&, const auto& p) { return cons(cdr(p), car(p)); }));
 
-        CHECK(ComputeValue(flipPair(Nat, Atom)) == lambda([](const auto& p) { return cons(cdr(p), car(p)); }));
+        CHECK(ComputeValue(flip_pair(Nat, Atom)) == lambda([](const auto& p) { return cons(cdr(p), car(p)); }));
     }
 }

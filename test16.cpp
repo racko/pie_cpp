@@ -7,11 +7,14 @@
 //
 // TODO: mark each CHECK with frame number and page
 
+struct Are_nats_equal {
+    static inline constexpr const char* value = "nat=?";
+};
+
 TEST_CASE("Chapter 16") {
     SECTION("Dec") {}
     SECTION("nat=-Dec") {
-        [[maybe_unused]] CONSTEXPR auto are_nats_equal = define(
-            "nat=?",
+        define<Are_nats_equal>(
             Pi(Nat, [](const auto& n) { return Pi(Nat, [n](const auto& j) { return Dec(Eq(Nat, n, j)); }); }),
             lambda([](const auto& n, const auto& j) {
                 return ind_Nat(

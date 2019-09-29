@@ -22,6 +22,7 @@ cc_library(
         "ind_absurd.h",
         "pie.h",
         "prelude.h",
+        "strings.h",
         "trivial.h",
     ],
     deps = [

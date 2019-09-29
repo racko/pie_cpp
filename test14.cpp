@@ -7,6 +7,10 @@
 //
 // TODO: mark each CHECK with frame number and page
 
+struct Similarly_absurd {
+    static inline constexpr const char* value = "similarly-absurd";
+};
+
 TEST_CASE("Chapter 14") {
     SECTION("Trivial") {}
     SECTION("Maybe") {}
@@ -14,7 +18,7 @@ TEST_CASE("Chapter 14") {
     SECTION("list-ref") {}
     // list-ref: "aref"
     SECTION("Absurd") {
-        define("similarly-absurd", Arrow(Absurd, Absurd), lambda([](const auto& x){ return x; }));
+        define<Similarly_absurd>(Arrow(Absurd, Absurd), lambda([](const auto& x){ return x; }));
     }
     SECTION("Fin") {}
     // Fin: finite number. Implemented using Absurd and Maybe
