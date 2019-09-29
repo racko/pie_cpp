@@ -5,23 +5,23 @@
 
 template <typename Derived1, typename Derived2>
 struct The_t : Pie<The_t<Derived1, Derived2>> {
-    constexpr The_t(const Pie<Derived1>& type, const Pie<Derived2>& value)
-        : type_(type), value_(value) {}
+    constexpr The_t(const Pie<Derived1>& type, const Pie<Derived2>& value) : type_(type), value_(value) {}
 
     Derived1 type_;
     Derived2 value_;
 };
 
 template <typename Derived1, typename Derived2>
-struct Height<The_t<Derived1, Derived2>> : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
+struct Height<The_t<Derived1, Derived2>>
+    : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
 struct Equal<The_t<Derived1, Derived2>, The_t<Derived3, Derived4>> : std::bool_constant<equal_v<Derived2, Derived4>> {};
 
 template <typename Derived1, typename Derived2>
-void print(std::ostream& s, const The_t<Derived1, Derived2>& x) {
-    s << "(the " << x.type_ << ' ' << x.value_ << ')';
-}
+struct Printer<The_t<Derived1, Derived2>> {
+    void print(std::ostream& s) { s << "(the " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ')'; }
+};
 
 template <typename Derived1, typename Derived2>
 constexpr The_t<Derived1, Derived2> the(const Pie<Derived1>& type, const Pie<Derived2>& value) {

@@ -30,10 +30,12 @@ struct Equal<Lambda_t<F1>, Lambda_t<F2>>
                                  std::invoke_result_t<F2, Var_t<height_v<Lambda_t<F2>>>>>> {};
 
 template <typename F>
-void print(std::ostream& s, const Lambda_t<F>& f) {
-    const Var_t<height_v<Lambda_t<F>>> v;
-    s << "(λ (" << v << ") " << f.f_(v) << ')';
-}
+struct Printer<Lambda_t<F>> {
+    void print(std::ostream& s) {
+        using VarType = Var_t<height_v<Lambda_t<F>>>;
+        s << "(λ (" << Print<VarType>{} << ") " << Print<std::invoke_result_t<F, VarType>>{} << ')';
+    }
+};
 
 template <typename F>
 constexpr Lambda_t<F> lambda(const F& f, std::enable_if_t<std::is_invocable_v<F, Var_t<0>>, int> = 0) {

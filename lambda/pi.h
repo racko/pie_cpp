@@ -30,10 +30,13 @@ struct Equal<Pi_t<ArgType1, Result1>, Pi_t<ArgType2, Result2>>
                   std::invoke_result_t<Result2, TypedVar_t<ArgType2, height_v<Pi_t<ArgType2, Result2>>>>>> {};
 
 template <typename ArgType, typename Result>
-void print(std::ostream& s, const Pi_t<ArgType, Result>& type) {
-    const auto v = var<height_v<Pi_t<ArgType, Result>>>(type.arg_);
-    s << "(Π (" << v << ' ' << type.arg_ << ") " << type.result_(v) << ')';
-}
+struct Printer<Pi_t<ArgType, Result>> {
+    void print(std::ostream& s) {
+        using VarType = TypedVar_t<ArgType, height_v<Pi_t<ArgType, Result>>>;
+        s << "(Π (" << Print<VarType>{} << ' ' << Print<ArgType>{} << ") "
+          << Print<std::invoke_result_t<Result, VarType>>{} << ')';
+    }
+};
 
 template <typename ArgType, typename Result>
 constexpr Pi_t<ArgType, Result> Pi(const Pie<ArgType>& arg, const Result& result) {

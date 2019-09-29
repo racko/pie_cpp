@@ -20,9 +20,9 @@ template <typename Derived1, typename Derived2>
 struct Equal<Cdr_t<Derived1>, Cdr_t<Derived2>> : std::bool_constant<equal_v<Derived1, Derived2>> {};
 
 template <typename Derived>
-void print(std::ostream& s, const Cdr_t<Derived>& cdr) {
-    s << "(cdr " << cdr.cons_ << ')';
-}
+struct Printer<Cdr_t<Derived>> {
+    void print(std::ostream& s) { s << "(cdr " << Print<Derived>{} << ')'; }
+};
 
 template <typename Derived>
 constexpr Cdr_t<Derived> cdr(const Pie<Derived>& cons) {

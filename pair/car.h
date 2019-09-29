@@ -19,9 +19,9 @@ template <typename Derived1, typename Derived2>
 struct Equal<Car_t<Derived1>, Car_t<Derived2>> : std::bool_constant<equal_v<Derived1, Derived2>> {};
 
 template <typename Derived>
-void print(std::ostream& s, const Car_t<Derived>& car) {
-    s << "(car " << car.cons_ << ')';
-}
+struct Printer<Car_t<Derived>> {
+    void print(std::ostream& s) { s << "(car " << Print<Derived>{} << ')'; }
+};
 
 template <typename Derived>
 constexpr Car_t<Derived> car(const Pie<Derived>& cons) {

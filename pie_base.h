@@ -70,10 +70,21 @@ constexpr bool operator==([[maybe_unused]] const Pie<Derived1>& lhs, [[maybe_unu
     return result;
 }
 
+template <typename T>
+struct Printer;
+
+template <typename T>
+struct Print {};
+
 template <typename Derived>
-std::ostream& operator<<(std::ostream& s, const Pie<Derived>& expr) {
-    print(s, expr.derived());
+std::ostream& operator<<(std::ostream& s, Print<Derived>) {
+    Printer<Derived>::print(s);
     return s;
+}
+
+template <typename Derived>
+std::ostream& operator<<(std::ostream& s, Pie<Derived>) {
+    return s << Print<Derived>{};
 }
 
 template <typename T>

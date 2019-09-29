@@ -26,9 +26,9 @@ struct Equal<Cons_t<Derived1, Derived2>, Cons_t<Derived3, Derived4>>
     : std::bool_constant<equal_v<Derived1, Derived3> && equal_v<Derived2, Derived4>> {};
 
 template <typename Derived1, typename Derived2>
-void print(std::ostream& s, const Cons_t<Derived1, Derived2>& cons) {
-    s << "(cons " << cons.car_ << ' ' << cons.cdr_ << ')';
-}
+struct Printer<Cons_t<Derived1, Derived2>> {
+    void print(std::ostream& s) { s << "(cons " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ')'; }
+};
 
 template <typename Derived1, typename Derived2>
 constexpr Cons_t<Derived1, Derived2> cons(const Pie<Derived1>& car, const Pie<Derived2>& cdr) {
