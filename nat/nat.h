@@ -11,7 +11,8 @@ struct Height<Nat_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Nat_t Nat;
 
-constexpr bool equal(Nat_t, Nat_t) { return true; }
+template <>
+struct Equal<Nat_t, Nat_t> : std::true_type {};
 
 inline void print(std::ostream& s, Nat_t) { s << "Nat"; }
 

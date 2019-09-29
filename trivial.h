@@ -10,7 +10,8 @@ struct Height<Trivial_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Trivial_t Trivial;
 
-constexpr bool equal(Trivial_t, Trivial_t) { return true; }
+template <>
+struct Equal<Trivial_t, Trivial_t> : std::true_type {};
 
 inline void print(std::ostream& s, Trivial_t) { s << "Trivial"; }
 
@@ -19,7 +20,8 @@ struct Sole_t : Pie<Sole_t> {};
 template <>
 struct Height<Sole_t> : std::integral_constant<int, 0> {};
 
-constexpr bool equal(Sole_t, Sole_t) { return true; }
+template <>
+struct Equal<Sole_t, Sole_t> : std::true_type {};
 
 inline void print(std::ostream& s, Sole_t) { s << "sole"; }
 

@@ -24,14 +24,10 @@ template <typename F>
 struct Height<Lambda_t<F>> : std::integral_constant<int, height_v<std::invoke_result_t<F, Var_t<0>>> + 1> {};
 
 template <typename F1, typename F2>
-constexpr bool equal(const Lambda_t<F1>& lhs, const Lambda_t<F2>& rhs) {
-    constexpr int height = height_v<Lambda_t<F1>>;
-    if (height != height_v<Lambda_t<F2>>) {
-        return false;
-    }
-    const Var_t<height> v;
-    return lhs.f_(v) == rhs.f_(v);
-}
+struct Equal<Lambda_t<F1>, Lambda_t<F2>>
+    : std::bool_constant<height_v<Lambda_t<F1>> == height_v<Lambda_t<F2>> &&
+                         equal_v<std::invoke_result_t<F1, Var_t<height_v<Lambda_t<F1>>>>,
+                                 std::invoke_result_t<F2, Var_t<height_v<Lambda_t<F2>>>>>> {};
 
 template <typename F>
 void print(std::ostream& s, const Lambda_t<F>& f) {

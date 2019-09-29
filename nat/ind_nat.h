@@ -32,10 +32,9 @@ template <typename Target1,
           typename Mot2,
           typename Base2,
           typename Step2>
-constexpr bool equal(const IndNat_t<Target1, Mot1, Base1, Step1>& lhs,
-                     const IndNat_t<Target2, Mot2, Base2, Step2>& rhs) {
-    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_ && lhs.base_ == rhs.base_ && lhs.step_ == rhs.step_;
-}
+struct Equal<IndNat_t<Target1, Mot1, Base1, Step1>, IndNat_t<Target2, Mot2, Base2, Step2>>
+    : std::bool_constant<equal_v<Target1, Target2> && equal_v<Mot1, Mot2> && equal_v<Base1, Base2> &&
+                         equal_v<Step1, Step2>> {};
 
 template <typename Target, typename Mot, typename Base, typename Step>
 void print(std::ostream& s, const IndNat_t<Target, Mot, Base, Step>& x) {

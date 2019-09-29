@@ -29,9 +29,8 @@ template <typename Derived1,
           typename Derived4,
           typename Derived5,
           typename Derived6>
-constexpr bool equal(const Eq_t<Derived1, Derived2, Derived3>& lhs, const Eq_t<Derived4, Derived5, Derived6>& rhs) {
-    return lhs.type_ == rhs.type_ && lhs.from_ == rhs.from_ && lhs.to_ == rhs.to_;
-}
+struct Equal<Eq_t<Derived1, Derived2, Derived3>, Eq_t<Derived4, Derived5, Derived6>>
+    : std::bool_constant<equal_v<Derived1, Derived4> && equal_v<Derived2, Derived5> && equal_v<Derived3, Derived6>> {};
 
 template <typename Derived1, typename Derived2, typename Derived3>
 void print(std::ostream& s, const Eq_t<Derived1, Derived2, Derived3>& eq) {

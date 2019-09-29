@@ -10,7 +10,8 @@ struct Height<Absurd_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Absurd_t Absurd;
 
-constexpr bool equal(Absurd_t, Absurd_t) { return true; }
+template <>
+struct Equal<Absurd_t, Absurd_t> : std::true_type {};
 
 inline void print(std::ostream& s, Absurd_t) { s << "Absurd"; }
 

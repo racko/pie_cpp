@@ -32,9 +32,7 @@ constexpr apply_result_t<Derived, Args...> Pie<Derived>::operator()(const Pie<Ar
 }
 
 template <typename F1, typename Arg1, typename F2, typename Arg2>
-constexpr bool equal(const App_t<F1, Arg1>& lhs, const App_t<F2, Arg2>& rhs) {
-    return lhs.f_ == rhs.f_ && lhs.arg_ == rhs.arg_;
-}
+struct Equal<App_t<F1, Arg1>, App_t<F2, Arg2>> : std::bool_constant<equal_v<F1, F2> && equal_v<Arg1, Arg2>> {};
 
 template <typename F, typename Arg>
 void print(std::ostream& s, const App_t<F, Arg>& app) {

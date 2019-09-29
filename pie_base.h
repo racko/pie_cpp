@@ -56,16 +56,16 @@ struct Pie {
     constexpr Derived const& derived() const { return static_cast<const Derived&>(*this); }
 };
 
-template <typename Derived1, typename Derived2>
-constexpr bool equal([[maybe_unused]] const Pie<Derived1>& lhs, [[maybe_unused]] const Pie<Derived2>& rhs) {
-    LOG("operator==(" << lhs.derived() << ", " << rhs.derived() << "): false (default)");
-    return false;
-}
+template <typename T1, typename T2>
+struct Equal : std::false_type {};
+
+template <typename T1, typename T2>
+constexpr inline bool equal_v = Equal<T1, T2>::value;
 
 template <typename Derived1, typename Derived2>
-constexpr bool operator==(const Pie<Derived1>& lhs, const Pie<Derived2>& rhs) {
+constexpr bool operator==([[maybe_unused]] const Pie<Derived1>& lhs, [[maybe_unused]] const Pie<Derived2>& rhs) {
     LOG("operator==(" << lhs.derived() << ", " << rhs.derived() << ") ...");
-    const bool result = equal(lhs.derived(), rhs.derived());
+    const bool result = equal_v<Derived1, Derived2>;
     LOG("operator==(" << lhs.derived() << ", " << rhs.derived() << "): " << result);
     return result;
 }
@@ -358,19 +358,13 @@ struct Height<Definition<Derived1, Derived2>>
     : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
 
 template <typename Type1, typename Expr1, typename Type2, typename Expr2>
-constexpr bool equal(const Definition<Type1, Expr1>& lhs, const Definition<Type2, Expr2>& rhs) {
-    return lhs.name_ == rhs.name_;
-}
+struct Equal<Definition<Type1, Expr1>, Definition<Type2, Expr2>> : std::bool_constant<equal_v<Expr1, Expr2>> {};
 
-template <typename Type, typename Expr, typename Derived>
-constexpr bool equal(const Definition<Type, Expr>& lhs, const Pie<Derived>& rhs) {
-    return lhs.expr_ == rhs.derived();
-}
+template <typename Type, typename Expr, typename T>
+struct Equal<Definition<Type, Expr>, T> : std::bool_constant<equal_v<Expr, T>> {};
 
-template <typename Derived, typename Type, typename Expr>
-constexpr bool equal(const Pie<Derived>& lhs, const Definition<Type, Expr>& rhs) {
-    return lhs.derived() == rhs.expr_;
-}
+template <typename T, typename Type, typename Expr>
+struct Equal<T, Definition<Type, Expr>> : std::bool_constant<equal_v<T, Expr>> {};
 
 template <typename Type, typename Expr>
 void print(std::ostream& s, const Definition<Type, Expr>& def) {
@@ -411,7 +405,8 @@ struct U_t : Pie<U_t> {};
 template <>
 struct Height<U_t> : std::integral_constant<int, 0> {};
 
-constexpr bool equal(U_t, U_t) { return true; }
+template <>
+struct Equal<U_t, U_t> : std::true_type {};
 
 inline void print(std::ostream& s, U_t) { s << 'U'; }
 

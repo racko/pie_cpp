@@ -24,6 +24,10 @@ constexpr bool equal(const Either_t<L1, R1>& lhs, const Either_t<L2, R2>& rhs) {
     return lhs.left_ == rhs.left_ && lhs.right_ == rhs.right_;
 }
 
+template <typename L1, typename R1, typename L2, typename R2>
+struct Equal<Either_t<L1, R1>, Either_t<L2, R2>>
+    : std::bool_constant<equal_v<L1, L2> && equal_v<R1, R2>> {};
+
 template <typename L, typename R>
 inline void print(std::ostream& s, const Either_t<L, R>& x) {
     s << "Either(" << x.left_ << ' ' << x.right_ << ')';

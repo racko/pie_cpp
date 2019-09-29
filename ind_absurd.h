@@ -18,9 +18,8 @@ template <typename Target, typename Mot>
 struct Height<IndAbsurd_t<Target, Mot>> : std::integral_constant<int, std::max(height_v<Target>, height_v<Mot>)> {};
 
 template <typename Target1, typename Mot1, typename Target2, typename Mot2>
-constexpr bool equal(const IndAbsurd_t<Target1, Mot1>& lhs, const IndAbsurd_t<Target2, Mot2>& rhs) {
-    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_;
-}
+struct Equal<IndAbsurd_t<Target1, Mot1>, IndAbsurd_t<Target2, Mot2>>
+    : std::bool_constant<equal_v<Target1, Target2> && equal_v<Mot1, Mot2>> {};
 
 template <typename Target, typename Mot>
 void print(std::ostream& s, const IndAbsurd_t<Target, Mot>& ind_absurd) {

@@ -23,14 +23,11 @@ struct Height<Pi_t<ArgType, Result>>
           std::max(height_v<ArgType>, height_v<std::invoke_result_t<Result, TypedVar_t<ArgType, 0>>>) + 1> {};
 
 template <typename ArgType1, typename Result1, typename ArgType2, typename Result2>
-constexpr bool equal(const Pi_t<ArgType1, Result1>& lhs, const Pi_t<ArgType2, Result2>& rhs) {
-    constexpr int height = height_v<Pi_t<ArgType1, Result1>>;
-    if (!(lhs.arg_ == rhs.arg_) || height != height_v<Pi_t<ArgType2, Result2>>) {
-        return false;
-    }
-    const auto v = var<height>(lhs.arg_);
-    return lhs.result_(v) == rhs.result_(v);
-}
+struct Equal<Pi_t<ArgType1, Result1>, Pi_t<ArgType2, Result2>>
+    : std::bool_constant<
+          equal_v<ArgType1, ArgType2> && height_v<Pi_t<ArgType1, Result1>> == height_v<Pi_t<ArgType2, Result2>> &&
+          equal_v<std::invoke_result_t<Result1, TypedVar_t<ArgType1, height_v<Pi_t<ArgType1, Result1>>>>,
+                  std::invoke_result_t<Result2, TypedVar_t<ArgType2, height_v<Pi_t<ArgType2, Result2>>>>>> {};
 
 template <typename ArgType, typename Result>
 void print(std::ostream& s, const Pi_t<ArgType, Result>& type) {

@@ -22,9 +22,8 @@ struct Height<IndEq_t<Target, Mot, Base>>
     : std::integral_constant<int, std::max({height_v<Target>, height_v<Mot>, height_v<Base>})> {};
 
 template <typename Target1, typename Mot1, typename Base1, typename Target2, typename Mot2, typename Base2>
-constexpr bool equal(const IndEq_t<Target1, Mot1, Base1>& lhs, const IndEq_t<Target2, Mot2, Base2>& rhs) {
-    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_ && lhs.base_ == rhs.base_;
-}
+struct Equal<IndEq_t<Target1, Mot1, Base1>, IndEq_t<Target2, Mot2, Base2>>
+    : std::bool_constant<equal_v<Target1, Target2> && equal_v<Mot1, Mot2> && equal_v<Base1, Base2>> {};
 
 template <typename Target, typename Mot, typename Base>
 void print(std::ostream& s, const IndEq_t<Target, Mot, Base>& ind_eq) {

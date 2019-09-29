@@ -32,11 +32,9 @@ template <typename Target1,
           typename Mot2,
           typename BaseLeft2,
           typename BaseRight2>
-constexpr bool equal(const IndEither_t<Target1, Mot1, BaseLeft1, BaseRight1>& lhs,
-                     const IndEither_t<Target2, Mot2, BaseLeft2, BaseRight2>& rhs) {
-    return lhs.target_ == rhs.target_ && lhs.mot_ == rhs.mot_ && lhs.base_left_ == rhs.base_left_ &&
-           lhs.base_right_ == rhs.base_right_;
-}
+struct Equal<IndEither_t<Target1, Mot1, BaseLeft1, BaseRight1>, IndEither_t<Target2, Mot2, BaseLeft2, BaseRight2>>
+    : std::bool_constant<equal_v<Target1, Target2> && equal_v<Mot1, Mot2> && equal_v<BaseLeft1, BaseLeft2> &&
+                         equal_v<BaseRight1, BaseRight2>> {};
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 void print(std::ostream& s, const IndEither_t<Target, Mot, BaseLeft, BaseRight>& x) {

@@ -11,7 +11,8 @@ struct Height<Atom_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Atom_t Atom;
 
-constexpr bool equal(Atom_t, Atom_t) { return true; }
+template <>
+struct Equal<Atom_t, Atom_t> : std::true_type {};
 
 inline void print(std::ostream& s, Atom_t) { s << "Atom"; }
 
@@ -43,9 +44,8 @@ constexpr bool isalpha(int c) { return (c >= 'A' && c <= 'Z') || (c >= 'a' && c 
 } // namespace detail
 
 template <typename Symbol1, typename Symbol2>
-constexpr bool equal(Quote_t<Symbol1>, Quote_t<Symbol2>) {
-    return detail::strcmp(Symbol1::value, Symbol2::value) == 0;
-}
+struct Equal<Quote_t<Symbol1>, Quote_t<Symbol2>>
+    : std::bool_constant<detail::strcmp(Symbol1::value, Symbol2::value) == 0> {};
 
 template <typename Symbol>
 inline void print(std::ostream& s, Quote_t<Symbol>) {

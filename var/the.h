@@ -16,9 +16,7 @@ template <typename Derived1, typename Derived2>
 struct Height<The_t<Derived1, Derived2>> : std::integral_constant<int, std::max(height_v<Derived1>, height_v<Derived2>)> {};
 
 template <typename Derived1, typename Derived2, typename Derived3, typename Derived4>
-constexpr bool equal(const The_t<Derived1, Derived2>& lhs, const The_t<Derived3, Derived4>& rhs) {
-    return lhs.value_ == rhs.value_;
-}
+struct Equal<The_t<Derived1, Derived2>, The_t<Derived3, Derived4>> : std::bool_constant<equal_v<Derived2, Derived4>> {};
 
 template <typename Derived1, typename Derived2>
 void print(std::ostream& s, const The_t<Derived1, Derived2>& x) {

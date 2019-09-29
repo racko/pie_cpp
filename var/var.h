@@ -10,9 +10,7 @@ template <int id>
 struct Height<Var_t<id>> : std::integral_constant<int, 0> {};
 
 template <int id1, int id2>
-constexpr bool equal(Var_t<id1>, Var_t<id2>) {
-    return id1 == id2;
-}
+struct Equal<Var_t<id1>, Var_t<id2>> : std::bool_constant<id1 == id2> {};
 
 template <int id>
 inline void print(std::ostream& s, Var_t<id>) {

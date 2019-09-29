@@ -13,7 +13,8 @@ struct Height<Zero_t> : std::integral_constant<int, 0> {};
 
 inline constexpr Zero_t zero;
 
-constexpr bool equal(Zero_t, Zero_t) { return true; }
+template <>
+struct Equal<Zero_t, Zero_t> : std::true_type {};
 
 inline void print(std::ostream& s, Zero_t) { s << "zero"; }
 

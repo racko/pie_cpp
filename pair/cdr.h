@@ -17,9 +17,7 @@ template <typename Derived>
 struct Height<Cdr_t<Derived>> : std::integral_constant<int, height_v<Derived>> {};
 
 template <typename Derived1, typename Derived2>
-constexpr bool equal(const Cdr_t<Derived1>& lhs, const Cdr_t<Derived2>& rhs) {
-    return lhs.cons_ == rhs.cons_;
-}
+struct Equal<Cdr_t<Derived1>, Cdr_t<Derived2>> : std::bool_constant<equal_v<Derived1, Derived2>> {};
 
 template <typename Derived>
 void print(std::ostream& s, const Cdr_t<Derived>& cdr) {
