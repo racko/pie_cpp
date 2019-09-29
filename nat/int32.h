@@ -8,6 +8,7 @@
 
 template <std::int32_t N>
 struct Int32 : Pie<Int32<N>> {
+    Int32() = default;
     int height_{};
 };
 

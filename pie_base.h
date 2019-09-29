@@ -54,6 +54,9 @@ struct Pie {
 
     constexpr Derived& derived() { return static_cast<Derived&>(*this); }
     constexpr Derived const& derived() const { return static_cast<const Derived&>(*this); }
+
+  protected:
+    ~Pie() = default;
 };
 
 template <typename Derived1, typename Derived2>
@@ -286,7 +289,8 @@ constexpr bool IsTheSameAs(const Pie<Derived1>& type, const Pie<Derived2>& lhs, 
     const auto lhs_norm = Normalize(lhs.derived());
     const auto rhs_norm = Normalize(rhs.derived());
     const auto normalforms_identical = lhs_norm == rhs_norm;
-    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived() << "): " << normalforms_identical);
+    LOG("IsTheSameAs(" << type.derived() << ", " << lhs.derived() << ", " << rhs.derived()
+                       << "): " << normalforms_identical);
     return normalforms_identical;
 }
 
