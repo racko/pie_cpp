@@ -1,4 +1,5 @@
-#include "prelude.h"
+#include "pie.h"
+#include "prelude/prelude.h"
 
 #include <catch2/catch.hpp>
 

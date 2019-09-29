@@ -6,6 +6,6 @@ cc_library(
         "ind_either.h",
         "either.h",
     ],
-    visibility = ["//:__pkg__"],
+    visibility = ["//:__subpackages__"],
     deps = ["//:base"],
 )

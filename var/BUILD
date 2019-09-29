@@ -5,9 +5,6 @@ cc_library(
         "typed_var.h",
         "var.h",
     ],
-    visibility = [
-        "//:__pkg__",
-        "//lambda:__pkg__",
-    ],
+    visibility = ["//:__subpackages__"],
     deps = ["//:base"],
 )

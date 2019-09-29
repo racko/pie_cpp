@@ -21,10 +21,10 @@ cc_library(
         "atom.h",
         "ind_absurd.h",
         "pie.h",
-        "prelude.h",
         "strings.h",
         "trivial.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         "//:base",
         "//either",
@@ -32,6 +32,7 @@ cc_library(
         "//lambda",
         "//nat",
         "//pair",
+        "//prelude",
         "//var",
     ],
 )

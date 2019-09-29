@@ -1,91 +1,31 @@
 #pragma once
 
-#include "pie.h"
+#include "absurd.h"
+#include "atom.h"
+#include "either/either.h"
+#include "either/ind_either.h"
+#include "either/left.h"
+#include "either/right.h"
+#include "eq/eq.h"
+#include "eq/same.h"
+#include "lambda/app.h"
+#include "lambda/lambda.h"
+#include "lambda/pi.h"
+#include "nat/add1.h"
+#include "nat/ind_nat.h"
+#include "nat/nat.h"
+#include "nat/zero.h"
+#include "pair/car.h"
+#include "pair/cdr.h"
+#include "pair/cons.h"
+#include "pair/sigma.h"
+#include "pie_base.h"
+#include "prelude/dec.h"
+#include "prelude/equality.h"
+#include "prelude/function.h"
+#include "prelude/nats.h"
 #include "strings.h"
-
-inline CONSTEXPR auto one{define<One>(Nat, add1(zero))};
-inline CONSTEXPR auto two{define<Two>(Nat, add1(one))};
-inline CONSTEXPR auto three{define<Three>(Nat, add1(two))};
-inline CONSTEXPR auto four{define<Four>(Nat, add1(three))};
-inline CONSTEXPR auto five{define<Five>(Nat, add1(four))};
-inline CONSTEXPR auto six{define<Six>(Nat, add1(five))};
-inline CONSTEXPR auto seven{define<Seven>(Nat, add1(six))};
-inline CONSTEXPR auto eight{define<Eight>(Nat, add1(seven))};
-inline CONSTEXPR auto nine{define<Nine>(Nat, add1(eight))};
-inline CONSTEXPR auto ten{define<Ten>(Nat, add1(nine))};
-
-inline CONSTEXPR auto Pair = define<Pair_>(
-    Arrow(U, U, U), lambda([](const auto& A, const auto& D) { return Sigma(A, [D](const auto&) { return D; }); }));
-
-inline CONSTEXPR auto Maybe = define<Maybe_>(Arrow(U, U), lambda([](const auto& X) { return Either(X, Trivial); }));
-
-inline CONSTEXPR auto nothing =
-    define<Nothing>(Pi(U, [](const auto& E) { return Maybe(E); }), lambda([](const auto&) { return right(sole); }));
-
-inline CONSTEXPR auto just = define<Just>(Pi(U, [](const auto& E) { return Arrow(E, Maybe(E)); }),
-                                          lambda([](const auto&, const auto& x) { return left(x); }));
-
-inline CONSTEXPR auto Fin = define<Fin_>(
-    Arrow(Nat, U), lambda([](const auto& n) {
-        return ind_Nat(n, lambda([](const auto&) { return U; }), Absurd, lambda([](const auto&, const auto& acc) {
-                           return Maybe(acc);
-                       }));
-    }));
-
-inline CONSTEXPR auto fzero = define<Fzero>(Pi(Nat, [](const auto& n) { return Fin(add1(n)); }),
-                                            lambda([](const auto& n) { return nothing(Fin(n)); }));
-
-inline CONSTEXPR auto fadd1 =
-    define<Fadd1>(Pi(Nat, [](const auto& n) { return Arrow(Fin(n), Fin(add1(n))); }),
-                  lambda([](const auto& n, const auto& smaller) { return just(Fin(n), smaller); }));
-
-inline CONSTEXPR auto Dec =
-    define<Dec_>(Arrow(U, U), lambda([](const auto& P) { return Either(P, Arrow(P, Absurd)); }));
-
-inline CONSTEXPR auto replace = define<Replace>(
-    Pi(U,
-       [](const auto& X) {
-           return Pi(X, [X](const auto& from) {
-               return Pi(X, [from, X](const auto& to) {
-                   return Arrow(Eq(X, from, to),
-                                Pi(Arrow(X, U), [from, to](const auto& mot) { return Arrow(mot(from), mot(to)); }));
-               });
-           });
-       }),
-    lambda(
-        [](const auto& /*X*/, const auto& /*from*/, const auto& /*to*/, const auto& t, const auto& m, const auto& b) {
-            return ind_Eq(t, lambda([m](const auto& x, const auto& /*proof_from*/) { return m(x); }), b);
-        }));
-
-inline CONSTEXPR auto cong = define<Cong>(
-    Pi(U,
-       [](const auto& X) {
-           return Pi(U, [X](const auto& Y) {
-               return Pi(X, [X, Y](const auto& from) {
-                   return Pi(X, [X, Y, from](const auto& to) {
-                       return Arrow(Eq(X, from, to),
-                                    Pi(Arrow(X, Y), [Y, from, to](const auto& f) { return Eq(Y, f(from), f(to)); }));
-                   });
-               });
-           });
-       }),
-    lambda([](const auto& /*X*/, const auto& Y, const auto& from, const auto& /*to*/, const auto& t, const auto& f) {
-        return ind_Eq(
-            t, lambda([Y, f, from](const auto& x, const auto& /*t*/) { return Eq(Y, f(from), f(x)); }), same(f(from)));
-    }));
-
-inline CONSTEXPR auto constant =
-    define<Const>(Pi(U, [](const auto& A) { return Pi(U, [A](const auto& B) { return Arrow(A, B, A); }); }),
-                  lambda([](const auto&, const auto&, const auto& a, const auto&) { return a; }));
-
-inline CONSTEXPR auto flip = define<Flip>(
-    Pi(U,
-       [](const auto& A) {
-           return Pi(U, [A](const auto& B) {
-               return Pi(U, [A, B](const auto& C) { return Arrow(Arrow(A, B, C), B, A, C); });
-           });
-       }),
-    lambda([](const auto&, const auto&, const auto&, const auto& f, const auto& b, const auto& a) { return f(a, b); }));
+#include "trivial.h"
 
 inline CONSTEXPR auto const_ind_Mot =
     define<Const_ind_Mot>(Arrow(U, Nat, U), lambda([](const auto& X, const auto&) { return X; }));
@@ -311,12 +251,3 @@ inline CONSTEXPR auto is_zero = define<Is_zero>(
                        left(same(zero)),
                        lambda([](const auto& n_minus_1, const auto&) { return right(zero_not_add1(n_minus_1)); }));
     }));
-
-namespace church {
-inline CONSTEXPR auto Nat = define<Nat_>(U, Pi(U, [](const auto& X) { return Arrow(X, Arrow(X, X), X); }));
-inline CONSTEXPR auto zero = define<Zero>(Nat, lambda([](const auto&, const auto& b, const auto&) { return b; }));
-inline CONSTEXPR auto add1 =
-    define<Add1>(Arrow(Nat, Nat), lambda([](const auto& smaller, const auto& X, const auto& b, const auto& step) {
-                     return step(smaller(X, b, step));
-                 }));
-} // namespace church

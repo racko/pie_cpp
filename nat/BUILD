@@ -8,6 +8,6 @@ cc_library(
         "nat.h",
         "zero.h",
     ],
-    visibility = ["//:__pkg__"],
+    visibility = ["//:__subpackages__"],
     deps = ["//:base"],
 )

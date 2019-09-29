@@ -1,0 +1,25 @@
+cc_library(
+    name = "prelude",
+    hdrs = [
+        "church.h",
+        "dec.h",
+        "equality.h",
+        "fin.h",
+        "function.h",
+        "maybe.h",
+        "nat.h",
+        "nats.h",
+        "pair.h",
+        "prelude.h",
+    ],
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//:base",
+        "//either",
+        "//eq",
+        "//lambda",
+        "//nat",
+        "//pair",
+        "//var",
+    ],
+)

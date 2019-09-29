@@ -5,6 +5,6 @@ cc_library(
         "ind_eq.h",
         "same.h",
     ],
-    visibility = ["//:__pkg__"],
+    visibility = ["//:__subpackages__"],
     deps = ["//:base"],
 )

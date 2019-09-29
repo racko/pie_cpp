@@ -6,6 +6,6 @@ cc_library(
         "cons.h",
         "sigma.h",
     ],
-    visibility = ["//:__pkg__"],
+    visibility = ["//:__subpackages__"],
     deps = ["//:base"],
 )
