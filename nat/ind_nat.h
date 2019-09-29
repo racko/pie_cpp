@@ -37,9 +37,12 @@ struct Equal<IndNat_t<Target1, Mot1, Base1, Step1>, IndNat_t<Target2, Mot2, Base
                          equal_v<Step1, Step2>> {};
 
 template <typename Target, typename Mot, typename Base, typename Step>
-void print(std::ostream& s, const IndNat_t<Target, Mot, Base, Step>& x) {
-    s << "(ind-Nat " << x.target_ << ' ' << x.mot_ << ' ' << x.base_ << ' ' << x.step_ << ')';
-}
+struct Printer<IndNat_t<Target, Mot, Base, Step>> {
+    static void print(std::ostream& s) {
+        s << "(ind-Nat " << Print<Target>{} << ' ' << Print<Mot>{} << ' ' << Print<Base>{} << ' ' << Print<Step>{}
+          << ')';
+    }
+};
 
 template <typename Target, typename Mot, typename Base, typename Step>
 constexpr IndNat_t<Target, Mot, Base, Step>

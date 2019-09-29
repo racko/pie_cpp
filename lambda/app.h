@@ -35,9 +35,9 @@ template <typename F1, typename Arg1, typename F2, typename Arg2>
 struct Equal<App_t<F1, Arg1>, App_t<F2, Arg2>> : std::bool_constant<equal_v<F1, F2> && equal_v<Arg1, Arg2>> {};
 
 template <typename F, typename Arg>
-void print(std::ostream& s, const App_t<F, Arg>& app) {
-    s << '(' << app.f_ << ' ' << app.arg_ << ')';
-}
+struct Printer<App_t<F, Arg>> {
+    static void print(std::ostream& s) { s << '(' << Print<F>{} << ' ' << Print<Arg>{} << ')'; }
+};
 
 template <typename F, typename Arg>
 struct step_result<App_t<F, Arg>> {

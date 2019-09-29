@@ -19,9 +19,9 @@ template <typename Derived1, typename Derived2>
 struct Equal<Add1_t<Derived1>, Add1_t<Derived2>> : std::bool_constant<equal_v<Derived1, Derived2>> {};
 
 template <typename Derived>
-void print(std::ostream& s, const Add1_t<Derived>& n) {
-    s << "(add1 " << n.smaller_ << ')';
-}
+struct Printer<Add1_t<Derived>> {
+    static void print(std::ostream& s) { s << "(add1 " << Print<Derived>{} << ')'; }
+};
 
 template <typename Derived>
 constexpr Add1_t<Derived> add1(const Pie<Derived>& n) {

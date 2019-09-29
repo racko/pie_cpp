@@ -16,9 +16,9 @@ template <std::int32_t N1, std::int32_t N2>
 struct Equal<Int32<N1>, Int32<N2>> : std::bool_constant<N1 == N2> {};
 
 template <std::int32_t N>
-void print(std::ostream& s, Int32<N>) {
-    s << N;
-}
+struct Printer<Int32<N>> {
+    static void print(std::ostream& s) { s << N; }
+};
 
 template <std::int32_t N>
 constexpr Int32<N> nat() {

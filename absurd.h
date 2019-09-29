@@ -13,7 +13,10 @@ inline constexpr Absurd_t Absurd;
 template <>
 struct Equal<Absurd_t, Absurd_t> : std::true_type {};
 
-inline void print(std::ostream& s, Absurd_t) { s << "Absurd"; }
+template <>
+struct Printer<Absurd_t> {
+    static void print(std::ostream& s) { s << "Absurd"; }
+};
 
 constexpr bool IsAType1(Absurd_t) { return true; }
 

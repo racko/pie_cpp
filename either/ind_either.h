@@ -37,9 +37,12 @@ struct Equal<IndEither_t<Target1, Mot1, BaseLeft1, BaseRight1>, IndEither_t<Targ
                          equal_v<BaseRight1, BaseRight2>> {};
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-void print(std::ostream& s, const IndEither_t<Target, Mot, BaseLeft, BaseRight>& x) {
-    s << "(ind-Either " << x.target_ << ' ' << x.mot_ << ' ' << x.base_left_ << ' ' << x.base_right_ << ')';
-}
+struct Printer<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
+    static void print(std::ostream& s) {
+        s << "(ind-Either " << Print<Target>{} << ' ' << Print<Mot>{} << ' ' << Print<BaseLeft>{} << ' '
+          << Print<BaseRight>{} << ')';
+    }
+};
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 constexpr IndEither_t<Target, Mot, BaseLeft, BaseRight> ind_Either(const Pie<Target>& target,

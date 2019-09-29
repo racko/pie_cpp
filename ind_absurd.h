@@ -22,9 +22,9 @@ struct Equal<IndAbsurd_t<Target1, Mot1>, IndAbsurd_t<Target2, Mot2>>
     : std::bool_constant<equal_v<Target1, Target2> && equal_v<Mot1, Mot2>> {};
 
 template <typename Target, typename Mot>
-void print(std::ostream& s, const IndAbsurd_t<Target, Mot>& ind_absurd) {
-    s << "(ind-= " << ind_absurd.target_ << ' ' << ind_absurd.mot_ << ')';
-}
+struct Printer<IndAbsurd_t<Target, Mot>> {
+    static void print(std::ostream& s) { s << "(ind-Absurd " << Print<Target>{} << ' ' << Print<Mot>{} << ')'; }
+};
 
 template <typename Target, typename Mot>
 constexpr IndAbsurd_t<Target, Mot> ind_Absurd(const Pie<Target>& target, const Pie<Mot>& mot) {

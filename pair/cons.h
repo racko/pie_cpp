@@ -27,7 +27,7 @@ struct Equal<Cons_t<Derived1, Derived2>, Cons_t<Derived3, Derived4>>
 
 template <typename Derived1, typename Derived2>
 struct Printer<Cons_t<Derived1, Derived2>> {
-    void print(std::ostream& s) { s << "(cons " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ')'; }
+    static void print(std::ostream& s) { s << "(cons " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ')'; }
 };
 
 template <typename Derived1, typename Derived2>

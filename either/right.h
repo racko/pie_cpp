@@ -19,9 +19,14 @@ template <typename Derived1, typename Derived2>
 struct Equal<Right_t<Derived1>, Right_t<Derived2>> : std::bool_constant<equal_v<Derived1, Derived2>> {};
 
 template <typename Derived>
-void print(std::ostream& s, const Right_t<Derived>& x) {
+static void print(std::ostream& s, const Right_t<Derived>& x) {
     s << "(right " << x.r_ << ')';
 }
+
+template <typename Derived>
+struct Printer<Right_t<Derived>> {
+    static void print(std::ostream& s) { s << "(right " << Print<Derived>{} << ')'; }
+};
 
 template <typename Derived>
 constexpr Right_t<Derived> right(const Pie<Derived>& x) {

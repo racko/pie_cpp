@@ -14,7 +14,7 @@ struct Equal<Var_t<id1>, Var_t<id2>> : std::bool_constant<id1 == id2> {};
 
 template <int id>
 struct Printer<Var_t<id>> {
-    void print(std::ostream& s) { s << 'x' << id; }
+    static void print(std::ostream& s) { s << 'x' << id; }
 };
 
 template <int id>

@@ -25,13 +25,12 @@ constexpr bool equal(const Either_t<L1, R1>& lhs, const Either_t<L2, R2>& rhs) {
 }
 
 template <typename L1, typename R1, typename L2, typename R2>
-struct Equal<Either_t<L1, R1>, Either_t<L2, R2>>
-    : std::bool_constant<equal_v<L1, L2> && equal_v<R1, R2>> {};
+struct Equal<Either_t<L1, R1>, Either_t<L2, R2>> : std::bool_constant<equal_v<L1, L2> && equal_v<R1, R2>> {};
 
 template <typename L, typename R>
-inline void print(std::ostream& s, const Either_t<L, R>& x) {
-    s << "Either(" << x.left_ << ' ' << x.right_ << ')';
-}
+struct Printer<Either_t<L, R>> {
+    static void print(std::ostream& s) { s << "(Either " << Print<L>{} << ' ' << Print<R>{} << ')'; }
+};
 
 template <typename L, typename R>
 constexpr bool IsAType1(const Either_t<L, R>& x) {

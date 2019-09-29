@@ -20,7 +20,7 @@ struct Equal<Car_t<Derived1>, Car_t<Derived2>> : std::bool_constant<equal_v<Deri
 
 template <typename Derived>
 struct Printer<Car_t<Derived>> {
-    void print(std::ostream& s) { s << "(car " << Print<Derived>{} << ')'; }
+    static void print(std::ostream& s) { s << "(car " << Print<Derived>{} << ')'; }
 };
 
 template <typename Derived>

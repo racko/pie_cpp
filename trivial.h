@@ -13,7 +13,10 @@ inline constexpr Trivial_t Trivial;
 template <>
 struct Equal<Trivial_t, Trivial_t> : std::true_type {};
 
-inline void print(std::ostream& s, Trivial_t) { s << "Trivial"; }
+template <>
+struct Printer<Trivial_t> {
+    static void print(std::ostream& s) { s << "Trivial"; }
+};
 
 struct Sole_t : Pie<Sole_t> {};
 
@@ -23,7 +26,10 @@ struct Height<Sole_t> : std::integral_constant<int, 0> {};
 template <>
 struct Equal<Sole_t, Sole_t> : std::true_type {};
 
-inline void print(std::ostream& s, Sole_t) { s << "sole"; }
+template <>
+struct Printer<Sole_t> {
+    static void print(std::ostream& s) { s << "sole"; }
+};
 
 inline constexpr Sole_t sole;
 

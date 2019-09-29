@@ -5,8 +5,7 @@
 #include <ostream>
 #include <utility>
 
-struct Zero_t : Pie<Zero_t> {
-};
+struct Zero_t : Pie<Zero_t> {};
 
 template <>
 struct Height<Zero_t> : std::integral_constant<int, 0> {};
@@ -16,7 +15,10 @@ inline constexpr Zero_t zero;
 template <>
 struct Equal<Zero_t, Zero_t> : std::true_type {};
 
-inline void print(std::ostream& s, Zero_t) { s << "zero"; }
+template <>
+struct Printer<Zero_t> {
+    static void print(std::ostream& s) { s << "zero"; }
+};
 
 constexpr bool IsA1(Zero_t, Nat_t) { return true; }
 

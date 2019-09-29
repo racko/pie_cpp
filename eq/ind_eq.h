@@ -26,9 +26,11 @@ struct Equal<IndEq_t<Target1, Mot1, Base1>, IndEq_t<Target2, Mot2, Base2>>
     : std::bool_constant<equal_v<Target1, Target2> && equal_v<Mot1, Mot2> && equal_v<Base1, Base2>> {};
 
 template <typename Target, typename Mot, typename Base>
-void print(std::ostream& s, const IndEq_t<Target, Mot, Base>& ind_eq) {
-    s << "(ind-= " << ind_eq.target_ << ' ' << ind_eq.mot_ << ' ' << ind_eq.base_ << ')';
-}
+struct Printer<IndEq_t<Target, Mot, Base>> {
+    static void print(std::ostream& s) {
+        s << "(ind-= " << Print<Target>{} << ' ' << Print<Mot>{} << ' ' << Print<Base>{} << ')';
+    }
+};
 
 template <typename Target, typename Mot, typename Base>
 constexpr IndEq_t<Target, Mot, Base> ind_Eq(const Pie<Target>& target, const Pie<Mot>& mot, const Pie<Base>& base) {

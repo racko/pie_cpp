@@ -21,7 +21,7 @@ struct Equal<Cdr_t<Derived1>, Cdr_t<Derived2>> : std::bool_constant<equal_v<Deri
 
 template <typename Derived>
 struct Printer<Cdr_t<Derived>> {
-    void print(std::ostream& s) { s << "(cdr " << Print<Derived>{} << ')'; }
+    static void print(std::ostream& s) { s << "(cdr " << Print<Derived>{} << ')'; }
 };
 
 template <typename Derived>

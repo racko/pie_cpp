@@ -31,7 +31,7 @@ struct Equal<Lambda_t<F1>, Lambda_t<F2>>
 
 template <typename F>
 struct Printer<Lambda_t<F>> {
-    void print(std::ostream& s) {
+    static void print(std::ostream& s) {
         using VarType = Var_t<height_v<Lambda_t<F>>>;
         s << "(λ (" << Print<VarType>{} << ") " << Print<std::invoke_result_t<F, VarType>>{} << ')';
     }

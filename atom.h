@@ -14,7 +14,10 @@ inline constexpr Atom_t Atom;
 template <>
 struct Equal<Atom_t, Atom_t> : std::true_type {};
 
-inline void print(std::ostream& s, Atom_t) { s << "Atom"; }
+template <>
+struct Printer<Atom_t> {
+    static void print(std::ostream& s) { s << "Atom"; }
+};
 
 template <typename Symbol>
 struct Quote_t : Pie<Quote_t<Symbol>> {};
@@ -48,9 +51,9 @@ struct Equal<Quote_t<Symbol1>, Quote_t<Symbol2>>
     : std::bool_constant<detail::strcmp(Symbol1::value, Symbol2::value) == 0> {};
 
 template <typename Symbol>
-inline void print(std::ostream& s, Quote_t<Symbol>) {
-    s << '\'' << Symbol::value;
-}
+struct Printer<Quote_t<Symbol>> {
+    static void print(std::ostream& s) { s << '\'' << Symbol::value; }
+};
 
 template <typename Symbol>
 constexpr Quote_t<Symbol> quote() {

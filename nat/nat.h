@@ -14,7 +14,10 @@ inline constexpr Nat_t Nat;
 template <>
 struct Equal<Nat_t, Nat_t> : std::true_type {};
 
-inline void print(std::ostream& s, Nat_t) { s << "Nat"; }
+template<>
+struct Printer<Nat_t> {
+    static void print(std::ostream& s) { s << "Nat"; }
+};
 
 constexpr bool IsAType1(Nat_t) { return true; }
 

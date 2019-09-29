@@ -377,9 +377,9 @@ template <typename T, typename Symbol, typename Type, typename Expr>
 struct Equal<T, Definition<Symbol, Type, Expr>> : std::bool_constant<equal_v<T, Expr>> {};
 
 template <typename Symbol, typename Type, typename Expr>
-void print(std::ostream& s, Definition<Symbol, Type, Expr>) {
-    s << Symbol::value;
-}
+struct Printer<Definition<Symbol, Type, Expr>> {
+    static void print(std::ostream& s) { s << Symbol::value; }
+};
 
 template <typename Symbol, typename Type, typename Expr>
 constexpr Definition<Symbol, Type, Expr> define(const Type& type, const Expr& expr) {
@@ -418,7 +418,10 @@ struct Height<U_t> : std::integral_constant<int, 0> {};
 template <>
 struct Equal<U_t, U_t> : std::true_type {};
 
-inline void print(std::ostream& s, U_t) { s << 'U'; }
+template<>
+struct Printer<U_t> {
+    static void print(std::ostream& s) { s << 'U'; }
+};
 
 inline constexpr U_t U;
 

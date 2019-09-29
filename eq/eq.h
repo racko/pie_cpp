@@ -33,9 +33,11 @@ struct Equal<Eq_t<Derived1, Derived2, Derived3>, Eq_t<Derived4, Derived5, Derive
     : std::bool_constant<equal_v<Derived1, Derived4> && equal_v<Derived2, Derived5> && equal_v<Derived3, Derived6>> {};
 
 template <typename Derived1, typename Derived2, typename Derived3>
-void print(std::ostream& s, const Eq_t<Derived1, Derived2, Derived3>& eq) {
-    s << "(= " << eq.type_ << ' ' << eq.from_ << ' ' << eq.to_ << ')';
-}
+struct Printer<Eq_t<Derived1, Derived2, Derived3>> {
+    static void print(std::ostream& s) {
+        s << "(= " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ' ' << Print<Derived3>{} << ')';
+    }
+};
 
 template <typename Derived1, typename Derived2, typename Derived3>
 constexpr Eq_t<Derived1, Derived2, Derived3>

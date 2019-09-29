@@ -20,7 +20,7 @@ struct Equal<The_t<Derived1, Derived2>, The_t<Derived3, Derived4>> : std::bool_c
 
 template <typename Derived1, typename Derived2>
 struct Printer<The_t<Derived1, Derived2>> {
-    void print(std::ostream& s) { s << "(the " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ')'; }
+    static void print(std::ostream& s) { s << "(the " << Print<Derived1>{} << ' ' << Print<Derived2>{} << ')'; }
 };
 
 template <typename Derived1, typename Derived2>

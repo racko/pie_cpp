@@ -22,9 +22,9 @@ template <typename Derived1, typename Derived2>
 struct Equal<Same_t<Derived1>, Same_t<Derived2>> : std::bool_constant<equal_v<Derived1, Derived2>> {};
 
 template <typename Derived>
-void print(std::ostream& s, const Same_t<Derived>& same) {
-    s << "(same " << same.x_ << ')';
-}
+struct Printer<Same_t<Derived>> {
+    static void print(std::ostream& s) { s << "(same " << Print<Derived>{} << ')'; }
+};
 
 template <typename Derived>
 constexpr Same_t<Derived> same(const Pie<Derived>& x) {

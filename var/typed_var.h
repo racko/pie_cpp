@@ -18,7 +18,7 @@ struct Equal<TypedVar_t<Type1, id1>, TypedVar_t<Type2, id2>> : std::bool_constan
 
 template <typename Type, int id>
 struct Printer<TypedVar_t<Type, id>> {
-    void print(std::ostream& s) { s << '[' << 'x' << id << ' ' << Print<Type>{} << ']'; }
+    static void print(std::ostream& s) { s << '[' << 'x' << id << ' ' << Print<Type>{} << ']'; }
 };
 
 template <int id, typename Type>

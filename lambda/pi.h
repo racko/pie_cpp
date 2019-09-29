@@ -31,7 +31,7 @@ struct Equal<Pi_t<ArgType1, Result1>, Pi_t<ArgType2, Result2>>
 
 template <typename ArgType, typename Result>
 struct Printer<Pi_t<ArgType, Result>> {
-    void print(std::ostream& s) {
+    static void print(std::ostream& s) {
         using VarType = TypedVar_t<ArgType, height_v<Pi_t<ArgType, Result>>>;
         s << "(Π (" << Print<VarType>{} << ' ' << Print<ArgType>{} << ") "
           << Print<std::invoke_result_t<Result, VarType>>{} << ')';
