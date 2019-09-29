@@ -18,7 +18,7 @@ TEST_CASE("Chapter 14") {
     SECTION("list-ref") {}
     // list-ref: "aref"
     SECTION("Absurd") {
-        define<Similarly_absurd>(Arrow(Absurd, Absurd), lambda([](const auto& x){ return x; }));
+        define<Similarly_absurd>(Arrow(Absurd, Absurd), lambda([](const auto& x) { return x; }));
     }
     SECTION("Fin") {}
     // Fin: finite number. Implemented using Absurd and Maybe

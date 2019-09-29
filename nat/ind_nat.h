@@ -128,4 +128,3 @@ constexpr synth_result_t<IndNat_t<Target, Mot, Base, Step>> synth1(const IndNat_
     assert(IsA(x.step_, Pi(Nat, [&x](const auto& smaller) { return Arrow(x.mot_(smaller), x.mot_(add1(smaller))); })));
     return x.mot_(x.target_);
 }
-

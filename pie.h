@@ -1,7 +1,6 @@
 #pragma once
 
 #include "absurd.h"
-#include "ind_absurd.h"
 #include "atom.h"
 #include "either/either.h"
 #include "either/ind_either.h"
@@ -10,6 +9,7 @@
 #include "eq/eq.h"
 #include "eq/ind_eq.h"
 #include "eq/same.h"
+#include "ind_absurd.h"
 #include "lambda/app.h"
 #include "lambda/lambda.h"
 #include "lambda/pi.h"

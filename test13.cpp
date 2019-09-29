@@ -8,8 +8,6 @@
 // TODO: mark each CHECK with frame number and page
 
 TEST_CASE("Chapter 13") {
-    SECTION("Either/ind-Either") {
-        CHECK(Normalize(even_or_odd(two)) == left(cons(one, same(two))));
-    }
+    SECTION("Either/ind-Either") { CHECK(Normalize(even_or_odd(two)) == left(cons(one, same(two)))); }
     // Either even or odd
 }

@@ -247,70 +247,65 @@ inline CONSTEXPR auto even_or_odd = [] {
             }));
     }();
 
-    return define<Even_or_odd>(
-                  Pi(Nat, [](const auto& n) { return Either(Even(n), Odd(n)); }),
-                  lambda([mot_even_or_odd, base_even_or_odd, step_even_or_odd](const auto& n) {
-                      return ind_Nat(n, mot_even_or_odd, base_even_or_odd, step_even_or_odd);
-                  }));
+    return define<Even_or_odd>(Pi(Nat, [](const auto& n) { return Either(Even(n), Odd(n)); }),
+                               lambda([mot_even_or_odd, base_even_or_odd, step_even_or_odd](const auto& n) {
+                                   return ind_Nat(n, mot_even_or_odd, base_even_or_odd, step_even_or_odd);
+                               }));
 }();
 
 inline CONSTEXPR auto use_Nat_eq = [] {
-    CONSTEXPR auto eq_consequence =
-        define<Eq_consequence>(Arrow(Nat, Nat, U), lambda([](const auto& n, const auto& j) {
-                   return ind_Nat(
-                       n,
-                       lambda([](const auto&) { return U; }),
-                       ind_Nat(j, lambda([](const auto&) { return U; }), Trivial, lambda([](const auto&, const auto&) {
-                                   return Absurd;
-                               })),
-                       lambda([j](const auto& n_minus_1, const auto&) {
-                           return ind_Nat(j,
-                                          lambda([](const auto&) { return U; }),
-                                          Absurd,
-                                          lambda([n_minus_1](const auto& j_minus_1, const auto&) {
-                                              return Eq(Nat, n_minus_1, j_minus_1);
-                                          }));
-                       }));
-               }));
+    CONSTEXPR auto eq_consequence = define<Eq_consequence>(
+        Arrow(Nat, Nat, U), lambda([](const auto& n, const auto& j) {
+            return ind_Nat(
+                n,
+                lambda([](const auto&) { return U; }),
+                ind_Nat(j, lambda([](const auto&) { return U; }), Trivial, lambda([](const auto&, const auto&) {
+                            return Absurd;
+                        })),
+                lambda([j](const auto& n_minus_1, const auto&) {
+                    return ind_Nat(j,
+                                   lambda([](const auto&) { return U; }),
+                                   Absurd,
+                                   lambda([n_minus_1](const auto& j_minus_1, const auto&) {
+                                       return Eq(Nat, n_minus_1, j_minus_1);
+                                   }));
+                }));
+        }));
 
-    CONSTEXPR auto eq_consequence_same =
-        define<Eq_consequence_same>(
-               Pi(Nat, [eq_consequence](const auto& n) { return eq_consequence(n, n); }),
-               lambda([eq_consequence](const auto& n) {
-                   return ind_Nat(n,
-                                  lambda([eq_consequence](const auto& k) { return eq_consequence(k, k); }),
-                                  sole,
-                                  lambda([](const auto& n_minus_1, const auto&) { return same(n_minus_1); }));
-               }));
+    CONSTEXPR auto eq_consequence_same = define<Eq_consequence_same>(
+        Pi(Nat, [eq_consequence](const auto& n) { return eq_consequence(n, n); }),
+        lambda([eq_consequence](const auto& n) {
+            return ind_Nat(n,
+                           lambda([eq_consequence](const auto& k) { return eq_consequence(k, k); }),
+                           sole,
+                           lambda([](const auto& n_minus_1, const auto&) { return same(n_minus_1); }));
+        }));
 
     return define<Use_Nat_eq>(
-                  Pi(Nat,
-                     [eq_consequence](const auto& n) {
-                         return Pi(Nat, [eq_consequence, n](const auto& j) {
-                             return Arrow(Eq(Nat, n, j), eq_consequence(n, j));
-                         });
-                     }),
-                  lambda([eq_consequence, eq_consequence_same](const auto& n, const auto& j, const auto& n_equals_j) {
-                      return replace(Nat,
-                                     n,
-                                     j,
-                                     n_equals_j,
-                                     lambda([eq_consequence, n](const auto& k) { return eq_consequence(n, k); }),
-                                     eq_consequence_same(n));
-                  }));
+        Pi(Nat,
+           [eq_consequence](const auto& n) {
+               return Pi(Nat,
+                         [eq_consequence, n](const auto& j) { return Arrow(Eq(Nat, n, j), eq_consequence(n, j)); });
+           }),
+        lambda([eq_consequence, eq_consequence_same](const auto& n, const auto& j, const auto& n_equals_j) {
+            return replace(Nat,
+                           n,
+                           j,
+                           n_equals_j,
+                           lambda([eq_consequence, n](const auto& k) { return eq_consequence(n, k); }),
+                           eq_consequence_same(n));
+        }));
 }();
 
 inline CONSTEXPR auto zero_not_add1 =
-    define<Zero_not_add1>(
-           Pi(Nat, [](const auto& n) { return Arrow(Eq(Nat, zero, add1(n)), Absurd); }),
-           lambda([](const auto& n) { return use_Nat_eq(zero, add1(n)); }));
-inline CONSTEXPR auto sub1_eq =
-    define<Sub1_eq>(
-           Pi(Nat,
-              [](const auto& n) {
-                  return Pi(Nat, [n](const auto& j) { return Arrow(Eq(Nat, add1(n), add1(j)), Eq(Nat, n, j)); });
-              }),
-           lambda([](const auto& n, const auto& j) { return use_Nat_eq(add1(n), add1(j)); }));
+    define<Zero_not_add1>(Pi(Nat, [](const auto& n) { return Arrow(Eq(Nat, zero, add1(n)), Absurd); }),
+                          lambda([](const auto& n) { return use_Nat_eq(zero, add1(n)); }));
+inline CONSTEXPR auto sub1_eq = define<Sub1_eq>(
+    Pi(Nat,
+       [](const auto& n) {
+           return Pi(Nat, [n](const auto& j) { return Arrow(Eq(Nat, add1(n), add1(j)), Eq(Nat, n, j)); });
+       }),
+    lambda([](const auto& n, const auto& j) { return use_Nat_eq(add1(n), add1(j)); }));
 
 inline CONSTEXPR auto is_zero = define<Is_zero>(
     Pi(Nat, [](const auto& n) { return Dec(Eq(Nat, zero, n)); }), lambda([](const auto& n) {
@@ -325,6 +320,6 @@ inline CONSTEXPR auto Nat = define<Nat_>(U, Pi(U, [](const auto& X) { return Arr
 inline CONSTEXPR auto zero = define<Zero>(Nat, lambda([](const auto&, const auto& b, const auto&) { return b; }));
 inline CONSTEXPR auto add1 =
     define<Add1>(Arrow(Nat, Nat), lambda([](const auto& smaller, const auto& X, const auto& b, const auto& step) {
-               return step(smaller(X, b, step));
-           }));
+                     return step(smaller(X, b, step));
+                 }));
 } // namespace church

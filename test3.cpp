@@ -7,7 +7,6 @@
 //
 // TODO: mark each CHECK with frame number and page
 
-
 TEST_CASE("Chapter 2.5") {
     SECTION("the") {}
 }

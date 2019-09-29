@@ -168,13 +168,13 @@ struct Step_even_or_odd {
 struct Even_or_odd {
     static inline constexpr const char* value = "even-or-odd";
 };
-struct Eq_consequence  {
+struct Eq_consequence {
     static inline constexpr const char* value = "=consequence";
 };
-struct Eq_consequence_same  {
+struct Eq_consequence_same {
     static inline constexpr const char* value = "=consequence-same";
 };
-struct Use_Nat_eq  {
+struct Use_Nat_eq {
     static inline constexpr const char* value = "use-Nat-eq";
 };
 struct Zero_not_add1 {

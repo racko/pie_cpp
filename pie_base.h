@@ -418,7 +418,7 @@ struct Height<U_t> : std::integral_constant<int, 0> {};
 template <>
 struct Equal<U_t, U_t> : std::true_type {};
 
-template<>
+template <>
 struct Printer<U_t> {
     static void print(std::ostream& s) { s << 'U'; }
 };
