@@ -77,3 +77,211 @@
 
 (claim =consequence-same (Pi ((n Nat)) (=consequence n n)))
 (define =consequence-same (lambda (n) (ind-Nat n (lambda (k) (=consequence k k)) sole (lambda (n-1 same-n-1) (same n-1)))))
+
+(claim mot-n=n+0 (-> Nat U))
+(define mot-n=n+0 (lambda (k) (= Nat k (+ k 0))))
+
+(claim base-n=n+0 (mot-n=n+0 0))
+(define base-n=n+0 (same 0))
+
+(claim step-n=n+0 (Pi ((k Nat)) (-> (mot-n=n+0 k) (mot-n=n+0 (add1 k)))))
+(define step-n=n+0 (lambda (k k=k+0) (cong k=k+0 (+ 1))))
+
+(claim n=n+0 (Pi ((n Nat)) (= Nat n (+ n 0))))
+(define n=n+0 (lambda (n) (ind-Nat n mot-n=n+0 base-n=n+0 step-n=n+0)))
+
+(claim n+0=n (Pi ((n Nat)) (= Nat (+ n 0) n)))
+(define n+0=n (lambda (n) (symm (n=n+0 n))))
+
+(claim mot-add1+=+add1 (-> Nat Nat U))
+(define mot-add1+=+add1 (lambda (j k) (= Nat (add1 (+ k j)) (+ k (add1 j)))))
+
+(claim base-add1+=+add1 (Pi ((j Nat)) (mot-add1+=+add1 j 0)))
+(define base-add1+=+add1 (lambda (j) (same (add1 j))))
+
+(claim step-add1+=+add1 (Pi ((j Nat) (k Nat)) (-> (mot-add1+=+add1 j k) (mot-add1+=+add1 j (add1 k)))))
+(define step-add1+=+add1 (lambda (j k assumption) (cong assumption (+ 1))))
+
+(claim add1+=+add1 (Pi ((n Nat) (j Nat)) (= Nat (add1 (+ n j)) (+ n (add1 j)))))
+(define add1+=+add1 (lambda (n j) (ind-Nat n (mot-add1+=+add1 j) (base-add1+=+add1 j) (step-add1+=+add1 j))))
+
+(claim mot-+-commutativity (-> Nat Nat U))
+(define mot-+-commutativity (lambda (j k) (= Nat (+ k j) (+ j k))))
+
+(claim step-+-commutativity (Pi ((j Nat) (k Nat)) (-> (mot-+-commutativity j k) (mot-+-commutativity j (add1 k)))))
+(define step-+-commutativity (lambda (j k assumption) (trans (cong assumption (+ 1)) (add1+=+add1 j k))))
+
+(claim +-commutativity (Pi ((a Nat) (b Nat)) (= Nat (+ a b) (+ b a))))
+(define +-commutativity (lambda (a b) (ind-Nat a (mot-+-commutativity b) (n=n+0 b) (step-+-commutativity b))))
+
+(claim mot-+-associativity (-> Nat Nat Nat U))
+(define mot-+-associativity (lambda (b c a) (= Nat (+ a (+ b c)) (+ (+ a b) c))))
+
+(claim step-+-associativity (Pi ((b Nat) (c Nat) (a Nat)) (-> (mot-+-associativity b c a) (mot-+-associativity b c (add1 a)))))
+(define step-+-associativity (lambda (b c a assumption) (cong assumption (+ 1))))
+
+(claim +-associativity (Pi ((a Nat) (b Nat) (c Nat)) (= Nat (+ a (+ b c)) (+ (+ a b) c))))
+(define +-associativity (lambda (a b c) (ind-Nat a (mot-+-associativity b c) (same (+ b c)) (step-+-associativity b c))))
+
+(claim * (-> Nat Nat Nat))
+(define * (lambda (n j) (iter-Nat n 0 (+ j))))
+
+(claim iter-Nat-id=base (Pi ((X U) (n Nat) (base X)) (= X base (iter-Nat n base (lambda (x) x)))))
+(define iter-Nat-id=base (lambda (X n base) (ind-Nat n (lambda (k) (= X base (iter-Nat k base (lambda (x) x)))) (same base) (lambda (k-1 assumption) assumption))))
+
+(claim 0=n*0 (Pi ((n Nat)) (= Nat 0 (* n 0))))
+(define 0=n*0 (lambda (n) (iter-Nat-id=base Nat n 0)))
+
+(claim mot-n+=*add1 (-> Nat Nat U))
+(define mot-n+=*add1 (lambda (j k) (= Nat (* k (add1 j)) (+ k (* k j)))))
+
+(claim step-n+=*add1-1 (Pi ((j Nat) (k Nat)) (= Nat (add1 (+ j (+ k (* k j)))) (add1 (+ (+ j k) (* k j))))))
+(define step-n+=*add1-1 (lambda (j k) (cong (+-associativity j k (* k j)) (+ 1))))
+
+(claim step-n+=*add1-2 (Pi ((j Nat) (k Nat)) (= Nat (add1 (+ (+ j k) (* k j))) (add1 (+ (+ k j) (* k j))))))
+(define step-n+=*add1-2 (lambda (j k) (cong (+-commutativity j k) (the (-> Nat Nat) (lambda (x) (add1 (+ x (* k j))))))))
+
+(claim step-n+=*add1-3 (Pi ((j Nat) (k Nat)) (= Nat (add1 (+ (+ k j) (* k j))) (add1 (+ k (+ j (* k j)))))))
+(define step-n+=*add1-3 (lambda (j k) (symm (cong (+-associativity k j (* k j)) (+ 1)))))
+
+(claim step-n+=*add1-1-3 (Pi ((j Nat) (k Nat)) (= Nat (+ (add1 j) (+ k (* k j))) (+ (add1 k) (* (add1 k) j)))))
+(define step-n+=*add1-1-3 (lambda (j k) (trans (step-n+=*add1-1 j k) (trans (step-n+=*add1-2 j k) (step-n+=*add1-3 j k)))))
+
+(claim step-n+=*add1 (Pi ((j Nat) (k Nat)) (-> (mot-n+=*add1 j k) (mot-n+=*add1 j (add1 k)))))
+(define step-n+=*add1 (lambda (j k assumption) (trans (cong assumption (+ (add1 j))) (step-n+=*add1-1-3 j k))))
+
+(claim n+=*add1 (Pi ((n Nat) (j Nat)) (= Nat (* n (add1 j)) (+ n (* n j)))))
+(define n+=*add1 (lambda (n j) (ind-Nat n (mot-n+=*add1 j) (same 0) (step-n+=*add1 j))))
+
+(claim mot-distributivity2 (-> Nat Nat Nat U))
+(define mot-distributivity2 (lambda (b c a) (= Nat (+ (* a b) (* a c)) (* a (+ b c)))))
+
+(claim step2A (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ (+ b c) (* a b)) (* a c)))))
+(define step2A (lambda (b c a) (+-associativity (+ b c) (* a b) (* a c))))
+
+(claim step2B (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ (+ b c) (* a b)) (* a c)) (+ (+ (+ c b) (* a b)) (* a c)))))
+(define step2B (lambda (b c a) (cong (+-commutativity b c) (the (-> Nat Nat) (lambda (k) (+ (+ k (* a b)) (* a c)))))))
+
+(claim step2A-B (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ (+ c b) (* a b)) (* a c)))))
+(define step2A-B (lambda (b c a) (trans (step2A b c a) (step2B b c a))))
+
+(claim step2C (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ (+ c b) (* a b)) (* a c)) (+ (+ c (+ b (* a b))) (* a c)))))
+(define step2C (lambda (b c a) (symm (cong (+-associativity c b (* a b)) (the (-> Nat Nat) (lambda (k) (+ k (* a c))))))))
+
+(claim step2A-C (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ c (+ b (* a b))) (* a c)))))
+(define step2A-C (lambda (b c a) (trans (step2A-B b c a) (step2C b c a))))
+
+(claim step2D (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ c (+ b (* a b))) (* a c)) (+ (+ (+ b (* a b)) c) (* a c)))))
+(define step2D (lambda (b c a) (cong (+-commutativity c (+ b (* a b))) (the (-> Nat Nat) (lambda (k) (+ k (* a c)))))))
+
+(claim step2A-D (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ (+ b (* a b)) c) (* a c)))))
+(define step2A-D (lambda (b c a) (trans (step2A-C b c a) (step2D b c a))))
+
+(claim step2E (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ (+ b (* a b)) c) (* a c)) (+ (+ b (* a b)) (+ c (* a c))))))
+(define step2E (lambda (b c a) (symm (+-associativity (+ b (* a b)) c (* a c)))))
+
+(claim step2A-E (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ b (* a b)) (+ c (* a c))))))
+(define step2A-E (lambda (b c a) (trans (step2A-D b c a) (step2E b c a))))
+
+(claim step1 (Pi ((b Nat) (c Nat) (a Nat)) (-> (= Nat (+ (* a b) (* a c)) (* a (+ b c))) (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ b c) (* a (+ b c)))))))
+(define step1 (lambda (b c a proof0) (cong proof0 (+ (+ b c)))))
+
+(claim step2 (Pi ((b Nat) (c Nat) (a Nat)) (-> (= Nat (+ (+ b c) (+ (* a b) (* a c))) (+ (+ b c) (* a (+ b c)))) (= Nat (+ (+ b (* a b)) (+ c (* a c))) (+ (+ b c) (* a (+ b c)))))))
+(define step2 (lambda (b c a proof1) (trans (symm (step2A-E b c a)) proof1)))
+
+(claim step-distributivity2 (Pi ((b Nat) (c Nat) (a Nat)) (-> (mot-distributivity2 b c a) (mot-distributivity2 b c (add1 a)))))
+(define step-distributivity2 (lambda (b c a assumption) (step2 b c a (step1 b c a assumption))))
+
+(claim distributivity2 (Pi ((a Nat) (b Nat) (c Nat)) (= Nat (+ (* a b) (* a c)) (* a (+ b c)))))
+(define distributivity2 (lambda (a b c) (ind-Nat a (mot-distributivity2 b c) (same 0) (step-distributivity2 b c))))
+
+(claim mot-distributivity (-> Nat Nat Nat U))
+(define mot-distributivity (lambda (a c b) (= Nat (+ (* b a) (* c a)) (* (+ b c) a))))
+
+(claim step-distributivity (Pi ((a Nat) (c Nat) (b Nat)) (-> (mot-distributivity a c b) (mot-distributivity a c (add1 b)))))
+(define step-distributivity (lambda (a c b assumption) (trans (symm (+-associativity a (* b a) (* c a))) (cong assumption (+ a)))))
+
+(claim distributivity (Pi ((a Nat) (b Nat) (c Nat)) (= Nat (+ (* b a) (* c a)) (* (+ b c) a))))
+(define distributivity (lambda (a b c) (ind-Nat b (mot-distributivity a c) (same (* c a)) (step-distributivity a c))))
+
+(claim mot-*-associativity (-> Nat Nat Nat U))
+(define mot-*-associativity (lambda (b c a) (= Nat (* a (* b c)) (* (* a b) c))))
+
+(claim step-*-associativity-1 (Pi ((b Nat) (c Nat) (a Nat)) (= Nat (+ (* b c) (* (* a b) c)) (* (+ b (* a b)) c))))
+(define step-*-associativity-1 (lambda (b c a) (distributivity c b (* a b))))
+
+(claim step-*-associativity (Pi ((b Nat) (c Nat) (a Nat)) (-> (mot-*-associativity b c a) (mot-*-associativity b c (add1 a)))))
+(define step-*-associativity (lambda (b c a assumption) (trans (cong assumption (+ (* b c))) (step-*-associativity-1 b c a))))
+
+(claim *-associativity (Pi ((a Nat) (b Nat) (c Nat)) (= Nat (* a (* b c)) (* (* a b) c))))
+(define *-associativity (lambda (a b c) (ind-Nat a (mot-*-associativity b c) (same 0) (step-*-associativity b c))))
+
+(claim mot-*-commutativity (-> Nat Nat U))
+(define mot-*-commutativity (lambda (j k) (= Nat (* k j) (* j k))))
+
+(claim step-*-commutativity (Pi ((j Nat) (k Nat)) (-> (mot-*-commutativity j k) (mot-*-commutativity j (add1 k)))))
+(define step-*-commutativity (lambda (j k assumption) (trans (cong assumption (+ j)) (symm (n+=*add1 j k)))))
+
+(claim *-commutativity (Pi ((a Nat) (b Nat)) (= Nat (* a b) (* b a))))
+(define *-commutativity (lambda (a b) (ind-Nat a (mot-*-commutativity b) (0=n*0 b) (step-*-commutativity b))))
+
+(claim gauss (-> Nat Nat))
+(define gauss (lambda (n) (rec-Nat n 0 (lambda (k-minus-1 acc) (+ (add1 k-minus-1) acc)))))
+
+(claim gauss2 (-> Nat Nat))
+(define gauss2 (lambda (n) (+ n (* n n))))
+
+(claim mot-2gauss=gauss2 (-> Nat U))
+(define mot-2gauss=gauss2 (lambda (k) (= Nat (gauss2 k) (* (gauss k) 2))))
+
+(claim base-2gauss=gauss2 (mot-2gauss=gauss2 0))
+(define base-2gauss=gauss2 (same 0))
+
+(claim example-gauss-1 (mot-2gauss=gauss2 1))
+(define example-gauss-1 (same 2))
+
+(claim example-gauss-2 (mot-2gauss=gauss2 2))
+(define example-gauss-2 (same 6))
+
+(claim example-gauss-3 (mot-2gauss=gauss2 3))
+(define example-gauss-3 (same 12))
+
+(claim gauss-step1 (Pi ((n Nat)) (-> (= Nat (gauss2 n) (* (gauss n) 2)) (= Nat (+ 2 (+ (* n 2) (gauss2 n))) (+ 2 (+ (* n 2) (* (gauss n) 2)))))))
+(define gauss-step1 (lambda (n assumption) (cong assumption (+ (* (add1 n) 2)))))
+
+(claim gauss-step2-left1 (Pi ((n Nat)) (= Nat (add1 (+ n (add1 (+ n (* n (add1 n)))))) (add1 (+ n (add1 (+ n (gauss2 n))))))))
+(define gauss-step2-left1 (lambda (n) (cong (n+=*add1 n n) (the (-> Nat Nat) (lambda (k) (add1 (+ n (add1 (+ n k)))))))))
+
+(claim gauss-step2-left2 (Pi ((n Nat)) (= Nat (add1 (+ n (add1 (+ n (gauss2 n))))) (add1 (add1 (+ n (+ n (gauss2 n))))))))
+(define gauss-step2-left2 (lambda (n) (symm (cong (add1+=+add1 n (+ n (gauss2 n))) (+ 1)))))
+
+(claim +n+n=+2*n-1 (Pi ((n Nat) (k Nat)) (= Nat (+ n (+ n k)) (+ (+ n n) k))))
+(define +n+n=+2*n-1 (lambda (n k) (+-associativity n n k)))
+
+(claim +n+n=+2*n-2 (Pi ((n Nat) (k Nat)) (= Nat (+ (+ n n) k) (+ (* 2 n) k))))
+(define +n+n=+2*n-2 (lambda (n k) (symm (cong (n+0=n n) (the (-> Nat Nat) (lambda (x) (+ (+ n x) k)))))))
+
+(claim +n+n=+2*n-3 (Pi ((n Nat) (k Nat)) (= Nat (+ (* 2 n) k) (+ (* n 2) k))))
+(define +n+n=+2*n-3 (lambda (n k) (cong (*-commutativity 2 n) (the (-> Nat Nat) (lambda (x) (+ x k))))))
+
+(claim +n+n=+2*n (Pi ((n Nat) (k Nat)) (= Nat (+ n (+ n k)) (+ (* n 2) k))))
+(define +n+n=+2*n (lambda (n k) (trans (+n+n=+2*n-1 n k) (trans (+n+n=+2*n-2 n k) (+n+n=+2*n-3 n k)))))
+
+(claim gauss-step2-left3 (Pi ((n Nat)) (= Nat (add1 (add1 (+ n (+ n (gauss2 n))))) (add1 (add1 (+ (* n 2) (gauss2 n)))))))
+(define gauss-step2-left3 (lambda (n) (cong (+n+n=+2*n n (gauss2 n)) (+ 2))))
+
+(claim gauss-step2-left (Pi ((n Nat)) (= Nat (add1 (+ n (add1 (+ n (* n (add1 n)))))) (+ 2 (+ (* n 2) (gauss2 n))))))
+(define gauss-step2-left (lambda (n) (trans (gauss-step2-left1 n) (trans (gauss-step2-left2 n) (gauss-step2-left3 n)))))
+
+(claim gauss-step2-right (Pi ((n Nat)) (= Nat (+ 2 (+ (* n 2) (* (gauss n) 2))) (+ 2 (* (+ n (gauss n)) 2)))))
+(define gauss-step2-right (lambda (n) (cong (distributivity 2 n (gauss n)) (+ 2))))
+
+(claim gauss-step2-N (Pi ((n Nat)) (-> (= Nat (+ 2 (+ (* n 2) (gauss2 n)))             (+ 2 (+ (* n 2) (* (gauss n) 2))))
+                                       (= Nat (add1 (+ n (add1 (+ n (* n (add1 n)))))) (+ 2 (* (+ n (gauss n)) 2))))))
+(define gauss-step2-N (lambda (n assumption) (trans (gauss-step2-left n) (trans assumption (gauss-step2-right n)))))
+
+(claim step-2gauss=gauss2 (Pi ((n Nat)) (-> (mot-2gauss=gauss2 n) (mot-2gauss=gauss2 (add1 n)))))
+(define step-2gauss=gauss2 (lambda (n assumption) (gauss-step2-N n (gauss-step1 n assumption))))
+
+(claim 2gauss=gauss2 (Pi ((n Nat)) (= Nat (gauss2 n) (* (gauss n) 2))))
+(define 2gauss=gauss2 (lambda (n) (ind-Nat n mot-2gauss=gauss2 (same 0) step-2gauss=gauss2)))
