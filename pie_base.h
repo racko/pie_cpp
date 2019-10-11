@@ -49,8 +49,8 @@ struct Pie {
     template <typename... Args>
     constexpr apply_result_t<Derived, Args...> operator()(const Pie<Args>&... args) const;
 
-    constexpr operator Derived&() { return static_cast<Derived&>(*this); }
-    constexpr operator Derived const&() const { return static_cast<const Derived&>(*this); }
+    constexpr operator Derived&() { return derived(); }
+    constexpr operator Derived const&() const { return derived(); }
 
     constexpr Derived& derived() { return static_cast<Derived&>(*this); }
     constexpr Derived const& derived() const { return static_cast<const Derived&>(*this); }
