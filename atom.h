@@ -19,10 +19,22 @@ struct Printer<Atom_t> {
     static void print(std::ostream& s) { s << "Atom"; }
 };
 
-template <typename Symbol>
-struct Quote_t : Pie<Quote_t<Symbol>> {
-    constexpr Quote_t() = default;
+struct Quote_t : Pie<Quote_t> {
+    template <int N>
+    constexpr Quote_t(const char (&symbol)[N]) {
+        for (auto i = 0; i < N; ++i) {
+            symbol_[i] = symbol[i];
+        }
+    }
+    char symbol_[16]{};
 };
+
+template <Quote_t quote>
+constexpr Quote_t operator""_a() {
+    return quote;
+}
+
+constexpr Quote_t foo = "foo"_a;
 
 template <typename Symbol>
 struct Height<Quote_t<Symbol>> : std::integral_constant<int, 0> {};
