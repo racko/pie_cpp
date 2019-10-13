@@ -39,12 +39,7 @@ template <std::int32_t N>
 struct is_value<Int32<N>> : std::true_type {};
 
 template <std::int32_t N>
-struct synth_result<Int32<N>> {
-    using type = Nat_t;
-};
-
-template <std::int32_t N>
-constexpr synth_result_t<Int32<N>> synth1(const Int32<N> n) {
+constexpr Nat_t synth1(const Int32<N> n) {
     assert(IsA(n, Nat));
     return Nat;
 }

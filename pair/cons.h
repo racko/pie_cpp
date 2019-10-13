@@ -47,11 +47,6 @@ template <typename Derived1, typename Derived2>
 struct is_value<Cons_t<Derived1, Derived2>> : std::true_type {};
 
 template <typename Car, typename Cdr>
-struct normalize_result1<Cons_t<Car, Cdr>, false> {
-    using type = Cons_t<normalize_result_t<Car>, normalize_result_t<Cdr>>;
-};
-
-template <typename Car, typename Cdr>
-constexpr normalize_result_t<Cons_t<Car, Cdr>> Normalize(const Cons_t<Car, Cdr> type, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Cons_t<Car, Cdr> type, std::false_type /*is_normal*/) {
     return Cons_t(Normalize(type.car_), Normalize(type.cdr_));
 }

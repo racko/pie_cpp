@@ -40,22 +40,12 @@ template <typename Derived>
 struct is_value<Add1_t<Derived>> : std::true_type {};
 
 template <typename Derived>
-struct normalize_result1<Add1_t<Derived>, false> {
-    using type = Add1_t<normalize_result_t<Derived>>;
-};
-
-template <typename Derived>
-constexpr normalize_result_t<Add1_t<Derived>> Normalize(const Add1_t<Derived>& x, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Add1_t<Derived>& x, std::false_type /*is_normal*/) {
     return add1(Normalize(x.smaller_));
 }
 
 template <typename Derived>
-struct synth_result<Add1_t<Derived>> {
-    using type = Nat_t;
-};
-
-template <typename Derived>
-constexpr synth_result_t<Add1_t<Derived>> synth1(const Add1_t<Derived>& n) {
+constexpr Nat_t synth1(const Add1_t<Derived>& n) {
     assert(IsA(n, Nat));
     return Nat;
 }

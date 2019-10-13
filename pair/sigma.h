@@ -57,23 +57,12 @@ template <typename Arg, typename Result>
 struct is_value<Sigma_t<Arg, Result>> : std::true_type {};
 
 template <typename Arg, typename Result>
-struct synth_result<Sigma_t<Arg, Result>> {
-    using type = U_t;
-};
-
-template <typename Arg, typename Result>
-constexpr synth_result_t<Sigma_t<Arg, Result>> synth1(const Sigma_t<Arg, Result>& t) {
+constexpr U_t synth1(const Sigma_t<Arg, Result>& t) {
     assert(IsAType(t));
     return U;
 }
 
 template <typename Arg, typename Result>
-struct normalize_result1<Sigma_t<Arg, Result>, false> {
-    using type = Sigma_t<normalize_result_t<Arg>, NormalizedLambda<Result>>;
-};
-
-template <typename Arg, typename Result>
-constexpr normalize_result_t<Sigma_t<Arg, Result>> Normalize(const Sigma_t<Arg, Result>& type,
-                                                             std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Sigma_t<Arg, Result>& type, std::false_type /*is_normal*/) {
     return Sigma(Normalize(type.arg_), NormalizedLambda{type.result_});
 }

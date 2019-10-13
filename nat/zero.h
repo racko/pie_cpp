@@ -28,9 +28,4 @@ struct is_normal<Zero_t> : std::true_type {};
 template <>
 struct is_value<Zero_t> : std::true_type {};
 
-template <>
-struct synth_result<Zero_t> {
-    using type = Nat_t;
-};
-
-constexpr synth_result_t<Zero_t> synth1(Zero_t) { return Nat; }
+constexpr Nat_t synth1(Zero_t) { return Nat; }

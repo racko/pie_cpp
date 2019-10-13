@@ -91,20 +91,10 @@ struct is_normal<Quote_t<Symbol>> : std::true_type {};
 template <typename Symbol>
 struct is_value<Quote_t<Symbol>> : std::true_type {};
 
-template <>
-struct synth_result<Atom_t> {
-    using type = U_t;
-};
-
-constexpr synth_result_t<Atom_t> synth1(Atom_t) { return U; }
+constexpr U_t synth1(Atom_t) { return U; }
 
 template <typename Symbol>
-struct synth_result<Quote_t<Symbol>> {
-    using type = Atom_t;
-};
-
-template <typename Symbol>
-constexpr synth_result_t<Quote_t<Symbol>> synth1(const Quote_t<Symbol> atom) {
+constexpr Atom_t synth1(const Quote_t<Symbol> atom) {
     assert(IsA(atom, Atom));
     return Atom;
 }

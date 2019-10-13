@@ -80,11 +80,6 @@ template <typename F>
 struct is_value<Lambda_t<F>> : std::true_type {};
 
 template <typename F>
-struct normalize_result1<Lambda_t<F>, false> {
-    using type = Lambda_t<NormalizedLambda<F>>;
-};
-
-template <typename F>
-constexpr normalize_result_t<Lambda_t<F>> Normalize(const Lambda_t<F>& f, std::false_type /*is_normal*/) {
+constexpr Lambda_t<NormalizedLambda<F>> Normalize(const Lambda_t<F>& f, std::false_type /*is_normal*/) {
     return lambda(NormalizedLambda{f.f_});
 }

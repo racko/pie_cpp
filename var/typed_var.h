@@ -30,12 +30,7 @@ template <typename Type, int id>
 struct is_neutral<TypedVar_t<Type, id>> : std::true_type {};
 
 template <typename Type, int id>
-struct synth_result<TypedVar_t<Type, id>> {
-    using type = Type;
-};
-
-template <typename Type, int id>
-constexpr synth_result_t<TypedVar_t<Type, id>> synth1(const TypedVar_t<Type, id>& x) {
+constexpr Type synth1(const TypedVar_t<Type, id>& x) {
     assert(IsAType(x.type_));
     return x.type_;
 }

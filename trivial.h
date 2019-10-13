@@ -49,18 +49,8 @@ struct is_normal<Sole_t> : std::true_type {};
 template <>
 struct is_value<Sole_t> : std::true_type {};
 
-template <>
-struct synth_result<Trivial_t> {
-    using type = U_t;
-};
+constexpr U_t synth1(Trivial_t) { return U; }
 
-constexpr synth_result_t<Trivial_t> synth1(Trivial_t) { return U; }
-
-template <>
-struct synth_result<Sole_t> {
-    using type = Trivial_t;
-};
-
-constexpr synth_result_t<Sole_t> synth1(Sole_t) { return Trivial; }
+constexpr Trivial_t synth1(Sole_t) { return Trivial; }
 
 // TODO: If e is a Trivial, then e is the same as sole

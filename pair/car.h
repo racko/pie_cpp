@@ -29,12 +29,7 @@ constexpr Car_t<Derived> car(const Pie<Derived>& cons) {
 }
 
 template <typename Derived>
-struct step_result<Car_t<Derived>> {
-    using type = typename compute_value_result_t<Derived>::car_type;
-};
-
-template <typename Derived>
-constexpr step_result_t<Car_t<Derived>> Step1(const Car_t<Derived>& car) {
+constexpr auto Step1(const Car_t<Derived>& car) {
     assert(!is_neutral_v<Derived>);
     return ComputeValue(car.cons_).car_;
 }
@@ -42,12 +37,7 @@ constexpr step_result_t<Car_t<Derived>> Step1(const Car_t<Derived>& car) {
 template <typename Derived>
 struct is_neutral<Car_t<Derived>> : std::bool_constant<is_neutral_v<Derived>> {};
 
-template <typename ConsType>
-struct synth_result<Car_t<ConsType>, std::enable_if_t<can_synth_v<ConsType>>> {
-    using type = typename compute_value_result_t<synth_result_t<ConsType>>::arg_type;
-};
-
 template <typename ConsType, typename = std::enable_if_t<can_synth_v<ConsType>>>
-constexpr synth_result_t<Car_t<ConsType>> synth1(const Car_t<ConsType>& x) {
+constexpr auto synth1(const Car_t<ConsType>& x) {
     return ComputeValue(synth(x.cons_)).arg_;
 }

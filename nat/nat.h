@@ -27,9 +27,4 @@ struct is_normal<Nat_t> : std::true_type {};
 template <>
 struct is_value<Nat_t> : std::true_type {};
 
-template <>
-struct synth_result<Nat_t> {
-    using type = U_t;
-};
-
-constexpr synth_result_t<Nat_t> synth1(Nat_t) { return U; }
+constexpr U_t synth1(Nat_t) { return U; }

@@ -26,11 +26,6 @@ struct is_normal<Absurd_t> : std::true_type {};
 template <>
 struct is_value<Absurd_t> : std::true_type {};
 
-template <>
-struct synth_result<Absurd_t> {
-    using type = U_t;
-};
-
-constexpr synth_result_t<Absurd_t> synth1(Absurd_t) { return U; }
+constexpr U_t synth1(Absurd_t) { return U; }
 
 // TODO: Every expression of type Absurd is neutral, and all of them are the same.

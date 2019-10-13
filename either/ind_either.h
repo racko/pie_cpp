@@ -53,42 +53,19 @@ constexpr IndEither_t<Target, Mot, BaseLeft, BaseRight> ind_Either(const Pie<Tar
         target.derived(), mot.derived(), base_left.derived(), base_right.derived()};
 }
 
-template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-struct step_Ind_Either_result;
-
-template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-using step_Ind_Either_result_t = typename step_Ind_Either_result<Target, Mot, BaseLeft, BaseRight>::type;
-
 template <typename Derived, typename Mot, typename BaseLeft, typename BaseRight>
-struct step_Ind_Either_result<Right_t<Derived>, Mot, BaseLeft, BaseRight> {
-    using type = apply_result_t<BaseRight, Derived>;
-};
-
-template <typename Derived, typename Mot, typename BaseLeft, typename BaseRight>
-constexpr step_Ind_Either_result_t<Right_t<Derived>, Mot, BaseLeft, BaseRight>
+constexpr auto
 Step_Ind_Either(const Right_t<Derived>& target, const Mot&, const BaseLeft&, const BaseRight& base_right) {
     return base_right(target.r_);
 }
 
 template <typename Derived, typename Mot, typename BaseLeft, typename BaseRight>
-struct step_Ind_Either_result<Left_t<Derived>, Mot, BaseLeft, BaseRight> {
-    using type = apply_result_t<BaseLeft, Derived>;
-};
-
-template <typename Derived, typename Mot, typename BaseLeft, typename BaseRight>
-constexpr step_Ind_Either_result_t<Left_t<Derived>, Mot, BaseLeft, BaseRight>
-Step_Ind_Either(const Left_t<Derived>& target, const Mot&, const BaseLeft& base_left, const BaseRight&) {
+constexpr auto Step_Ind_Either(const Left_t<Derived>& target, const Mot&, const BaseLeft& base_left, const BaseRight&) {
     return base_left(target.l_);
 }
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-struct step_result<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
-    using type = step_Ind_Either_result_t<compute_value_result_t<Target>, Mot, BaseLeft, BaseRight>;
-};
-
-template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-constexpr step_result_t<IndEither_t<Target, Mot, BaseLeft, BaseRight>>
-Step1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
+constexpr auto Step1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
     assert(!is_neutral_v<Target>);
     return Step_Ind_Either(
         ComputeValue(ind_either.target_), ind_either.mot_, ind_either.base_left_, ind_either.base_right_);
@@ -98,13 +75,7 @@ template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
 struct is_neutral<IndEither_t<Target, Mot, BaseLeft, BaseRight>> : std::bool_constant<is_neutral_v<Target>> {};
 
 template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-struct synth_result<IndEither_t<Target, Mot, BaseLeft, BaseRight>> {
-    using type = apply_result_t<Mot, Target>;
-};
-
-template <typename Target, typename Mot, typename BaseLeft, typename BaseRight>
-constexpr synth_result_t<IndEither_t<Target, Mot, BaseLeft, BaseRight>>
-synth1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
+constexpr auto synth1(const IndEither_t<Target, Mot, BaseLeft, BaseRight>& ind_either) {
     const auto target_type = ComputeValue(synth(ind_either.target_));
     assert(IsA(ind_either.mot_, Arrow(target_type, U)));
     assert(IsA(ind_either.base_left_,

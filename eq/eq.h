@@ -58,24 +58,12 @@ template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
 struct is_value<Eq_t<DerivedT, DerivedFrom, DerivedTo>> : std::true_type {};
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
-struct normalize_result1<Eq_t<DerivedT, DerivedFrom, DerivedTo>, false> {
-    using type = Eq_t<normalize_result_t<DerivedT>, normalize_result_t<DerivedFrom>, normalize_result_t<DerivedTo>>;
-};
-
-template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
-constexpr normalize_result_t<Eq_t<DerivedT, DerivedFrom, DerivedTo>>
-Normalize(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& type, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& type, std::false_type /*is_normal*/) {
     return Eq_t(Normalize(type.type_), Normalize(type.from_), Normalize(type.to_));
 }
 
 template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
-struct synth_result<Eq_t<DerivedT, DerivedFrom, DerivedTo>> {
-    using type = U_t;
-};
-
-template <typename DerivedT, typename DerivedFrom, typename DerivedTo>
-constexpr synth_result_t<Eq_t<DerivedT, DerivedFrom, DerivedTo>>
-synth1(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& t) {
+constexpr U_t synth1(const Eq_t<DerivedT, DerivedFrom, DerivedTo>& t) {
     assert(IsAType(t));
     return U;
 }

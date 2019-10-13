@@ -40,11 +40,6 @@ template <typename Derived>
 struct is_value<Left_t<Derived>> : std::true_type {};
 
 template <typename Derived>
-struct normalize_result1<Left_t<Derived>, false> {
-    using type = Left_t<normalize_result_t<Derived>>;
-};
-
-template <typename Derived>
-constexpr normalize_result_t<Left_t<Derived>> Normalize(const Left_t<Derived>& x, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Left_t<Derived>& x, std::false_type /*is_normal*/) {
     return left(Normalize(x.l_));
 }

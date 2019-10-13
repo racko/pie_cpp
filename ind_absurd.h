@@ -35,12 +35,7 @@ template <typename Target, typename Mot>
 struct is_neutral<IndAbsurd_t<Target, Mot>> : std::bool_constant<is_neutral_v<Target>> {};
 
 template <typename Target, typename Mot>
-struct synth_result<IndAbsurd_t<Target, Mot>> {
-    using type = Mot;
-};
-
-template <typename Target, typename Mot>
-constexpr synth_result_t<IndAbsurd_t<Target, Mot>> synth1(const IndAbsurd_t<Target, Mot>& ind_absurd) {
+constexpr Mot synth1(const IndAbsurd_t<Target, Mot>& ind_absurd) {
     const auto& t = ind_absurd.target_;
     const auto& m = ind_absurd.mot_;
 

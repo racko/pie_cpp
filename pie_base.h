@@ -28,26 +28,10 @@
 template <typename F, typename Arg>
 struct App_t;
 
-template <typename F, typename... Args>
-struct apply_result;
-
-template <typename F, typename... Args>
-using apply_result_t = typename apply_result<F, Args...>::type;
-
-template <typename F>
-struct apply_result<F> {
-    using type = F;
-};
-
-template <typename F, typename Arg, typename... Args>
-struct apply_result<F, Arg, Args...> {
-    using type = apply_result_t<App_t<F, Arg>, Args...>;
-};
-
 template <typename Derived>
 struct Pie {
     template <typename... Args>
-    constexpr apply_result_t<Derived, Args...> operator()(const Pie<Args>&... args) const;
+    constexpr auto operator()(const Pie<Args>&... args) const;
 
     constexpr operator Derived&() { return derived(); }
     constexpr operator Derived const&() const { return derived(); }
@@ -129,53 +113,23 @@ constexpr bool IsValue(const Pie<Derived>&) {
     return is_value_v<Derived>;
 }
 
-template <typename T>
-struct step_result;
-
-template <typename T>
-using step_result_t = typename step_result<T>::type;
-
 template <typename Derived>
-constexpr step_result_t<Derived> Step(const Pie<Derived>& x) {
+constexpr auto Step(const Pie<Derived>& x) {
     LOG("Step(" << x.derived() << ") ...");
     const auto result = Step1(x.derived());
     LOG("Step(" << x.derived() << "): " << result);
     return result;
 }
 
-template <typename T>
-struct compute_value_result;
-
-template <typename T, bool IsValue>
-struct compute_value_result1;
-
-template <typename T>
-struct compute_value_result1<T, true> {
-    using type = T;
-};
-
-template <typename T>
-struct compute_value_result1<T, false> {
-    using type = typename compute_value_result<step_result_t<T>>::type;
-};
-
-template <typename T>
-struct compute_value_result {
-    using type = typename compute_value_result1<T, is_value_v<T>>::type;
-};
-
-template <typename T>
-using compute_value_result_t = typename compute_value_result<T>::type;
-
 template <typename Derived>
-constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x, std::true_type) {
+constexpr Derived ComputeValue(const Pie<Derived>& x, std::true_type) {
     const auto result = x.derived();
     LOG("ComputeValue(" << x.derived() << "): " << result);
     return result;
 }
 
 template <typename Derived>
-constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x, std::false_type) {
+constexpr auto ComputeValue(const Pie<Derived>& x, std::false_type) {
     LOG("ComputeValue(" << x.derived() << ") ...");
     const auto result = ComputeValue(Step(x.derived()));
     LOG("ComputeValue(" << x.derived() << "): " << result);
@@ -183,43 +137,19 @@ constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x, st
 }
 
 template <typename Derived>
-constexpr compute_value_result_t<Derived> ComputeValue(const Pie<Derived>& x) {
+constexpr auto ComputeValue(const Pie<Derived>& x) {
     return ComputeValue(x.derived(), is_value<Derived>{});
 }
 
-template <typename T>
-struct normalize_result;
-
-template <typename T, bool IsNormal>
-struct normalize_result1;
-
-template <typename T>
-struct normalize_result1<T, true> {
-    using type = T;
-};
-
-template <typename T>
-struct normalize_result1<T, false> {
-    using type = typename normalize_result<step_result_t<T>>::type;
-};
-
-template <typename T>
-struct normalize_result {
-    using type = typename normalize_result1<T, is_normal_v<T>>::type;
-};
-
-template <typename T>
-using normalize_result_t = typename normalize_result<T>::type;
-
 template <typename Derived>
-constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x, std::true_type /*is_normal*/) {
+constexpr Derived Normalize(const Pie<Derived>& x, std::true_type /*is_normal*/) {
     const auto result = x.derived();
     LOG("Normalize(" << x.derived() << "): " << result);
     return result;
 }
 
 template <typename Derived>
-constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Pie<Derived>& x, std::false_type /*is_normal*/) {
     LOG("Normalize(" << x.derived() << ") ...");
     const auto result = Normalize(Step(x.derived()));
     LOG("Normalize(" << x.derived() << "): " << result);
@@ -227,7 +157,7 @@ constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x, std::fals
 }
 
 template <typename Derived>
-constexpr normalize_result_t<Derived> Normalize(const Pie<Derived>& x) {
+constexpr auto Normalize(const Pie<Derived>& x) {
     return Normalize(x.derived(), is_normal<Derived>{});
 }
 
@@ -236,26 +166,12 @@ struct NormalizedLambda {
     constexpr NormalizedLambda(const F& f) : f_{f} {}
 
     template <typename Arg>
-    constexpr normalize_result_t<std::invoke_result_t<F, Arg>> operator()(const Arg& arg) const {
+    constexpr auto operator()(const Arg& arg) const {
         return Normalize(f_(arg));
     }
 
     F f_;
 };
-
-template <typename T, typename Enabled = void>
-struct synth_result;
-
-template <typename T>
-using synth_result_t = typename synth_result<T>::type;
-
-template <typename Derived>
-constexpr synth_result_t<Derived> synth(const Pie<Derived>& x) {
-    LOG("synth(" << x.derived() << ") ...");
-    const auto result = synth1(x.derived());
-    LOG("synth(" << x.derived() << "): " << result);
-    return result;
-}
 
 template <typename T, typename = std::void_t<>>
 struct can_synth : std::false_type {};
@@ -264,7 +180,15 @@ template <typename T>
 constexpr inline bool can_synth_v = can_synth<T>::value;
 
 template <typename T>
-struct can_synth<T, std::void_t<decltype(synth(std::declval<T>()))>> : std::true_type {};
+struct can_synth<T, std::void_t<decltype(synth1(std::declval<T>()))>> : std::true_type {};
+
+template <typename Derived>
+constexpr auto synth(const Pie<Derived>& x, std::enable_if_t<can_synth_v<Derived>, int> = 0) {
+    LOG("synth(" << x.derived() << ") ...");
+    const auto result = synth1(x.derived());
+    LOG("synth(" << x.derived() << "): " << result);
+    return result;
+}
 
 template <typename Derived1, typename Derived2>
 constexpr bool
@@ -393,22 +317,12 @@ constexpr Definition<Symbol, Type, Expr> define(const Type& type, const Expr& ex
 }
 
 template <typename Symbol, typename Type, typename Expr>
-struct step_result<Definition<Symbol, Type, Expr>> {
-    using type = Expr;
-};
-
-template <typename Symbol, typename Type, typename Expr>
-constexpr step_result_t<Definition<Symbol, Type, Expr>> Step1(const Definition<Symbol, Type, Expr>& x) {
+constexpr Expr Step1(const Definition<Symbol, Type, Expr>& x) {
     return x.expr_;
 }
 
 template <typename Symbol, typename Type, typename Expr>
-struct synth_result<Definition<Symbol, Type, Expr>> {
-    using type = Type;
-};
-
-template <typename Symbol, typename Type, typename Expr>
-constexpr synth_result_t<Definition<Symbol, Type, Expr>> synth1(const Definition<Symbol, Type, Expr>& x) {
+constexpr Type synth1(const Definition<Symbol, Type, Expr>& x) {
     LOG("synth(" << x << "): " << x.type_);
     return x.type_;
 }

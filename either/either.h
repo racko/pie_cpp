@@ -44,22 +44,12 @@ template <typename L, typename R>
 struct is_value<Either_t<L, R>> : std::true_type {};
 
 template <typename L, typename R>
-struct synth_result<Either_t<L, R>> {
-    using type = U_t;
-};
-
-template <typename L, typename R>
-constexpr synth_result_t<Either_t<L, R>> synth1(const Either_t<L, R>& t) {
+constexpr U_t synth1(const Either_t<L, R>& t) {
     assert(IsAType(t));
     return U;
 }
 
 template <typename L, typename R>
-struct normalize_result1<Either_t<L, R>, false> {
-    using type = Either_t<normalize_result_t<L>, normalize_result_t<R>>;
-};
-
-template <typename L, typename R>
-constexpr normalize_result_t<Either_t<L, R>> Normalize(const Either_t<L, R>& type, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Either_t<L, R>& type, std::false_type /*is_normal*/) {
     return Either(Normalize(type.left_), Normalize(type.right_));
 }

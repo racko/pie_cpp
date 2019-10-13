@@ -44,11 +44,6 @@ template <typename Derived>
 struct is_value<Same_t<Derived>> : std::true_type {};
 
 template <typename Derived>
-struct normalize_result1<Same_t<Derived>, false> {
-    using type = Same_t<normalize_result_t<Derived>>;
-};
-
-template <typename Derived>
-constexpr normalize_result_t<Same_t<Derived>> Normalize(const Same_t<Derived> x, std::false_type /*is_normal*/) {
+constexpr auto Normalize(const Same_t<Derived> x, std::false_type /*is_normal*/) {
     return same(Normalize(x.x_));
 }

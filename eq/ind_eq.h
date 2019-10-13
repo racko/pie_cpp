@@ -38,12 +38,7 @@ constexpr IndEq_t<Target, Mot, Base> ind_Eq(const Pie<Target>& target, const Pie
 }
 
 template <typename Target, typename Mot, typename Base>
-struct step_result<IndEq_t<Target, Mot, Base>> {
-    using type = Base;
-};
-
-template <typename Target, typename Mot, typename Base>
-constexpr step_result_t<IndEq_t<Target, Mot, Base>> Step1(const IndEq_t<Target, Mot, Base>& ind_eq) {
+constexpr Base Step1(const IndEq_t<Target, Mot, Base>& ind_eq) {
     assert(!is_neutral_v<Target>);
     return ind_eq.base_;
 }
@@ -52,12 +47,7 @@ template <typename Target, typename Mot, typename Base>
 struct is_neutral<IndEq_t<Target, Mot, Base>> : std::bool_constant<is_neutral_v<Target>> {};
 
 template <typename Target, typename Mot, typename Base>
-struct synth_result<IndEq_t<Target, Mot, Base>> {
-    using type = apply_result_t<Mot, typename compute_value_result_t<synth_result_t<Target>>::to_t, Target>;
-};
-
-template <typename Target, typename Mot, typename Base>
-constexpr synth_result_t<IndEq_t<Target, Mot, Base>> synth1(const IndEq_t<Target, Mot, Base>& ind_eq) {
+constexpr auto synth1(const IndEq_t<Target, Mot, Base>& ind_eq) {
     const auto& t = ind_eq.target_;
     const auto& m = ind_eq.mot_;
     const auto& b = ind_eq.base_;
