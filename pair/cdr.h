@@ -30,16 +30,15 @@ constexpr Cdr_t<Derived> cdr(const Pie<Derived>& cons) {
 }
 
 template <typename Derived>
-constexpr auto Step1(const Cdr_t<Derived>& cdr) {
-    assert(!is_neutral_v<Derived>);
-    return ComputeValue(cdr.cons_).cdr_;
-}
-
-template <typename Derived>
 struct is_neutral<Cdr_t<Derived>> : std::bool_constant<is_neutral_v<Derived>> {};
 
-template <typename ConsType, typename = std::enable_if_t<can_synth_v<ConsType>>>
-constexpr auto synth1(const Cdr_t<ConsType>& x) {
-    const auto cons_type = ComputeValue(synth(x.cons_));
-    return cons_type.result_(car(x.cons_));
-}
+template <typename Derived>
+struct StepResult<Cdr_t<Derived>> {
+    static_assert(!is_neutral_v<Derived>);
+    using type = typename compute_value_t<Derived>::cdr_type;
+};
+
+template <typename ConsType>
+struct Synth<Cdr_t<ConsType>, std::enable_if_t<can_synth_v<ConsType>>> {
+    using type = std::invoke_result_t<typename compute_value_t<synth_t<ConsType>>::result_type, typename ConsType::car_type>;
+};

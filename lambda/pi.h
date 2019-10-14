@@ -53,11 +53,18 @@ constexpr auto Arrow(const Pie<Arg>& arg, const Args&... args) {
     return Pi(arg.derived(), [args...](const auto&) { return Arrow(args...); });
 }
 
+// TODO:
+// - make test1.cpp green
+//   - update pi
+//     - replace synth1
+//     - replace Normalize
+//   - update sigma
+// - make other tests green
+
 template <typename Arg, typename Result>
-constexpr bool IsAType1(const Pi_t<Arg, Result>& type) {
-    const auto v = var<height_v<Pi_t<Arg, Result>>>(type.arg_);
-    return IsAType(type.arg_) && IsAType(type.result_(v));
-}
+struct is_a_type_impl<Pi_t<Arg, Result>>
+    : std::bool_constant<is_a_type_v<Arg> &&
+                         is_a_type_v<std::invoke_result_t<Result, TypedVar_t<Arg, height_v<Pi_t<Arg, Result>>>>>> {};
 
 template <typename Arg, typename Result>
 struct is_normal<Pi_t<Arg, Result>>
@@ -67,12 +74,11 @@ template <typename Arg, typename Result>
 struct is_value<Pi_t<Arg, Result>> : std::true_type {};
 
 template <typename Arg, typename Result>
-constexpr U_t synth1(const Pi_t<Arg, Result>& t) {
-    assert(IsAType(t));
-    return U;
-}
+struct Synth<Pi_t<Arg, Result>> {
+    static_assert(is_a_type_v<Pi_t<Arg, Result>>);
+    using type = U_t;
+};
 
-template <typename Arg, typename Result>
 constexpr auto Normalize(const Pi_t<Arg, Result>& type, std::false_type /*is_normal*/) {
     return Pi(Normalize(type.arg_), NormalizedLambda{type.result_});
 }

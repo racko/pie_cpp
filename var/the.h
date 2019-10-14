@@ -29,13 +29,13 @@ constexpr The_t<Derived1, Derived2> the(const Pie<Derived1>& type, const Pie<Der
 }
 
 template <typename Type, typename Expr>
-constexpr Expr Step1(const The_t<Type, Expr>& x) {
-    return x.value_;
-}
+struct StepResult<The_t<Type, Expr>> {
+    using type = Expr;
+};
 
-template <typename Type, typename Expr>
-constexpr Type synth1(const The_t<Type, Expr>& x) {
-    assert(IsAType(x.type_));
-    assert(IsA(x.value_, x.type_));
-    return x.type_;
-}
+template<typename Type, typename Expr>
+struct Synth<The_t<Type, Expr>> {
+    static_assert(is_a_type_v<Type>);
+    static_assert(is_a_v<Expr, Type>);
+    using type = Type;
+};

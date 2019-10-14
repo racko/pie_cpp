@@ -62,8 +62,9 @@ constexpr Quote_t<Symbol> quote() {
     return Quote_t<Symbol>{};
 }
 
+namespace detail {
 template <typename Symbol>
-constexpr bool IsA1(Quote_t<Symbol>, Atom_t) {
+constexpr bool IsASymbol() {
     if (*Symbol::value == '\0') {
         return false;
     }
@@ -76,8 +77,13 @@ constexpr bool IsA1(Quote_t<Symbol>, Atom_t) {
     } while (*c != '\0');
     return true;
 }
+}
 
-constexpr bool IsAType1(Atom_t) { return true; }
+template <>
+struct is_a_type_impl<Atom_t> : std::true_type {};
+
+template <typename Symbol>
+struct is_a_impl<Quote_t<Symbol>, Atom_t> : std::bool_constant<detail::IsASymbol<Symbol>()> {};
 
 template <>
 struct is_normal<Atom_t> : std::true_type {};
@@ -91,10 +97,13 @@ struct is_normal<Quote_t<Symbol>> : std::true_type {};
 template <typename Symbol>
 struct is_value<Quote_t<Symbol>> : std::true_type {};
 
-constexpr U_t synth1(Atom_t) { return U; }
+template<>
+struct Synth<Atom_t> {
+    using type = U_t;
+};
 
-template <typename Symbol>
-constexpr Atom_t synth1(const Quote_t<Symbol> atom) {
-    assert(IsA(atom, Atom));
-    return Atom;
-}
+template<typename Symbol>
+struct Synth<Quote_t<Symbol>> {
+    static_assert(is_a_v<Quote_t<Symbol>, Atom_t>);
+    using type = Atom_t;
+};

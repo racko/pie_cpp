@@ -67,11 +67,12 @@ constexpr auto lambda(const F& f, std::enable_if_t<!std::is_invocable_v<F, Var_t
 }
 
 template <typename F, typename Arg, typename Result>
-constexpr bool IsA1(const Lambda_t<F> f, Pi_t<Arg, Result> type) {
-    const auto height = std::max(height_v<Lambda_t<F>>, height_v<Pi_t<Arg, Result>>);
-    const auto v = var<height>(type.arg_);
-    return IsA(f.f_(v), type.result_(v));
-}
+constexpr inline int lambda_pi_height = std::max(height_v<Lambda_t<F>>, height_v<Pi_t<Arg, Result>>);
+
+template <typename F, typename Arg, typename Result>
+struct is_a_impl<Lambda_t<F>, Pi_t<Arg, Result>>
+    : std::bool_constant<is_a_v<std::invoke_result_t<F, TypedVar_t<Arg, lambda_pi_height<F, Arg, Result>>>,
+                                std::invoke_result_t<Result, TypedVar_t<Arg, lambda_pi_height<F, Arg, Result>>>>> {};
 
 template <typename F>
 struct is_normal<Lambda_t<F>> : std::bool_constant<is_normal_v<std::invoke_result_t<F, Var_t<0>>>> {};
@@ -80,6 +81,6 @@ template <typename F>
 struct is_value<Lambda_t<F>> : std::true_type {};
 
 template <typename F>
-constexpr Lambda_t<NormalizedLambda<F>> Normalize(const Lambda_t<F>& f, std::false_type /*is_normal*/) {
-    return lambda(NormalizedLambda{f.f_});
-}
+struct normalize<Lambda_t<F>, false> {
+    using type = Lambda_t<NormalizedLambda<F>>;
+};
